@@ -28,10 +28,13 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "include": [
-    "src",
+    "src/**/*", 
     ".next/types/**/*.ts"
   ],
   "exclude": [

@@ -2,8 +2,11 @@
 import { DataSource } from "typeorm";
 import path from "path";
 import * as dotenv from "dotenv";
-
-const entitiesPath = path.join(__dirname, "../entities/**/*.{ts,js}"); // Corrected "entity" to "entities"
+import { User } from "../entities/user";
+import * as Entities from '@/entities';
+// const baseDir = process.cwd();
+// const entitiesPath = path.resolve(baseDir, "src/entities/*.{ts,js}");
+const entitiesPath = path.join(__dirname, "../entities/*.{ts,js}"); 
 const migrationPath = path.join(__dirname, "../config/migrations/*.{ts,js}");
 console.log("Entities Path:", entitiesPath);
 console.log("Migrations Path:", migrationPath);
@@ -22,14 +25,10 @@ export const AppDataSource = new DataSource({
   database: DB_NAME,
   ssl: false,
   synchronize:false,
-  //
-  //logging logs sql command on the treminal
   logging: true,
-  // entities: [`${__dirname}**/entity/*.{ts,js}`],
-  entities: [entitiesPath],
-  // migrations: [`${__dirname}/**/migrations/*.{ts, js}`],
+  entities: Object.values(Entities),
   migrations: [migrationPath],
-  //   entities: [User],
-  // migrations: [__dirname + "/migration/*.ts"],
+
   subscribers: [],
 });
+

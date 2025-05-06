@@ -2,7 +2,6 @@
 import { DataSource } from "typeorm";
 import path from "path";
 import * as dotenv from "dotenv";
-import { User } from "../entities/user";
 import * as Entities from '@/entities';
 // const baseDir = process.cwd();
 // const entitiesPath = path.resolve(baseDir, "src/entities/*.{ts,js}");

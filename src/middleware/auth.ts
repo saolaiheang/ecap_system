@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import * as jwt from 'jsonwebtoken';
 import { TokenPayload } from '../common/types/user';
-import { RoleEnum, RoleType } from '../common/types/index';
+import { RoleEnum, RoleType } from '../common';
 
 // Middleware to protect routes and check roles
 export function middleware(request: NextRequest, roles: RoleType[] = [RoleEnum[2]]) {
@@ -50,5 +50,5 @@ export function middleware(request: NextRequest, roles: RoleType[] = [RoleEnum[2
 
 // Optionally, specify which routes the middleware applies to
 export const config = {
-  matcher: ['/api/protected/:path*', '/dashboard/:path*'], // Adjust paths as needed
+  matcher: ['/api/protected-typeofsport/:path*', '/dashboard/:path*'], // Adjust paths as needed
 };

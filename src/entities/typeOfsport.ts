@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryColumn,BeforeInsert } from 'typeorm';
+import { Entity, Column, PrimaryColumn,BeforeInsert, OneToMany } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
+import { News } from './index';
 
 @Entity()
 export class TypeOfSport {
@@ -9,6 +10,8 @@ export class TypeOfSport {
   name: string;
   @Column({ type: 'text', nullable: true })
   description: string;
+  @OneToMany(() => News, news => news.typeOfSport)
+  news: News[];
   @BeforeInsert()
   generateId() {
     this.id = uuidv4();

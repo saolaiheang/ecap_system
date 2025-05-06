@@ -1,5 +1,5 @@
 
-import Login from "./login/login"
+import Login from "./pages/login/login"
 
 import Homepage from "./pages/home/page";
 

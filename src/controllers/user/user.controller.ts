@@ -40,20 +40,9 @@ export const createUser = async (req: NextRequest) => {
         );
     }
 };
-export const login = async (req: NextRequest) => {
+export const login = async (email:string,password: string | undefined) => {
     try {
-        if (req.method !== "POST") {
-            return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
-        }
-
-        const { email, password } = await req.json();
-
-        if (!email || !password) {
-            return NextResponse.json(
-                { error: "Email and password are required" },
-                { status: 400 }
-            );
-        }
+        
 
         if (!AppDataSource.isInitialized) {
             await AppDataSource.initialize();

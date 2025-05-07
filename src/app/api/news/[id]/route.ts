@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getNewsByIdTypeOfSport,deleteNews,updateNews } from "@/controllers/user/news.controller";
+import { getNewsByIdTypeOfSport,deleteNews,updateNews } from "@/controllers/news/news.controller";
 export const GET = async (req: NextRequest, context: { params: { id: string } }) => {
     try {
         const news = await getNewsByIdTypeOfSport(req, context);

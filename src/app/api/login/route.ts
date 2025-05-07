@@ -1,7 +1,7 @@
 import { login } from "@/controllers/user/user.controller";
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-export const POST = async (req: NextRequest) => {
+export const POST = async (req: NextRequest, res: NextResponse) => {
   try {
     const response = await login(req);
     return response;

@@ -6,7 +6,7 @@ import Aboutpage from "./pages/about/about";
 export default function Home() {
   return (
     <div>
-      <Aboutpage/>
+      <Login/>
     </div>
   );
 }

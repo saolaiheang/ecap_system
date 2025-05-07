@@ -30,11 +30,14 @@
       }
     ],
     "paths": {
-      "@/*": ["src/*"]
-    }
+      "@/*": [
+        "src/*"
+      ]
+    },
+    "target": "ES2017"
   },
   "include": [
-    "src/**/*", 
+    "src/**/*",
     ".next/types/**/*.ts"
   ],
   "exclude": [

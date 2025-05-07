@@ -1,5 +1,5 @@
 import { NextRequest,NextResponse } from "next/server";
-import { createNews,getNews } from "@/controllers/user/news.controller";
+import { createNews,getNews } from "@/controllers/news/news.controller";
 export const POST = async (req:NextRequest): Promise <NextResponse> =>{
     try{
         const response = await createNews(req);

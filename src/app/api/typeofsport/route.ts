@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createTypeOfSport, getTypeOfSport } from '@/controllers/user/typeOfsport.controller';
+import { createTypeOfSport, getTypeOfSport } from '@/controllers/typeOfsport/typeOfsport.controller';
 
 export const POST = async (req: NextRequest): Promise<NextResponse> => {
     try {

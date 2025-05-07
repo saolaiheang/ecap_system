@@ -113,7 +113,7 @@ export default function LoginPage() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      router.push("/pages/adminPage");
+      router.push("/pages/adminpage");
     }
   }, []);
 
@@ -138,7 +138,7 @@ export default function LoginPage() {
       if (!res.ok) throw new Error(data.message || "Login failed");
 
       localStorage.setItem("token", data.token);
-      router.push("/admin/dashboard");
+      router.push("/pages/adminpage");
     } catch (err: any) {
       setError(err.message);
     }

@@ -1,5 +1,5 @@
 
-import Login from "./pages/login/login"
+import Login from "./pages/login/page"
 import Homepage from "./pages/home/home";
 import Aboutpage from "./pages/about/about";
 

@@ -29,6 +29,7 @@ export default function DashboardLayout() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     router.push("/pages/login");
+
   };
 
   const [openMenus, setOpenMenus] = useState({
@@ -41,6 +42,7 @@ export default function DashboardLayout() {
 
   const toggleMenu = (key: string) => {
     setOpenMenus({ ...openMenus, [key]: !openMenus[key] });
+
   };
 
   return (

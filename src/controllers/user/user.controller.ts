@@ -7,7 +7,7 @@ import { generateToken } from '../../utils/encrypt';
 
 export const createUser = async (req: NextRequest) => {
     try {
-        const { userName, email, password, role } = await req.json();
+        const { userName, email, password, role } = await req.json(); 
 
         if (!userName || !email || !password) {
             return NextResponse.json(

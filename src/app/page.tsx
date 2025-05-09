@@ -1,7 +1,9 @@
 
 import Login from "./pages/login/page"
-import Homepage from "./pages/home/home";
-import Aboutpage from "./pages/about/about";
+import Homepage from "./pages/home/page";
+import Aboutpage from "./pages/about/page";
+import FootballDashboard from "@/components/footballProfile";
+
 
 export default function Home() {
   return (

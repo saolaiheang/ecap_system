@@ -20,16 +20,16 @@ export default function Header() {
 
 
         <nav className="hidden md:flex space-x-6 text-white text-2xl gap-20 mr-[200px]">
-          <Link href="/home" className="hover:text-blue-500">
+          <Link href="/pages/home" className="hover:text-blue-500">
             Home
           </Link>
-          <Link href="/about" className="hover:text-blue-500">
+          <Link href="/pages/about" className="hover:text-blue-500">
             About
           </Link>
-          <Link href="/news" className="hover:text-blue-500">
+          <Link href="/pages/news" className="hover:text-blue-500">
             News
           </Link>
-          <Link href="/schedule" className="hover:text-blue-500">
+          <Link href="/pages/schedule" className="hover:text-blue-500">
             Schedule
           </Link>
         </nav>

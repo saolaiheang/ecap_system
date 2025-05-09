@@ -87,7 +87,7 @@ export default function TypesOfSport() {
             />
             <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-end p-4 text-white">
               <h2 className="text-[25px] font-bold">{sport.title}</h2>
-              <p className="text-[17px]">{sport.description}</p>
+              <p className="text-[17px] hover:text-[#cf89b8] hover:font-bold ">{sport.description}</p>
             </div>
           </div>
         ))}

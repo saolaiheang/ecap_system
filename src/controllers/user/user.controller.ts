@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { User } from "../../entities/user";
-import { AppDataSource } from "../../config";
+import { initializeDataSource } from "@/utils/inititializeDataSource";
 import { generateToken } from '../../utils/encrypt';
+import { AppDataSource } from "@/config";
 
 
 
@@ -16,9 +17,7 @@ export const createUser = async (req: NextRequest) => {
             );
         }
 
-        if (!AppDataSource.isInitialized) {
-            await AppDataSource.initialize();
-        }
+       await initializeDataSource();
 
         const userRepository = AppDataSource.getRepository(User);
         const user = new User();

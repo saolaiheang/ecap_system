@@ -1,102 +1,183 @@
-import { NextRequest,NextResponse } from "next/server";
-import { News } from "@/entities";
+import { NextRequest, NextResponse } from "next/server";
+import { News, SportType } from "@/entities";
 import { AppDataSource } from "@/config";
+import { initializeDataSource } from "@/utils/inititializeDataSource";
+
+interface NewsInput {
+    title: string;
+    description: string;
+    image?: string;
+    sport_type_id: string;
+}
+
 export const createNews = async (req: NextRequest) => {
     try {
-        const { title, description, image,typeOfSport } = await req.json();
-        if (!AppDataSource.isInitialized) {
-            await AppDataSource.initialize();
+        await initializeDataSource();
+
+        const { title, description, image, sport_type_id } = await req.json() as NewsInput;
+
+        // Validate required fields
+        if (!title || !description || !sport_type_id) {
+            return NextResponse.json(
+                { error: "Title, description, and sport_type_id are required" },
+                { status: 400 }
+            );
         }
-        const news = AppDataSource.getRepository(News).create({
+
+        // Validate SportType exists
+        const sportTypeRepository = AppDataSource.getRepository(SportType);
+        const sportType = await sportTypeRepository.findOne({ where: { id: sport_type_id } });
+        if (!sportType) {
+            return NextResponse.json(
+                { error: "Sport type not found" },
+                { status: 404 }
+            );
+        }
+
+        // Create and save News
+        const newsRepository = AppDataSource.getRepository(News);
+        const news = newsRepository.create({
             title,
             description,
-            image,
-            typeOfSport,
-            
+            image: image, // Optional field
+            sport_type_id,
+            date: new Date(), // Set current date
         });
-        if (!title || !description || !image) {
-            return NextResponse.json({ error: 'Title, description and image are required' },
-                { status: 400 }
-            )
-        }
-        await AppDataSource.manager.save(news);
-        return NextResponse.json({ message: 'News created successfully' },
+
+        await newsRepository.save(news);
+
+        return NextResponse.json(
+            { message: "News created successfully", data: news },
             { status: 201 }
-        )
+        );
     } catch (error) {
-        console.log(error);
-        return NextResponse.json({ error: 'Error creating news' },
+        console.error("Error creating news:", error);
+        return NextResponse.json(
+            { error: "Error creating news" },
             { status: 500 }
-        )
+        );
     }
-}
+};
 
-export const getNews= async (req:NextRequest)=>{
-    try{
-        if (!AppDataSource.isInitialized) {
-            await AppDataSource.initialize();
-        }
-        const news = await AppDataSource.getRepository(News).find();
-        return NextResponse.json(news)
+export const getNews = async (req: NextRequest) => {
+    try {
+        await initializeDataSource();
+        const newsRepository = AppDataSource.getRepository(News);
+        const news = await newsRepository.find({ relations: ["sportType"] });
+        return NextResponse.json(
+            { data: news },
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error("Error getting news:", error);
+        return NextResponse.json(
+            { error: "Error getting news" },
+            { status: 500 }
+        );
     }
-    catch(error){
-        console.log(error);
-        return NextResponse.json({error:"Error getting news"})
-    }
-}
+};
 
-export const getNewsByIdTypeOfSport = async (req:NextRequest,context:{params:{id:string}})=>{
-    try{
-        const {id} = context.params;
-        if (!AppDataSource.isInitialized) {
-            await AppDataSource.initialize();
+export const getNewsByIdTypeOfSport = async (
+    req: NextRequest,
+    context: { params: { id: string } }
+) => {
+    try {
+        await initializeDataSource();
+        const { id } = context.params;
+        const newsRepository = AppDataSource.getRepository(News);
+        const news = await newsRepository.find({
+            where: { sport_type_id: id },
+            relations: ["sportType"],
+        });
+        return NextResponse.json(
+            { data: news },
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error("Error getting news by sport type:", error);
+        return NextResponse.json(
+            { error: "Error getting news" },
+            { status: 500 }
+        );
+    }
+};
+
+export const deleteNews = async (
+    req: NextRequest,
+    context: { params: { id: string } }
+) => {
+    try {
+        await initializeDataSource();
+        const { id } = context.params;
+        const newsRepository = AppDataSource.getRepository(News);
+        const news = await newsRepository.findOne({ where: { id } });
+        if (!news) {
+            return NextResponse.json(
+                { error: "News not found" },
+                { status: 404 }
+            );
         }
-        const news = await AppDataSource.getRepository(News).find({where:{typeOfSport:{id:id}},  relations: ['typeOfSport']})
-        return NextResponse.json(news)
+
+        await newsRepository.remove(news);
+        return NextResponse.json(
+            { message: "News deleted successfully" },
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error("Error deleting news:", error);
+        return NextResponse.json(
+            { error: "Error deleting news" },
+            { status: 500 }
+        );
     }
-    catch(error){
-        console.log(error);
-        return NextResponse.json({error:"Error getting news"})
-    }
-}
-export const deleteNews = async (req:NextRequest, context:{params:{id:string}})=>{
-    try{
-        const {id} = context.params;
-        if (!AppDataSource.isInitialized) {
-            await AppDataSource.initialize();
+};
+
+export const updateNews = async (
+    req: NextRequest,
+    context: { params: { id: string } }
+) => {
+    try {
+        await initializeDataSource();
+        const { id } = context.params;
+        const { title, description, image, sport_type_id } = await req.json() as NewsInput;
+
+        const newsRepository = AppDataSource.getRepository(News);
+        const news = await newsRepository.findOne({ where: { id } });
+        if (!news) {
+            return NextResponse.json(
+                { error: "News not found" },
+                { status: 404 }
+            );
         }
-        const news = await AppDataSource.getRepository(News).findOne({where:{id:id}})
-        if(!news){
-            return NextResponse.json({error:"News not found"})
+
+        // Validate SportType if sport_type_id is provided
+        if (sport_type_id) {
+            const sportTypeRepository = AppDataSource.getRepository(SportType);
+            const sportType = await sportTypeRepository.findOne({ where: { id: sport_type_id } });
+            if (!sportType) {
+                return NextResponse.json(
+                    { error: "Sport type not found" },
+                    { status: 404 }
+                );
+            }
         }
-        await AppDataSource.getRepository(News).remove(news);
-        return NextResponse.json({message:"News deleted successfully"})
+
+        news.title = title || news.title;
+        news.description = description || news.description;
+        news.image = image || news.image;
+        news.sport_type_id = sport_type_id || news.sport_type_id;
+        news.date = new Date(); // Update date on modification (optional)
+
+        await newsRepository.save(news);
+        return NextResponse.json(
+            { message: "News updated successfully", data: news },
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error("Error updating news:", error);
+        return NextResponse.json(
+            { error: "Error updating news" },
+            { status: 500 }
+        );
     }
-    catch(error){
-        console.log(error);
-        return NextResponse.json({error:"Error deleting news"})
-    }
-}
-export const updateNews = async (req:NextRequest, context:{params:{id:string}})=>{
-    try{
-        const {id} = context.params;
-        const {title, description, image,typeOfSport} = await req.json();
-        if (!AppDataSource.isInitialized) {
-            await AppDataSource.initialize();
-        }
-        const news = await AppDataSource.getRepository(News).findOne({where:{id:id}})
-        if(!news){
-            return NextResponse.json({error:"News not found"})
-        }
-        news.title = title;
-        news.description = description;
-        news.image = image;
-        news.typeOfSport = typeOfSport;
-        await AppDataSource.getRepository(News).save(news);
-        return NextResponse.json({message:"News updated successfully"})
-    }
-    catch(error){
-        console.log(error);
-        return NextResponse.json({error:"Error updating news"})
-    }
-}
+};

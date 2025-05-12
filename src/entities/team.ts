@@ -21,6 +21,8 @@ export class Team {
 
     @Column({ length: 300 })
     contact_info: string;
+    @Column({nullable:true})
+    image:string;
 
     @ManyToOne(() => SportType)
     @JoinColumn({ name: "sport_type_id" })

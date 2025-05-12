@@ -1,76 +1,11 @@
-// import {
-//   Entity,
-//   PrimaryColumn,
-//   Column,
-//   ManyToOne,
-//   JoinColumn,
-//   BeforeInsert,
-// } from "typeorm";
-// import { TypeOfSport } from "./typeOfsport"; 
-// import { Team } from "./team";
-// import { v4 as uuidv4 } from "uuid";
-
-
-// @Entity('matches')
-// export class Match {
-//   @PrimaryColumn('uuid')
-//   id: string;
-
-//   @ManyToOne(() => Team, (team) => team.matchesAsTeamA)
-//   @JoinColumn({ name: 'teamAId' })
-//   teamA: Team;
-
-//   @Column()
-//   teamAId: string;
-
-//   @ManyToOne(() => Team, (team) => team.matchesAsTeamB)
-//   @JoinColumn({ name: 'teamBId' })
-//   teamB: Team;
-
-//   @Column()
-//   teamBId: string;
-
-//   @Column({ type: 'date' })
-//   date_match: string;
-
-//   @Column({ type: 'time' })
-//   time_match: string;
-
-//   @ManyToOne(() => TypeOfSport, (typeOfSport) => typeOfSport.matches)
-//   @JoinColumn({ name: 'type_of_sport_id' })
-//   typeOfSport: TypeOfSport;
-
-//   @Column()
-//   typeOfSportId: string;
-
-//   @Column({ nullable: true })
-//   location: string;
-
-//   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-//   created_at: Date;
-
-//   @Column({
-//     type: 'timestamp',
-//     default: () => 'CURRENT_TIMESTAMP',
-//     onUpdate: 'CURRENT_TIMESTAMP',
-//   })
-//   updated_at: Date;
-
-//   @BeforeInsert()
-//   generateId() {
-//     this.id = uuidv4();
-//   }
-// }
-
-
-
 
 import { Entity, PrimaryColumn, Column, ManyToOne, OneToMany, JoinColumn, BeforeInsert } from "typeorm";
-import { Competition } from "./competition";
+import { Stage } from "./stage";
 import { SportType } from "./typeOfsport";
 import type { MatchTeam } from "./match_team";
 import type { MatchResult } from "./match_result";
 import { v4 as uuidv4 } from "uuid";
+
 
 @Entity()
 export class Match {
@@ -84,14 +19,14 @@ export class Match {
   location: string;
 
   @Column()
-  competition_id: string;
+  stage_id: string;
 
   @Column()
   sport_type_id: string;
 
-  @ManyToOne(() => Competition)
-  @JoinColumn({ name: "competition_id" })
-  competition: Competition;
+  @ManyToOne(() => Stage)
+  @JoinColumn({ name: "stage_id" })
+  stage: Stage;
 
   @ManyToOne(() => SportType)
   @JoinColumn({ name: "sport_type_id" })

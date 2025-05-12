@@ -16,6 +16,9 @@ export class Coach {
     @Column({ length: 200 })
     contact_info: string;
 
+    @Column({nullable:true})
+    image:string;
+
     @ManyToOne("Team", "coaches")
     @JoinColumn({ name: "team_id" })
     team: Team;

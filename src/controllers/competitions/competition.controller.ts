@@ -1,146 +1,23 @@
-// import { NextRequest, NextResponse } from "next/server";
-// import { AppDataSource } from "@/config";
-// import { Competition } from "@/entities";
-// import { SportType } from "@/entities";
-
-// export const createCompetion = async (name: string, location: string, start_date: Date, sport_id: string) => {
-//     try {
-//         if (!AppDataSource.isInitialized) {
-//             await AppDataSource.initialize();
-//         }
-//         const sportTypeRepository = AppDataSource.getRepository(TypeOfSport);
-//         const competitionRepository = AppDataSource.getRepository(Competition);
-//         const newCompetition = new Competition();
-//         const sportType = await sportTypeRepository.findOneBy({ id: sport_id });
-//         if (!sportType) {
-//             return { message: "Sport Type not found", status: 404 };
-//         }
-//         newCompetition.name = name;
-//         newCompetition.location = location;
-//         newCompetition.start_date = start_date;
-//         newCompetition.sportType = sportType;
-//         await competitionRepository.save(newCompetition);
-//         return { message: "Competition created successfully", status: 201 }
-//     } catch (err) {
-//         console.log(err)
-//         return NextResponse.json({ message: "Error creating competition" }, { status: 500 })
-//     }
-// }
-
-
-// export const getCompetitionBytypeOfsport = async (sport_id: string) => {
-//     try {
-//         if (!AppDataSource.isInitialized) {
-//             await AppDataSource.initialize();
-//         }
-
-//         const competitionRepository = AppDataSource.getRepository(Competition);
-//         const sportTypeRepository = AppDataSource.getRepository(SportType);
-
-//         const sportType = await sportTypeRepository.findOneBy({ id: sport_id });
-
-//         if (!sportType) {
-//             return { message: "Sport Type not found", status: 404 };
-//         }
-
-//         const competitions = await competitionRepository.find({
-//             where: { SportType: sportType },
-//             relations: ["typeOfSport"],
-//         });
-
-//         return { data: competitions, status: 200 };
-//     } catch (error) {
-//         console.log(error);
-//         return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
-//     }
-// }
-
-// export const updateCompetition = async (
-//     id: string,
-//     name: string,
-//     location: string,
-//     start_date: Date,
-//     sport_id: string
-// ) => {
-//     try {
-//         if (!AppDataSource.isInitialized) {
-//             await AppDataSource.initialize();
-//         }
-
-//         const competitionRepository = AppDataSource.getRepository(Competition);
-//         const sportTypeRepository = AppDataSource.getRepository(TypeOfSport);
-
-//         const competition = await competitionRepository.findOneBy({ id });
-
-//         if (!competition) {
-//             return { message: "Competition not found", status: 404 };
-//         }
-
-//         const sportType = await sportTypeRepository.findOneBy({ id: sport_id });
-
-//         if (!sportType) {
-//             return { message: "Sport Type not found", status: 404 };
-//         }
-
-//         competition.name = name;
-//         competition.lacation = location;
-//         competition.start_date = start_date;
-//         competition.typeOfSport = sportType;
-
-//         await competitionRepository.save(competition);
-
-//         return { message: "Competition updated successfully", status: 200 };
-//     } catch (error) {
-//         console.log(error);
-//         return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
-//     }
-// };
-
-// export const deleteCompetition = async (id: string) => {
-//     try {
-//         if (!AppDataSource.isInitialized) {
-//             await AppDataSource.initialize();
-//         }
-
-//         const competitionRepository = AppDataSource.getRepository(Competition);
-
-//         const competition = await competitionRepository.findOneBy({ id });
-
-//         if (!competition) {
-//             return { message: "Competition not found", status: 404 };
-//         }
-
-//         await competitionRepository.remove(competition);
-
-//         return { message: "Competition deleted successfully", status: 200 };
-//     } catch (error) {
-//         console.log(error);
-//         return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
-//     }
-// };
-
-
 
 import { NextRequest, NextResponse } from "next/server";
 import { AppDataSource } from "@/config";
 import { Competition, SportType } from "@/entities";
 import { initializeDataSource } from "@/utils/inititializeDataSource";
 
-// Interface for request body typing
 interface CompetitionInput {
     name: string;
     location: string;
     start_date: Date;
     sport_type_id: string;
+    image:string;
 }
 
 export const createCompetition = async (req: NextRequest) => {
     try {
         await initializeDataSource();
 
-        const { name, location, start_date, sport_type_id } = await req.json() as CompetitionInput;
+        const { name, location, start_date, sport_type_id,image } = await req.json() as CompetitionInput;
 
-        // Validate required fields
         if (!name || !location || !start_date || !sport_type_id) {
             return NextResponse.json(
                 { error: "Name, location, start_date, and sport_type_id are required" },
@@ -148,7 +25,6 @@ export const createCompetition = async (req: NextRequest) => {
             );
         }
 
-        // Validate SportType exists
         const sportTypeRepository = AppDataSource.getRepository(SportType);
         const sportType = await sportTypeRepository.findOne({ where: { id: sport_type_id } });
         if (!sportType) {
@@ -158,13 +34,13 @@ export const createCompetition = async (req: NextRequest) => {
             );
         }
 
-        // Create and save Competition
         const competitionRepository = AppDataSource.getRepository(Competition);
         const competition = competitionRepository.create({
             name,
             location,
             start_date,
             sport_type_id,
+            image
         });
 
         await competitionRepository.save(competition);
@@ -182,18 +58,17 @@ export const createCompetition = async (req: NextRequest) => {
     }
 };
 
-export const getCompetitionByTypeOfSport = async (req: NextRequest, context: { params: { sport_id: string } }) => {
+export const getCompetitionByTypeOfSport =  async (params: { id: string } ) => {
     try {
         await initializeDataSource();
 
-        const { sport_id } = context.params;
+        const { id:sport_id } =params;
         const competitionRepository = AppDataSource.getRepository(Competition);
 
         const competitions = await competitionRepository.find({
             where: { sport_type_id: sport_id },
             relations: ["sportType"],
         });
-
         if (competitions.length === 0) {
             return NextResponse.json(
                 { message: "No competitions found for this sport type" },
@@ -214,6 +89,45 @@ export const getCompetitionByTypeOfSport = async (req: NextRequest, context: { p
     }
 };
 
+
+export const getCompetitionById = async (params: { id: string, competition_id: string }) => {
+    try {
+        await initializeDataSource();
+
+        const { id, competition_id } = params;
+
+        console.log("Sport Type ID:", id);
+        console.log("Competition ID:", competition_id);
+
+        const competitionRepository = AppDataSource.getRepository(Competition);
+
+        const competition = await competitionRepository.findOne({
+            where: {
+                id: competition_id,
+                sport_type_id: id,
+            },
+            relations: ["sportType"],
+        });
+
+        if (!competition) {
+            return NextResponse.json(
+                { message: "Competition not found for this sport type" },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json(
+            { data: competition },
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error("Error getting competition by sport type and ID:", error);
+        return NextResponse.json(
+            { error: "Internal Server Error" },
+            { status: 500 }
+        );
+    }
+};
 export const updateCompetition = async (req: NextRequest, context: { params: { id: string } }) => {
     try {
         await initializeDataSource();
@@ -232,7 +146,6 @@ export const updateCompetition = async (req: NextRequest, context: { params: { i
             );
         }
 
-        // Validate SportType if provided
         if (sport_type_id) {
             const sportType = await sportTypeRepository.findOne({ where: { id: sport_type_id } });
             if (!sportType) {
@@ -277,9 +190,7 @@ export const deleteCompetition = async (req: NextRequest, context: { params: { i
                 { status: 404 }
             );
         }
-
         await competitionRepository.remove(competition);
-
         return NextResponse.json(
             { message: "Competition deleted successfully" },
             { status: 200 }

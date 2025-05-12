@@ -1,69 +1,12 @@
-// import {  NextResponse } from "next/server";
-// import { AppDataSource } from "@/config";
-// import { Team } from "@/entities";
-// import { SportType } from "@/entities";
-// import { Competition } from "@/entities";
-
-// export const createTeam = async (name: string, division: string, sport_id: string, id: string) => {
-//     if (!AppDataSource.isInitialized) {
-//         await AppDataSource.initialize();
-//     }
-//     const teamRepository = AppDataSource.getRepository(Team);
-//     const typeOfSportRepository = AppDataSource.getRepository(SportType);
-//     const competitionRepository = AppDataSource.getRepository(Competition);
-//     const typeOfSport = await typeOfSportRepository.findOne({ where: { id: sport_id
-//         } });
-//         const competition = await competitionRepository.findOne({ where: { id: id
-//             } });
-//             if (!typeOfSport || !competition) {
-//                 return { status: 404, message: "Type of sport or competition not found" };
-//                 }
-//                 const team = teamRepository.save({ name, division, typeOfSport, competition });
-
-  
-//     const sportType = await typeOfSportRepository.findOne({ where: { id: sport_id } });
-//     if (!sportType) {
-//       throw new Error("Sport type not found");
-//     }
-//     (await team).typeOfSport = sportType;
-  
-//     const competitions = await competitionRepository.findBy({ id: sport_id });
-//     if (competitions.length > 0) {
-//       (await team) = competitions;
-//     }
-  
-//     console.log("Team before save:", team); // <-- Add this to debug
-  
-//     await teamRepository.save(await team);
-  
-//     const savedTeam = await teamRepository.findOne({
-//       where: { id: (await team).id },
-//       relations: ["typeOfSport", "competitions"],
-//     });
-  
-//     if (!savedTeam) {
-//       throw new Error("Team not saved correctly");
-//     }
-  
-//     return savedTeam;
-//   };
-  
-
-
 
 import { NextRequest, NextResponse } from "next/server";
 import { AppDataSource } from "@/config";
 import { Team, SportType } from "@/entities";
 import { initializeDataSource } from "@/utils/inititializeDataSource";
-
-export const createTeam = async (req: NextRequest, division: any, sport_id: any, id: string) => {
+export const createTeam = async (req: NextRequest) => {
     try {
         await initializeDataSource();
-
-        // Parse request body
-        const { name, division, sport_id, contact_info } = await req.json();
-
-        // Validate input
+        const { name, division, sport_id, contact_info ,image} = await req.json();
         if (!name || !division || !sport_id) {
             return NextResponse.json(
                 { error: "Name, division, and sport_id are required" },
@@ -71,11 +14,8 @@ export const createTeam = async (req: NextRequest, division: any, sport_id: any,
             );
         }
 
-        // Initialize repositories
         const teamRepository = AppDataSource.getRepository(Team);
         const typeOfSportRepository = AppDataSource.getRepository(SportType);
-
-        // Check if sport type exists
         const sportType = await typeOfSportRepository.findOne({ where: { id: sport_id } });
         if (!sportType) {
             return NextResponse.json(
@@ -83,24 +23,19 @@ export const createTeam = async (req: NextRequest, division: any, sport_id: any,
                 { status: 404 }
             );
         }
-
-        // Create new team
         const team = teamRepository.create({
             name,
             division,
-            sport_type_id: sportType.id,
+            sportType,
             contact_info: contact_info || null,
+            image: image || null
         });
 
-        // Save the team
         await teamRepository.save(team);
-
-        // Fetch the saved team with its sport type relation
         const savedTeam = await teamRepository.findOne({
             where: { id: team.id },
             relations: ["sportType"],
         });
-
         if (!savedTeam) {
             return NextResponse.json(
                 { error: "Team not saved correctly" },
@@ -116,6 +51,84 @@ export const createTeam = async (req: NextRequest, division: any, sport_id: any,
         console.error("Error creating team:", error);
         return NextResponse.json(
             { error: "Error creating team" },
+            { status: 500 }
+        );
+    }
+};
+
+export const getTeamsByTypeOf= async (req: NextRequest, context: { params: { id: string } }) => {
+    try {
+        await initializeDataSource();
+        const { id } = context.params;
+        const teamRepository = AppDataSource.getRepository(Team);
+        const teams = await teamRepository.find({
+            where: { sportType: { id } },
+            relations: ["sportType"],
+        });
+        return NextResponse.json(
+            { data: teams },
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error("Error getting teams by type of sport:", error);
+        return NextResponse.json(
+            { error: "Error getting teams" },
+            { status: 500 }
+        );
+    }
+};
+
+export const getTeams = async (req: NextRequest) => {
+    try {
+        await initializeDataSource();
+        const teamRepository = AppDataSource.getRepository(Team);
+        const teams = await teamRepository.find({
+            relations: ["sportType"],
+        });
+        return NextResponse.json(
+            { data: teams },
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error("Error getting teams:", error);
+        return NextResponse.json(
+            { error: "Error getting teams" },
+            { status: 500 }
+        );
+    }
+};
+
+export const updateTeam= async (req: NextRequest, context: { params: { id: string } }) => {
+    try {
+        await initializeDataSource();
+        const { id } = context.params;
+        const { name, division,contact_info } = await req.json();
+        const teamRepository = AppDataSource.getRepository(Team);
+        const team = await teamRepository.findOne({ where: { id } });
+        if (!team) {
+            return NextResponse.json(
+                { error: "Team not found" },
+                { status: 404 }
+            );
+        }
+        if (name) {
+            team.name = name;
+        }
+        if (division) {
+            team.division = division;
+        }
+        if (contact_info) {
+            team.contact_info = contact_info;
+        }
+        await teamRepository.save(team);
+        return NextResponse.json(
+            { message: "Team updated successfully", data: team },
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error("Error updating team:", error);
+        return NextResponse.json(
+            { error: "Error updating team" },
             { status: 500 }
         );
     }

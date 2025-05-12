@@ -1,65 +1,45 @@
-import {
-    Entity,
-    PrimaryColumn,
-    Column,
-    ManyToOne,
-    JoinColumn,
-    BeforeInsert,
-    OneToMany,
-    ManyToMany,
-  } from "typeorm";
-  import { v4 as uuidv4 } from "uuid";
-  import { Match } from "./match";
-  import { TypeOfSport } from "./index";
-  import { Competition } from "./index";
-  import { Coach } from "./index";
-  import { Player } from "./index";
-  
-  @Entity('teams')
+
+
+import { Entity, PrimaryColumn, Column, ManyToOne, OneToMany, JoinColumn,BeforeInsert } from "typeorm";
+import { SportType } from "./typeOfsport";
+import { Player } from "./player";
+import { Coach } from "./coach";
+import { ScheduleTraining } from "./schedule_training";
+import { MatchTeam } from "./match_team";
+import {v4 as uuidv4} from'uuid'
+
+@Entity()
 export class Team {
-  @PrimaryColumn('uuid')
-  id: string;
+    @PrimaryColumn("uuid")
+    id: string;
 
-  @Column()
-  name: string;
+    @Column({ length: 200, nullable: false })
+    name: string;
 
-  @Column({ nullable: true })
-  division: string;
+    @Column({ length: 50 })
+    division: string;
 
-  @ManyToOne(() => TypeOfSport, (typeOfSport) => typeOfSport.teams)
-  @JoinColumn({ name: 'type_of_sport_id' })
-  typeOfSport: TypeOfSport;
+    @Column({ length: 300 })
+    contact_info: string;
 
-  @Column()
-  typeOfSportId: string;
-  @Column()
-  competitionId: string;
-  @ManyToMany(() => Competition, (competition) => competition.teams)
-  competitions: Competition[];
+    @ManyToOne(() => SportType)
+    @JoinColumn({ name: "sport_type_id" })
+    sportType: SportType;
 
-  @OneToMany(() => Match, (match) => match.teamA)
-  matchesAsTeamA: Match[];
-  @OneToMany(() => Player, (player) => player.team)
-  players: Player[];
+    @OneToMany("Player", "team")
+    players: Player[];
 
-  @OneToMany(() => Match, (match) => match.teamB)
-  matchesAsTeamB: Match[];
+    @OneToMany("Coach","team")
+    coaches: Coach[];
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  created_at: Date;
+    @OneToMany("ScheduleTraining","team")
+    scheduleTrainings: ScheduleTraining[];
 
-  @ManyToMany(() => Coach, (coach) => coach.teams)
-  coaches: Coach[];
+    @OneToMany('MatchTeam','team')
+    matchTeams: MatchTeam[];
 
-  @Column({
-    type: 'timestamp',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
-  })
-  updated_at: Date;
-
-  @BeforeInsert()
-  generateId() {
-    this.id = uuidv4();
-  }
+    @BeforeInsert()
+    generateId() {
+      this.id = uuidv4();
+    }
 }

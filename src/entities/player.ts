@@ -1,38 +1,30 @@
-import {
-    Entity,
-    PrimaryColumn,
-    Column,
-    ManyToOne,
-    JoinColumn,
-    BeforeInsert,
-  } from "typeorm";
-  import { v4 as uuidv4 } from "uuid";
-  import { Team } from "./team";
-  
-  @Entity("players")
-  export class Player {
-    @PrimaryColumn()
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn ,BeforeInsert} from "typeorm";
+import { Team } from "./team";
+import { v4 as uuidv4 } from 'uuid';
+
+@Entity()
+export class Player {
+    @PrimaryColumn("uuid")
     id: string;
-  
-    @Column()
+
+    @Column({ length: 200, nullable: false })
     name: string;
-  
-    @Column()
+
+    @Column({ length: 250 })
     position: string;
-  
+
     @Column()
+    team_id: string;
+
+    @Column({ length: 250 })
     contact_info: string;
-  
-    @ManyToOne(() => Team, (team) => team.players, {
-      cascade: true,
-      onDelete: "CASCADE",
-    })
+
+    @ManyToOne("Team", "players")
     @JoinColumn({ name: "team_id" })
     team: Team;
-  
+
     @BeforeInsert()
     generateId() {
-      this.id = uuidv4();
+        this.id = uuidv4();
     }
-  }
-  
+}

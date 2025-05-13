@@ -12,14 +12,13 @@ import Coach from "../../../components/coach";
 import Player from "../../../components/player";
 import MatchLayout from "@/components/matchLayout";
 
-
 export default function Homepage() {
   return (
     <div>
       <Header />
 
       <div className="w-full h-[500px] overflow-hidden">
-        {/* <video
+        <video
           className="w-full h-full object-cover"
           autoPlay
           loop
@@ -28,13 +27,12 @@ export default function Homepage() {
           controls
         >
           <source src="/homepagevideo.mp4" type="video/mp4" />
-
-        </video> */}
+        </video>
       </div>
 
       <div>
+        <MatchLayout />
         <TypesOfSport />
-        <MatchLayout/>
         <News />
         <Coach />
         <Player />

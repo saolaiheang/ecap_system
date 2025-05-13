@@ -15,6 +15,8 @@ import {
 } from "react-icons/fa";
 import FetchNews from "@/components/fetchnews";
 import FetchActivityD from "@/components/fetchActivityD";
+// import ProfileDashboard from "@/components/fetchnews";\
+import ProfileDashboard from "@/components/fetchprofileD";
 
 interface Sport {
   id: string;
@@ -174,9 +176,7 @@ export default function DashboardLayout() {
           {selectedContent.startsWith("news-") ? (
             <FetchNews sport={selectedContent.replace("news-", "")} />
           ) : selectedContent.startsWith("profile-") ? (
-            <h2 className="text-xl font-semibold capitalize text-[#1D276C]">
-              Profile: {selectedContent.replace("profile-", "")}
-            </h2>
+            <ProfileDashboard sport={selectedContent.replace("profile-", "")} />
           ) : selectedContent.startsWith("schedule-") ? (
             <h2 className="text-xl font-semibold capitalize text-[#1D276C]">
               Schedule: {selectedContent.replace("schedule-", "")}

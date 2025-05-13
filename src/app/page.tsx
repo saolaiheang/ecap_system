@@ -9,7 +9,7 @@ import Typeofsport from "@/components/fetchTypeSport";
 export default function Home() {
   return (
     <div>
-      <Typeofsport/>
+      <Homepage/>
     </div>
   );
 }

@@ -1,10 +1,9 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import HeaderAdminPage from "@/components/headerAdmin";
-import FootballProfile from "@/components/footballProfile";
-import FootballSchedule from "@/components/footballSchedule";
-import FootballMatch from "@/components/footballMatch";
+
 import {
   FaUser,
   FaChevronDown,
@@ -14,27 +13,14 @@ import {
   FaHistory,
   FaChartLine,
 } from "react-icons/fa";
-import FootballNews from "@/components/footballNews";
-import FootballActivity from "@/components/footballActivity";
-import BasketballProfile from "@/components/basketballProfile";
-import VolleyballProfile from "@/components/volleyballProfile";
-import RugbyProfile from "@/components/rugbyProfile";
-import HockeyProfile from "@/components/hockeyProfile";
-import VolleyballSchedule from "@/components/volleyballShedule";
-import BasketballSchedule from "@/components/basketballShedule";
-import RugbySchedule from "@/components/rugbyShedule";
-import VolleyballMatch from "@/components/volleyballMatch";
-import BasketballMatch from "@/components/basketballMatch";
-import RugbyMatch from "@/components/rugbyMatch";
-import HockeyMatch from "@/components/hockeyMatch";
-import HockeyActivity from "@/components/hockeyAcitvity";
-import RugbyActivity from "@/components/rugbyActivity";
-import BasketballActivity from "@/components/basketballActitivity";
-import VolleyballActivity from "@/components/volleyballActivity";
-import HockeyNews from "@/components/hockeyNews";
-import RugbyNews from "@/components/rugbyNews";
-import BasketballNews from "@/components/basketballNews";
-import VolleyballNews from "@/components/volleyballNews";
+import FetchNews from "@/components/fetchnews";
+import FetchActivityD from "@/components/fetchActivityD";
+
+interface Sport {
+  id: string;
+  name: string;
+  description?: string;
+}
 
 export default function DashboardLayout() {
   const router = useRouter();
@@ -49,7 +35,6 @@ export default function DashboardLayout() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     router.push("/pages/login");
-
   };
 
   const [openMenus, setOpenMenus] = useState({
@@ -59,14 +44,43 @@ export default function DashboardLayout() {
     news: false,
     history: false,
     activity: false,
+    types: false,
   });
 
   const [selectedContent, setSelectedContent] = useState("dashboard");
 
   const toggleMenu = (key: string) => {
     setOpenMenus({ ...openMenus, [key]: !openMenus[key] });
-
   };
+
+  const [sports, setSports] = useState<Sport[]>([]);
+  const [loadingSports, setLoadingSports] = useState(true);
+
+  useEffect(() => {
+    const fetchSports = async () => {
+      try {
+        const response = await fetch("/api/typeofsport");
+        const data = await response.json();
+        const typeOfSport = data?.typeOfSport;
+        setSports(Array.isArray(typeOfSport) ? typeOfSport : []);
+      } catch (error) {
+        console.error("Failed to fetch sports:", error);
+      } finally {
+        setLoadingSports(false);
+      }
+    };
+
+    fetchSports();
+  }, []);
+
+  const sidebarSections = [
+    { label: "History", icon: <FaHistory />, key: "history" },
+    { label: "Profile", icon: <FaUser />, key: "profile" },
+    { label: "Schedule", icon: <FaCalendarAlt />, key: "schedule" },
+    { label: "Match", icon: <FaUsers />, key: "match" },
+    { label: "News", icon: <FaNewspaper />, key: "news" },
+    { label: "Activity", icon: <FaChartLine />, key: "activity" },
+  ];
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
@@ -75,14 +89,7 @@ export default function DashboardLayout() {
       <div className="flex flex-1">
         {/* Sidebar */}
         <aside className="w-64 bg-[#2C357C] text-white flex flex-col py-4 px-2 shadow-lg">
-          {[
-            { label: "History", icon: <FaHistory />, key: "history" },
-            { label: "Profile", icon: <FaUser />, key: "profile" },
-            { label: "Schedule", icon: <FaCalendarAlt />, key: "schedule" },
-            { label: "Match", icon: <FaUsers />, key: "match" },
-            { label: "News", icon: <FaNewspaper />, key: "news" },
-            { label: "Activity", icon: <FaChartLine />, key: "activity" },
-          ].map((item) => (
+          {sidebarSections.map((item) => (
             <div key={item.key}>
               <button
                 onClick={() => toggleMenu(item.key)}
@@ -99,99 +106,102 @@ export default function DashboardLayout() {
 
               {openMenus[item.key] && (
                 <div className="bg-[#3b478f] ml-10 mt-1 text-xs p-2 rounded">
-                  <p
-                    className="py-1 cursor-pointer hover:underline"
-                    onClick={() => setSelectedContent(`${item.key}-football`)}
-                  >
-                    Football
-                  </p>
-                  <p
-                    className="py-1 cursor-pointer hover:underline"
-                    onClick={() => setSelectedContent(`${item.key}-volleyball`)}
-                  >
-                  Volleyball
-                  </p>
-                  <p
-                    className="py-1 cursor-pointer hover:underline"
-                    onClick={() => setSelectedContent(`${item.key}-basketball`)}
-                  >
-                    Basketball
-                  </p>
-                  <p
-                    className="py-1 cursor-pointer hover:underline"
-                    onClick={() => setSelectedContent(`${item.key}-rugby`)}
-                  >
-                    Rugby
-                  </p>
-                  <p
-                    className="py-1 cursor-pointer hover:underline"
-                    onClick={() => setSelectedContent(`${item.key}-hockey`)}
-                  >
-                    Hockey
-                  </p>
+                  {loadingSports ? (
+                    <p className="text-white">Loading...</p>
+                  ) : sports.length > 0 ? (
+                    sports.map((sport) => (
+                      <p
+                        key={`${item.key}-${sport.id}`}
+                        className="py-1 cursor-pointer hover:underline"
+                        onClick={() =>
+                          setSelectedContent(
+                            `${item.key}-${sport.name.toLowerCase()}`
+                          )
+                        }
+                      >
+                        {sport.name}
+                      </p>
+                    ))
+                  ) : (
+                    <p className="text-red-300">No sports found</p>
+                  )}
                 </div>
               )}
             </div>
           ))}
+
+          {/* Sport Types Summary View */}
+          <div>
+            <button
+              onClick={() => toggleMenu("types")}
+              className="flex items-center w-full px-3 py-3 text-sm hover:bg-[#e66dbd] rounded transition"
+            >
+              <span className="mr-3">⚽</span>
+              Sport Types
+              <FaChevronDown
+                className={`ml-auto transition-transform ${
+                  openMenus["types"] ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {openMenus["types"] && (
+              <div className="bg-[#3b478f] ml-10 mt-1 text-xs p-2 rounded">
+                {loadingSports ? (
+                  <p className="text-white text-sm">Loading...</p>
+                ) : sports.length > 0 ? (
+                  sports.map((sport) => (
+                    <p
+                      key={sport.id}
+                      className="py-1 cursor-pointer hover:underline"
+                      onClick={() =>
+                        setSelectedContent(`type-${sport.name.toLowerCase()}`)
+                      }
+                    >
+                      {sport.name}
+                    </p>
+                  ))
+                ) : (
+                  <p className="text-red-300 text-sm">No sports found</p>
+                )}
+              </div>
+            )}
+          </div>
         </aside>
 
-        {/* Main content */}
+        {/* Main Content */}
         <main className="flex-1 p-6 bg-white">
-          {/* {selectedContent === "dashboard" && (
-            <>
-              <h2 className="text-2xl font-semibold text-[#1D276C]">
-                Welcome to Dashboard
+          {selectedContent.startsWith("news-") ? (
+            <FetchNews sport={selectedContent.replace("news-", "")} />
+          ) : selectedContent.startsWith("profile-") ? (
+            <h2 className="text-xl font-semibold capitalize text-[#1D276C]">
+              Profile: {selectedContent.replace("profile-", "")}
+            </h2>
+          ) : selectedContent.startsWith("schedule-") ? (
+            <h2 className="text-xl font-semibold capitalize text-[#1D276C]">
+              Schedule: {selectedContent.replace("schedule-", "")}
+            </h2>
+          ) : selectedContent.startsWith("match-") ? (
+            <h2 className="text-xl font-semibold capitalize text-[#1D276C]">
+              Match: {selectedContent.replace("match-", "")}
+            </h2>
+          ) : selectedContent.startsWith("activity-") ? (
+            <FetchActivityD sport={selectedContent.replace("activity-", "")} />
+          ) : selectedContent.startsWith("history-") ? (
+            <h2 className="text-xl font-semibold capitalize text-[#1D276C]">
+              History: {selectedContent.replace("history-", "")}
+            </h2>
+          ) : selectedContent.startsWith("type-") ? (
+            <div>
+              <h2 className="text-xl font-semibold capitalize text-[#1D276C]">
+                {selectedContent.replace("type-", "")} Type of Sport
               </h2>
-              <p className="text-gray-600 mt-2">This is your content area.</p>
-            </>
-          )} */}
-
-          {selectedContent === "profile-football" && <FootballProfile/>}
-          {selectedContent === "profile-volleyball" && <VolleyballProfile />}
-          {selectedContent === "profile-basketball" && <BasketballProfile />}
-          {selectedContent === "profile-rugby" && <RugbyProfile />}
-          {selectedContent === "profile-hockey" && <HockeyProfile />}
-
-          {selectedContent === "schedule-football" && <FootballSchedule />}
-          {selectedContent === "schedule-volleyball" && <VolleyballSchedule />}
-          {selectedContent === "schedule-basketball" && <BasketballSchedule />}
-          {selectedContent === "schedule-rugby" && <RugbySchedule />}
-          {selectedContent === "schedule-hockey" && <RugbySchedule />}
-
-          {selectedContent === "match-football" && <FootballMatch />}
-          {selectedContent === "match-volleyball" && <VolleyballMatch />}
-          {selectedContent === "match-basketball" && <BasketballMatch />}
-          {selectedContent === "match-rugby" && <RugbyMatch />}
-          {selectedContent === "match-hockey" && <HockeyMatch />}
-
-          {selectedContent === "activity-football" && <FootballActivity />}
-          {selectedContent === "activity-volleyball" && <VolleyballActivity />}
-          {selectedContent === "activity-basketball" && <BasketballActivity />}
-          {selectedContent === "activity-rugby" && <RugbyActivity />}
-          {selectedContent === "activity-hockey" && <HockeyActivity />}
-
-          {selectedContent === "news-football" && <FootballNews />}
-          {selectedContent === "news-volleyball" && <VolleyballNews />}
-          {selectedContent === "news-basketball" && <BasketballNews />}
-          {selectedContent === "news-rugby" && <RugbyNews />}
-          {selectedContent === "news-hockey" && <HockeyNews />}
-
-
-
-
-
-{/* 
-          {selectedContent !== "dashboard" &&
-            selectedContent !== "profile-football" && (
-              <>
-                <h2 className="text-2xl font-semibold text-[#1D276C] capitalize">
-                  {selectedContent.replaceAll("-", " ")}
-                </h2>
-                <p className="text-gray-600 mt-2">
-                  This is the <strong>{selectedContent}</strong> section.
-                </p>
-              </>
-            )} */}
+              <p className="text-gray-600 mt-2">
+                You selected:{" "}
+                <strong>{selectedContent.replace("type-", "")}</strong>
+              </p>
+            </div>
+          ) : null}
 
           <button
             onClick={handleLogout}

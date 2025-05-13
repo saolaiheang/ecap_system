@@ -10,6 +10,7 @@ import Header from "../../../components/header";
 import News from "../../../components/news";
 import Coach from "../../../components/coach";
 import Player from "../../../components/player";
+import MatchLayout from "@/components/matchLayout";
 
 
 export default function Homepage() {
@@ -18,7 +19,7 @@ export default function Homepage() {
       <Header />
 
       <div className="w-full h-[500px] overflow-hidden">
-        <video
+        {/* <video
           className="w-full h-full object-cover"
           autoPlay
           loop
@@ -28,11 +29,12 @@ export default function Homepage() {
         >
           <source src="/homepagevideo.mp4" type="video/mp4" />
 
-        </video>
+        </video> */}
       </div>
 
       <div>
         <TypesOfSport />
+        <MatchLayout/>
         <News />
         <Coach />
         <Player />

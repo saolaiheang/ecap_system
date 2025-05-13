@@ -107,3 +107,38 @@ export const getCoachesByteam=async (rep:NextRequest,{params}:{params:{id:string
         }
     }
 }
+
+export const updateCoach = async (req: NextRequest, { params }: { params: { id: string } }) => {
+    try {
+        await initializeDataSource();
+        const { id: id } = params;
+        const { name, contact_info, image } = await req.json() as CoachInput;
+        const coachRepository = AppDataSource.getRepository(Coach);
+        const coach = await coachRepository.findOne({ where: { id:id } });
+        if (!coach) {
+            return NextResponse.json(
+                { error: "Coach not found" },
+                { status: 404 }
+            );
+        }
+        coach.name = name;
+        coach.contact_info = contact_info;
+        coach.image = image;
+        await coachRepository.save(coach);
+        return NextResponse.json(
+            {
+                message: "Coach updated successfully",
+                coach,
+            },
+            {
+                status: 200,
+            }
+        );
+    } catch (error) {
+        console.error("Error updating coach:", error);
+        return NextResponse.json(
+            { error: "Error updating coach" },
+            { status: 500 }
+        );
+    }
+}

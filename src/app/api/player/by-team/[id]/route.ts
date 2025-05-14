@@ -9,3 +9,9 @@ export const GET = async (req: NextRequest, context: {
 }) => {
     return await getPlayersByteams(req, context);
 }
+
+export const config = {
+    api: {
+        bodyParser: false,
+    },
+};

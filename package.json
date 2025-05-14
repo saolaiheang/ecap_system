@@ -14,7 +14,9 @@
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "cloudinary": "^2.6.1",
     "dotenv": "^16.5.0",
+    "formidable": "^3.5.4",
     "jsonwebtoken": "^9.0.2",
     "next": "^15.4.0-canary.24",
     "pg": "^8.15.6",
@@ -25,6 +27,7 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@types/formidable": "^3.4.5",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^20.17.32",
     "@types/react": "^18",

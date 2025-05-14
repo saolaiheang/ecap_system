@@ -3,6 +3,7 @@ import { Player } from "@/entities";
 import { initializeDataSource } from "@/utils/inititializeDataSource";
 import { AppDataSource } from "@/config";
 import { Team } from "@/entities";
+import { SportType } from "@/entities";
 
 
 
@@ -12,6 +13,7 @@ interface PlayerInput {
     contact_info: string;
     team_id?: string;
     image:string
+    sport_id:string;
 }
 const validPositions = ["Goalkeeper", "Defender", "Midfielder", "Forward"];
 export const createPlayer = async (req: NextRequest, { params }: { params: { id: string } }) => {
@@ -20,7 +22,7 @@ export const createPlayer = async (req: NextRequest, { params }: { params: { id:
        
         console.log("team_id", team_id);
         await initializeDataSource();
-        const { name, position, contact_info,image } = await req.json() as PlayerInput;
+        const { name, position, contact_info,image,sport_id } = await req.json() as PlayerInput;
 
         if (!name || !position || !contact_info  ) {
             return NextResponse.json(
@@ -38,6 +40,9 @@ export const createPlayer = async (req: NextRequest, { params }: { params: { id:
         const teamRepository = AppDataSource.getRepository(Team);
         const team = await teamRepository.findOne({ where: { id: team_id } });
 
+        const typeSportRepository= AppDataSource.getRepository(SportType);
+        const sport = await typeSportRepository.findOne({ where: { id: sport_id } });
+
 
         if (!team) {
             return NextResponse.json(
@@ -46,7 +51,7 @@ export const createPlayer = async (req: NextRequest, { params }: { params: { id:
             );
         }
         const playerRepository = AppDataSource.getRepository(Player);
-        const player = playerRepository.create({ name, position, contact_info, team ,image});
+        const player = playerRepository.create({ name, position, contact_info, team ,image,sport_id});
         await playerRepository.save(player);
         return NextResponse.json(
             { message: "player created successfully", data: player },

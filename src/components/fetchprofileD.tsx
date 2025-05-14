@@ -8,6 +8,7 @@ interface Profile {
   location: string;
   start_date: string;
   sport_type_id: string;
+  team_name:string;
 }
 
 export default function ProfileDashboard() {
@@ -17,10 +18,10 @@ export default function ProfileDashboard() {
     location: "",
     start_date: "",
     sport_type_id: "",
+    team_name:"",
   });
   const [editingId, setEditingId] = useState<number | null>(null);
 
-  // Fetch all profiles from API
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
@@ -47,7 +48,6 @@ export default function ProfileDashboard() {
 
     try {
       if (editingId !== null) {
-        // Update an existing profile
         const res = await fetch(`/api/profile/${editingId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -59,7 +59,6 @@ export default function ProfileDashboard() {
         );
         setEditingId(null);
       } else {
-        // Add a new profile
         const res = await fetch("/api/profile", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -74,6 +73,7 @@ export default function ProfileDashboard() {
         location: "",
         start_date: "",
         sport_type_id: "",
+        team_name:"",
       });
     } catch (err) {
       console.error("Failed to save profile", err);
@@ -86,13 +86,13 @@ export default function ProfileDashboard() {
       location: profile.location,
       start_date: profile.start_date,
       sport_type_id: profile.sport_type_id,
+      team_name: profile.team_name, 
     });
     setEditingId(profile.id);
   };
 
   const handleDelete = async (id: number) => {
     try {
-      // Call delete API
       await fetch(`/api/profile/${id}`, { method: "DELETE" });
       setProfiles((prev) => prev.filter((e) => e.id !== id));
     } catch (err) {

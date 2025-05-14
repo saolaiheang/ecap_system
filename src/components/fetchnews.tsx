@@ -9,8 +9,11 @@ interface Profile {
   sport: string;
   image: string;
 }
+interface Props {
+  sport: string;
+}
 
-export default function NewsDeshboard() {
+export default function NewsDeshboard({ sport }: Props) {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [formData, setFormData] = useState({
     name: "",

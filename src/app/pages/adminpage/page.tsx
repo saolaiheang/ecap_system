@@ -17,12 +17,35 @@ import FetchNews from "@/components/fetchnews";
 import FetchActivityD from "@/components/fetchActivityD";
 // import ProfileDashboard from "@/components/fetchnews";\
 import ProfileDashboard from "@/components/fetchprofileD";
+import { FC } from "react";
 
 interface Sport {
   id: string;
   name: string;
   description?: string;
 }
+
+interface FetchNewsProps {
+  sport: string;
+}
+interface FetchNewsProps {
+  sport: string;
+}
+
+interface ProfileDashboardProps {
+  sport: string;
+}
+
+interface FetchActivityDProps {
+  sport: string;
+}
+
+
+// Wrapper component for FetchActivityD
+const FetchActivityDWrapper: FC<FetchActivityDProps> = ({ sport }) => {
+  return <FetchActivityD sport={sport} />;
+};
+
 
 export default function DashboardLayout() {
   const router = useRouter();
@@ -50,9 +73,12 @@ export default function DashboardLayout() {
   });
 
   const [selectedContent, setSelectedContent] = useState("dashboard");
-
-  const toggleMenu = (key: string) => {
-    setOpenMenus({ ...openMenus, [key]: !openMenus[key] });
+  type MenuKey = keyof typeof openMenus;
+  // const toggleMenu = (key: string) => {
+  //   setOpenMenus({ ...openMenus, [key]: !openMenus[key] });
+  // };
+  const toggleMenu = (key: MenuKey) => {
+    setOpenMenus((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   const [sports, setSports] = useState<Sport[]>([]);
@@ -75,7 +101,7 @@ export default function DashboardLayout() {
     fetchSports();
   }, []);
 
-  const sidebarSections = [
+  const sidebarSections :{ label: string; icon: JSX.Element; key: MenuKey }[] = [
     { label: "History", icon: <FaHistory />, key: "history" },
     { label: "Profile", icon: <FaUser />, key: "profile" },
     { label: "Schedule", icon: <FaCalendarAlt />, key: "schedule" },

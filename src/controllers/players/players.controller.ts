@@ -14,7 +14,7 @@
 // export const createPlayer = async (req: NextRequest, { params }: { params: { id: string } }) => {
 //     try {
 //         const { id: team_id } = params;
-       
+
 //         console.log("team_id", team_id);
 //         await initializeDataSource();
 //         const { name, position, contact_info,image } = await req.json() as PlayerInput;
@@ -61,7 +61,7 @@
 
 
 import { NextRequest, NextResponse } from "next/server";
-import { Player, Team } from "@/entities";
+import { Player, Team, SportType } from "@/entities";
 import { initializeDataSource } from "@/utils/inititializeDataSource";
 import { AppDataSource } from "@/config";
 import formidable, { IncomingForm } from "formidable";
@@ -69,113 +69,172 @@ import fs, { writeFile } from "fs/promises";
 import cloudinary from "@/lib/cloudinary";
 import os from "os";
 
-// Configure Cloudinary
 
 
 interface PlayerInput {
-  name: string;
-  position: string;
-  contact_info: string;
-  team_id?: string;
-  image?: string;
+    name: string;
+    position: string;
+    contact_info: string;
+    team_id?: string;
+    sport_id?: string;
+    image?: string;
 }
 
-const validPositions = ["Goalkeeper", "Defender", "Midfielder", "Forward"];
 
 export const config = {
-  api: {
-    bodyParser: false,
-  },
+    api: {
+        bodyParser: false,
+    },
 };
 
-export async function createPlayer(req: NextRequest, { params }: { params: { id: string } }) {    try {
-      const { id: team_id } = params;
-      console.log("team_id:", team_id);
-  
-      const formData = await req.formData();
-      const name = formData.get("name") as string;
-      const position = formData.get("position") as string;
-      const contact_info = formData.get("contact_info") as string;
-      const imageFile = formData.get("image") as File;
-  
-      if (!name || !position || !contact_info) {
+export async function createPlayer(req: NextRequest, { params }: { params: { id: string } }) {
+    try {
+        const { id: team_id } = params;
+        console.log("team_id:", team_id);
+
+        const formData = await req.formData();
+        const name = formData.get("name") as string;
+        const position = formData.get("position") as string;
+        const contact_info = formData.get("contact_info") as string;
+        const sportType_id = formData.get("sport_id") as string;
+        const imageFile = formData.get("image") as File;
+
+        if (!name || !position || !contact_info) {
+            return NextResponse.json(
+                { error: "Name, position, and contact_info are required" },
+                { status: 400 }
+            );
+        }
+
+        if (!imageFile) {
+            return NextResponse.json(
+                { error: "Image file is required" },
+                { status: 400 }
+            );
+        }
+
+        if (!imageFile.type.startsWith("image/")) {
+            return NextResponse.json(
+                { error: "Only image files are allowed" },
+                { status: 400 }
+            );
+        }
+
+        await initializeDataSource();
+        const teamRepository = AppDataSource.getRepository(Team);
+        const team = await teamRepository.findOne({ where: { id: team_id } });
+
+        if (!team) {
+            return NextResponse.json(
+                { error: "Team not found" },
+                { status: 404 }
+            );
+        }
+        const sportTypeRepository = AppDataSource.getRepository(SportType);
+        const sport = await sportTypeRepository.findOne({ where: { id: sportType_id } })
+        if (!sport) {
+            return NextResponse.json(
+                { error: "Team not found" },
+                { status: 404 }
+            );
+        }
+        const tempFilePath = `${os.tmpdir()}/${imageFile.name}-${Date.now()}`;
+        const fileBuffer = Buffer.from(await imageFile.arrayBuffer());
+        await writeFile(tempFilePath, fileBuffer);
+
+        const uploadResult = await cloudinary.uploader.upload(tempFilePath, {
+            folder: "players",
+            public_id: `${name}-${Date.now()}`,
+        });
+
+        await fs.unlink(tempFilePath);
+
+        const playerRepository = AppDataSource.getRepository(Player);
+        const player = playerRepository.create({
+            name,
+            position,
+            contact_info,
+            team,
+            sport,
+            image: uploadResult.secure_url,
+        });
+        await playerRepository.save(player);
+
         return NextResponse.json(
-          { error: "Name, position, and contact_info are required" },
-          { status: 400 }
+            { message: "Player created successfully", data: player },
+            { status: 201 }
         );
-      }
-  
-      if (!validPositions.includes(position)) {
-        return NextResponse.json(
-          { status: "error", message: `Position must be one of: ${validPositions.join(", ")}` },
-          { status: 400 }
-        );
-      }
-  
-      if (!imageFile) {
-        return NextResponse.json(
-          { error: "Image file is required" },
-          { status: 400 }
-        );
-      }
-  
-      if (!imageFile.type.startsWith("image/")) {
-        return NextResponse.json(
-          { error: "Only image files are allowed" },
-          { status: 400 }
-        );
-      }
-  
-      await initializeDataSource();
-      const teamRepository = AppDataSource.getRepository(Team);
-      const team = await teamRepository.findOne({ where: { id: team_id } });
-  
-      if (!team) {
-        return NextResponse.json(
-          { error: "Team not found" },
-          { status: 404 }
-        );
-      }
-  
-      const tempFilePath = `${os.tmpdir()}/${imageFile.name}-${Date.now()}`;
-      const fileBuffer = Buffer.from(await imageFile.arrayBuffer());
-      await writeFile(tempFilePath, fileBuffer);
-  
-      const uploadResult = await cloudinary.uploader.upload(tempFilePath, {
-        folder: "players",
-        public_id: `${name}-${Date.now()}`,
-      });
-  
-      await fs.unlink(tempFilePath);
-  
-      const playerRepository = AppDataSource.getRepository(Player);
-      const player = playerRepository.create({
-        name,
-        position,
-        contact_info,
-        team,
-        image: uploadResult.secure_url,
-      });
-      await playerRepository.save(player);
-  
-      return NextResponse.json(
-        { message: "Player created successfully", data: player },
-        { status: 201 }
-      );
     } catch (error) {
-      console.error("Error creating player:", error);
-      return NextResponse.json(
-        { error: "Error creating player" },
-        { status: 500 }
-      );
+        console.error("Error creating player:", error);
+        return NextResponse.json(
+            { error: "Error creating player" },
+            { status: 500 }
+        );
     }
-  }
-export const getPlayersByteams = async (req: NextRequest,{params}:{params:{id:string}}) => {
+}
+
+export const getPlayerBySport = async ( {params}: { params: { id: string } }) => {
+    try {
+
+        console.log("paramss",params)
+        const { id: sport_id } = params;
+        await initializeDataSource();
+
+        const playerRepository = AppDataSource.getRepository(Player);
+        const players = await playerRepository.find({
+            where: { sport_id },
+            relations: ["team", "sport"],
+        })
+
+      
+        console.log(players)
+        return NextResponse.json(
+            { data: players },
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error("Error getting players by sport:", error);
+        return NextResponse.json(
+            { error: "Error getting players by sport" },
+            { status: 500 }
+        );
+
+    };
+};
+
+export const getPlayerById = async (req: NextRequest, { params }: { params: { id: string } }) => {
+    try {
+        await initializeDataSource();
+        const playerRepository = AppDataSource.getRepository(Player);
+        const player = await playerRepository.findOne({
+            where: { id: params.id },
+            relations: ["team"],
+        });
+        if (!player) {
+            return NextResponse.json(
+                { error: "Player not found" },
+                { status: 404 }
+            );
+        }
+        return NextResponse.json(
+            { data: player },
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error("Error getting player by ID:", error);
+        return NextResponse.json(
+            { error: "Error getting player" },
+            { status: 500 }
+        );
+    }
+};
+export const getPlayersByteams = async (req: NextRequest, { params }: { params: { id: string; }; }) => {
     try {
         const { id: team_id } = params;
         await initializeDataSource();
         const playerRepository = AppDataSource.getRepository(Player);
-        const players = await playerRepository.find({where:{team_id:team_id},
+        const players = await playerRepository.find({
+            where: { team_id: team_id },
             relations: ["team"],
         });
         return NextResponse.json(
@@ -196,7 +255,7 @@ export const getPlayers = async (req: NextRequest) => {
     try {
         await initializeDataSource();
         const playerRepository = AppDataSource.getRepository(Player);
-        const players = await playerRepository.find({relations: ["team"]});
+        const players = await playerRepository.find({ relations: ["team"] });
         return NextResponse.json(
             { data: players },
             { status: 200 }

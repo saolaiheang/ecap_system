@@ -1,37 +1,23 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
-import TypesOfSport from "../../../components/typeSport";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
-import { faLock } from "@fortawesome/free-solid-svg-icons";
 import Header from "../../../components/header";
+import TypesOfSport from "../../../components/typeSport";
 import News from "../../../components/news";
 import Coach from "../../../components/coach";
 import Player from "../../../components/player";
 import MatchLayout from "@/components/matchLayout";
+// import TestVideo from "@/components/video";
 
 export default function Homepage() {
   return (
     <div>
       <Header />
+      {/* <TestVideo/> */}
 
-      <div className="w-full h-[500px] overflow-hidden">
-        <video
-          className="w-full h-full object-cover"
-          autoPlay
-          loop
-          muted
-          playsInline
-          controls
-        >
-          <source src="/homepagevideo.mp4" type="video/mp4" />
-        </video>
-      </div>
 
+      {/* Sections */}
       <div>
-        <MatchLayout />
+        {/* <MatchLayout /> */}
         <TypesOfSport />
         <News />
         <Coach />

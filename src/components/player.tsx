@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 
 interface PlayerInput {
   name: string;
@@ -24,7 +23,7 @@ export default function Player() {
           throw new Error("Failed to fetch players");
         }
         const data = await res.json();
-        setPlayers(data.data); // Assuming your API returns { data: [...] }
+        setPlayers(data.data || []);
       } catch (err: any) {
         setError(err.message || "Something went wrong");
       } finally {
@@ -40,23 +39,31 @@ export default function Player() {
 
   return (
     <section className="px-8 py-6">
-      <h2 className="text-3xl font-bold text-orange-500 mb-4">Player</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-[30px] h-[450px]">
+      <h2 className="text-4xl font-bold text-blue-600 mb-8 ">Player List</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
         {players.map((player, i) => (
-          <div key={i} className="bg-white rounded-lg shadow-lg overflow-hidden text-center">
-            <div className="h-[350px] ">
-            <img
-              src={player.image}
-              alt={player.name}              
-              className="w-full h-full object-cover"
-            />
+          <div
+            key={i}
+            className="bg-white rounded-2xl shadow-md overflow-hidden border border-blue-100 hover:shadow-blue-400 transition duration-300"
+          >
+            <div className="h-[300px] w-full overflow-hidden">
+              <img
+                src={player.image || "https://via.placeholder.com/300x300"}
+                alt={player.name}
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              />
             </div>
 
-           
-            <div className="p-2 text-sm text-left">
-              <p><strong className="text-xl">Name:</strong> {player.name}</p>
-              <p><strong className="text-xl">Position:</strong> {player.position}</p>
-              <p><strong className="text-xl">Contact:</strong> {player.contact_info}</p>
+            <div className="p-4 text-left space-y-2">
+              <p className="text-lg font-semibold text-blue-700">
+                Name: {player.name}
+              </p>
+              <p className="text-md text-blue-600">
+                Position: {player.position}
+              </p>
+              <p className="text-md text-blue-600">
+                Contact: {player.contact_info}
+              </p>
             </div>
           </div>
         ))}

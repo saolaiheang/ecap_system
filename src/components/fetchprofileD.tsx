@@ -1,190 +1,281 @@
+
 "use client";
 
 import { useEffect, useState, ChangeEvent } from "react";
 
-interface Profile {
-  id: number;
+interface Sport {
+  id: string;
   name: string;
-  location: string;
-  start_date: string;
-  sport_type_id: string;
 }
 
-export default function ProfileDashboard() {
-  const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [formData, setFormData] = useState({
-    name: "",
-    location: "",
-    start_date: "",
-    sport_type_id: "",
-  });
-  const [editingId, setEditingId] = useState<number | null>(null);
+interface Team {
+  id: string;
+  name: string;
+}
 
-  // Fetch all profiles from API
+interface Player {
+  id: string;
+  name: string;
+  position: string;
+  contact_info: string;
+  image: string;
+  team: {
+    name: string;
+    division: string;
+    contact_info: string;
+  };
+}
+interface Props {
+  sport: string;
+}
+
+export default function PlayerProfileBySport({ sport }: Props) {
+  const [sports, setSports] = useState<Sport[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [selectedTeam, setSelectedTeam] = useState<string>("");
+
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [selectedSport, setSelectedSport] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [formData,setFormData]=useState({
+    name:"",
+    position:"",
+    contact_info:"",
+    team_id:"",
+    sport_id:"",
+    image:""
+  })
+
+  const handleChange=(e:ChangeEvent<HTMLInputElement>)=>{
+    if(e.target.files){
+      setFormData({...formData,[e.target.name]:e.target.files[0]})
+    }else{
+      setFormData({...formData,[e.target.name]:e.target.value})
+    }
+  }
+
+  const handleAddPlayer= async()=>{
+    if(!selectedSport)return alert("Please select a sport type");
+    const formDataPayload= new FormData();
+    formDataPayload.append("name",formData.name);
+    formDataPayload.append("position",formData.position);
+    formDataPayload.append("contact_info",formData.contact_info);
+    formDataPayload.append("team_id",formData.team_id);
+    formDataPayload.append("sport_id",selectedSport);
+    formDataPayload.append("image",formData.image);
+    try{
+      const res=await fetch(`/api/player/by-team/${selectedTeam}`,{
+        method:"POST",
+        body:formDataPayload
+      })
+      const newPlayer = await res.json();
+      setPlayers((prev) => [...prev, newPlayer]);
+      alert("Player added successfully");
+      setFormData({ name: "", position: "", contact_info: "",team_id:"",sport_id:"", image:"" });
+    }catch(err){
+      console.error("Failed to add player",err);
+    }
+  }
+
   useEffect(() => {
-    const fetchProfiles = async () => {
+    const fetchSports = async () => {
       try {
-        const res = await fetch("/api/profile");
+        const res = await fetch("/api/typeofsport");
         const data = await res.json();
-        setProfiles(data);
+
+        if (data && Array.isArray(data.typeOfSport)) {
+          setSports(data.typeOfSport);
+        } else {
+          console.error("Invalid response structure:", data);
+          setSports([]);
+        }
       } catch (err) {
-        console.error("Failed to fetch profiles", err);
+        console.error("Failed to fetch sports", err);
+        setSports([]);
       }
     };
 
-    fetchProfiles();
-  }, []);
+    fetchSports();
+  }, [sports]);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
-  const handleAddOrUpdate = async () => {
-    const { name, location, start_date, sport_type_id } = formData;
-    if (!name || !location || !start_date || !sport_type_id) return;
+  useEffect(() => {
+    if (selectedSport) {
+      const fetchTeams = async () => {
+        try {
+          const res = await fetch(`/api/team/by-sport/${selectedSport}`);
+          const data = await res.json();
+          setTeams(data.data);
+        } catch (err) {
+          console.error("Failed to fetch teams", err);
+        }
+      };
 
-    const payload = { name, location, start_date, sport_type_id };
+      fetchTeams();
+    }
+  }, [selectedSport]);
 
-    try {
-      if (editingId !== null) {
-        // Update an existing profile
-        const res = await fetch(`/api/profile/${editingId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        const updated = await res.json();
-        setProfiles((prev) =>
-          prev.map((e) => (e.id === editingId ? updated : e))
-        );
-        setEditingId(null);
-      } else {
-        // Add a new profile
-        const res = await fetch("/api/profile", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        const created = await res.json();
-        setProfiles((prev) => [...prev, created]);
+  // Fetch players when the sport changes
+  useEffect(() => {
+    const fetchPlayers = async () => {
+      if (!selectedSport) return;
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/player/by-sport/${selectedSport}`);
+        const data = await res.json();
+        setPlayers(data.data);
+      } catch (err) {
+        console.error("Failed to fetch players", err);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      setFormData({
-        name: "",
-        location: "",
-        start_date: "",
-        sport_type_id: "",
-      });
-    } catch (err) {
-      console.error("Failed to save profile", err);
-    }
-  };
+    fetchPlayers();
+  }, [selectedSport]);
 
-  const handleEdit = (profile: Profile) => {
-    setFormData({
-      name: profile.name,
-      location: profile.location,
-      start_date: profile.start_date,
-      sport_type_id: profile.sport_type_id,
-    });
-    setEditingId(profile.id);
-  };
-
-  const handleDelete = async (id: number) => {
-    try {
-      // Call delete API
-      await fetch(`/api/profile/${id}`, { method: "DELETE" });
-      setProfiles((prev) => prev.filter((e) => e.id !== id));
-    } catch (err) {
-      console.error("Failed to delete profile", err);
-    }
-  };
+  // Filtered players based on the search query
+  const filteredPlayers = players.filter((player) =>
+    player.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    player.position.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold text-[#1D276C] mb-4 capitalize">
-        Profile Management
+        Player Profiles by Sport Type
       </h2>
 
-      {/* Form */}
+      {/* Sport Dropdown */}
+      <div className="mb-4 flex gap-4">
+        <select
+          className="border p-2 rounded w-1/3"
+          value={selectedSport}
+          onChange={(e) => setSelectedSport(e.target.value)}
+        >
+          <option value="">Select a Sport</option>
+          {sports.length > 0 ? (
+            sports.map((sport) => (
+              <option key={sport.id} value={sport.id}>
+                {sport.name}
+              </option>
+            ))
+          ) : (
+            <option disabled>No sports found</option>
+          )}
+        </select>
+
+        <select
+          className="border p-2 rounded w-1/3"
+          value={selectedTeam}
+          onChange={(e) => setSelectedTeam(e.target.value)}
+        >
+          <option value="">Select a Team</option>
+          {teams.map((team) => (
+            <option key={team.id} value={team.id}>
+              {team.name}
+            </option>
+          ))}
+        </select>
+
+        {/* Search Input */}
+        <input
+          type="text"
+          placeholder="Search by Name or Position"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="border p-2 rounded w-2/3"
+        />
+      </div>
+
+
       <div className="grid grid-cols-4 gap-4 mb-6">
         <input
           name="name"
           type="text"
-          placeholder="Profile Name"
+          placeholder="Player Name"
           value={formData.name}
           onChange={handleChange}
           className="border p-2 rounded"
         />
         <input
-          name="location"
+          name="position"
           type="text"
-          placeholder="Location"
-          value={formData.location}
+          placeholder="Position"
+          value={formData.position}
           onChange={handleChange}
           className="border p-2 rounded"
         />
         <input
-          name="start_date"
-          type="date"
-          value={formData.start_date}
+          name="contact_info"
+          type="text"
+          placeholder="Contact Info"
+          value={formData.contact_info}
           onChange={handleChange}
           className="border p-2 rounded"
         />
         <input
-          name="sport_type_id"
-          type="text"
-          placeholder="Sport Type ID"
-          value={formData.sport_type_id}
+          name="image"
+          type="file"
           onChange={handleChange}
           className="border p-2 rounded"
         />
         <button
-          onClick={handleAddOrUpdate}
+          onClick={handleAddPlayer}
           className="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700 transition"
         >
-          {editingId ? "Update" : "Add"}
+          Add Player
         </button>
       </div>
 
-      {/* Table */}
-      <table className="w-full table-auto border-collapse border border-gray-300 text-sm">
-        <thead className="bg-gray-100 text-left">
+      {/* Loading Spinner */}
+      {loading && <p>Loading players...</p>}
+
+      {/* Player Table */}
+      <table className="w-full border-collapse border border-gray-300 mt-4">
+        <thead className="bg-gray-100">
           <tr>
             <th className="border px-4 py-2">#</th>
+            <th className="border px-4 py-2">Image</th>
             <th className="border px-4 py-2">Name</th>
-            <th className="border px-4 py-2">Location</th>
-            <th className="border px-4 py-2">Start Date</th>
-            <th className="border px-4 py-2">Sport Type ID</th>
-            <th className="border px-4 py-2">Actions</th>
+            <th className="border px-4 py-2">Position</th>
+            <th className="border px-4 py-2">Contact Info</th>
+            <th className="border px-4 py-2">Team Name</th>
+            <th className="border px-4 py-2">Division</th>
+            <th className="border px-4 py-2">Team Contact</th>
           </tr>
         </thead>
         <tbody>
-          {profiles.map((profile) => (
-            <tr key={profile.id}>
-              <td className="border px-4 py-2">{profile.id}</td>
-              <td className="border px-4 py-2">{profile.name}</td>
-              <td className="border px-4 py-2">{profile.location}</td>
-              <td className="border px-4 py-2">{profile.start_date}</td>
-              <td className="border px-4 py-2">{profile.sport_type_id}</td>
-              <td className="border px-4 py-2 space-x-2">
-                <button
-                  onClick={() => handleEdit(profile)}
-                  className="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(profile.id)}
-                  className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                >
-                  Delete
-                </button>
+          {filteredPlayers.length > 0 ? (
+            filteredPlayers.map((player, index) => (
+              <tr key={player.id}>
+                <td className="border px-4 py-2">{index + 1}</td>
+                <td className="border px-4 py-2">
+                  <img
+                    src={player.image}
+                    alt={player.name}
+                    className="w-16 h-16 object-cover rounded-full"
+                  />
+                </td>
+                <td className="border px-4 py-2">{player.name}</td>
+                <td className="border px-4 py-2">{player.position}</td>
+                <td className="border px-4 py-2">{player.contact_info}</td>
+                <td className="border px-4 py-2">{player.team.name}</td>
+                <td className="border px-4 py-2">{player.team.division}</td>
+                <td className="border px-4 py-2">{player.team.contact_info}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={8} className="text-center p-4 text-gray-500">
+                No players found.
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>
   );
 }
+

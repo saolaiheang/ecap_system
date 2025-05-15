@@ -1,9 +1,9 @@
+
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import HeaderAdminPage from "@/components/headerAdmin";
-
 import {
   FaUser,
   FaChevronDown,
@@ -15,8 +15,8 @@ import {
 } from "react-icons/fa";
 import FetchNews from "@/components/fetchnews";
 import FetchActivityD from "@/components/fetchActivityD";
-// import ProfileDashboard from "@/components/fetchnews";\
 import ProfileDashboard from "@/components/fetchprofileD";
+import FetchProfileCoach from "@/components/fetchProfileCoachD";
 import { FC } from "react";
 
 interface Sport {
@@ -25,44 +25,42 @@ interface Sport {
   description?: string;
 }
 
-interface FetchNewsProps {
-  sport: string;
-}
-interface FetchNewsProps {
+interface CommonProps {
   sport: string;
 }
 
-interface ProfileDashboardProps {
-  sport: string;
-}
+// Unified interface for component props
+interface FetchNewsProps extends CommonProps {}
+interface FetchActivityDProps extends CommonProps {}
+interface ProfileDashboardProps extends CommonProps {}
+interface FetchProfileCoachProps extends CommonProps {}
 
-interface FetchActivityDProps {
-  sport: string;
-}
+// Wrapper components with proper typing
+const FetchNewsWrapper: FC<FetchNewsProps> = ({ sport }) => {
+  return <FetchNews sport={sport} />;
+};
 
-
-// Wrapper component for FetchActivityD
 const FetchActivityDWrapper: FC<FetchActivityDProps> = ({ sport }) => {
   return <FetchActivityD sport={sport} />;
 };
 
+const ProfileDashboardWrapper: FC<ProfileDashboardProps> = ({ sport }) => {
+  return <ProfileDashboard sport={sport} />;
+};
+
+
+const FetchProfileCoachWrapper: FC<FetchProfileCoachProps> = ({ sport }) => {
+  return <FetchProfileCoach sport={sport} />;
+};
 
 export default function DashboardLayout() {
   const router = useRouter();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      router.push("/pages/login");
-    }
-  }, []);
+  // Type for menu keys
+  type MenuKey = "profile" | "schedule" | "match" | "news" | "history" | "activity" | "types";
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    router.push("/pages/login");
-  };
-
-  const [openMenus, setOpenMenus] = useState({
+  // State management
+  const [openMenus, setOpenMenus] = useState<Record<MenuKey, boolean>>({
     profile: false,
     schedule: false,
     match: false,
@@ -71,28 +69,34 @@ export default function DashboardLayout() {
     activity: false,
     types: false,
   });
-
-  const [selectedContent, setSelectedContent] = useState("dashboard");
-  type MenuKey = keyof typeof openMenus;
-  // const toggleMenu = (key: string) => {
-  //   setOpenMenus({ ...openMenus, [key]: !openMenus[key] });
-  // };
-  const toggleMenu = (key: MenuKey) => {
-    setOpenMenus((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
-
+  const [selectedContent, setSelectedContent] = useState<string>("dashboard");
   const [sports, setSports] = useState<Sport[]>([]);
   const [loadingSports, setLoadingSports] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  // Authentication check
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/pages/login");
+    }
+  }, [router]);
+
+  // Fetch sports data
   useEffect(() => {
     const fetchSports = async () => {
       try {
+        setLoadingSports(true);
         const response = await fetch("/api/typeofsport");
+        if (!response.ok) {
+          throw new Error("Failed to fetch sports");
+        }
         const data = await response.json();
         const typeOfSport = data?.typeOfSport;
         setSports(Array.isArray(typeOfSport) ? typeOfSport : []);
       } catch (error) {
         console.error("Failed to fetch sports:", error);
+        setError("Failed to load sports data");
       } finally {
         setLoadingSports(false);
       }
@@ -101,7 +105,17 @@ export default function DashboardLayout() {
     fetchSports();
   }, []);
 
-  const sidebarSections :{ label: string; icon: JSX.Element; key: MenuKey }[] = [
+  // Handlers
+  const handleLogout = useCallback(() => {
+    localStorage.removeItem("token");
+    router.push("/pages/login");
+  }, [router]);
+
+  const toggleMenu = useCallback((key: MenuKey) => {
+    setOpenMenus((prev) => ({ ...prev, [key]: !prev[key] }));
+  }, []);
+
+  const sidebarSections: { label: string; icon: JSX.Element; key: MenuKey }[] = [
     { label: "History", icon: <FaHistory />, key: "history" },
     { label: "Profile", icon: <FaUser />, key: "profile" },
     { label: "Schedule", icon: <FaCalendarAlt />, key: "schedule" },
@@ -134,7 +148,24 @@ export default function DashboardLayout() {
 
               {openMenus[item.key] && (
                 <div className="bg-[#3b478f] ml-10 mt-1 text-xs p-2 rounded">
-                  {loadingSports ? (
+                  {item.key === "profile" ? (
+                    <>
+                      <p
+                        className="py-1 cursor-pointer hover:underline"
+                        onClick={() => setSelectedContent("profile-player")}
+                      >
+                        Player
+                      </p>
+                      <p
+                        className="py-1 cursor-pointer hover:underline"
+                        onClick={() => setSelectedContent("profile-coach")}
+                      >
+                        Coach
+                      </p>
+                    </>
+                  ) : error ? (
+                    <p className="text-red-300">{error}</p>
+                  ) : loadingSports ? (
                     <p className="text-white">Loading...</p>
                   ) : sports.length > 0 ? (
                     sports.map((sport) => (
@@ -142,9 +173,7 @@ export default function DashboardLayout() {
                         key={`${item.key}-${sport.id}`}
                         className="py-1 cursor-pointer hover:underline"
                         onClick={() =>
-                          setSelectedContent(
-                            `${item.key}-${sport.name.toLowerCase()}`
-                          )
+                          setSelectedContent(`${item.key}-${sport.name.toLowerCase()}`)
                         }
                       >
                         {sport.name}
@@ -168,14 +197,16 @@ export default function DashboardLayout() {
               Sport Types
               <FaChevronDown
                 className={`ml-auto transition-transform ${
-                  openMenus["types"] ? "rotate-180" : ""
+                  openMenus.types ? "rotate-180" : ""
                 }`}
               />
             </button>
 
-            {openMenus["types"] && (
+            {openMenus.types && (
               <div className="bg-[#3b478f] ml-10 mt-1 text-xs p-2 rounded">
-                {loadingSports ? (
+                {error ? (
+                  <p className="text-red-300">{error}</p>
+                ) : loadingSports ? (
                   <p className="text-white text-sm">Loading...</p>
                 ) : sports.length > 0 ? (
                   sports.map((sport) => (
@@ -199,10 +230,13 @@ export default function DashboardLayout() {
 
         {/* Main Content */}
         <main className="flex-1 p-6 bg-white">
+          {error && <p className="text-red-600 mb-4">{error}</p>}
           {selectedContent.startsWith("news-") ? (
-            <FetchNews sport={selectedContent.replace("news-", "")} />
-          ) : selectedContent.startsWith("profile-") ? (
-            <ProfileDashboard sport={selectedContent.replace("profile-", "")} />
+            <FetchNewsWrapper sport={selectedContent.replace("news-", "")} />
+          ) : selectedContent.startsWith("profile-player") ? (
+            <ProfileDashboardWrapper sport="player"/>)
+            : selectedContent === "profile-coach" ? (
+              <FetchProfileCoachWrapper sport="coach" />
           ) : selectedContent.startsWith("schedule-") ? (
             <h2 className="text-xl font-semibold capitalize text-[#1D276C]">
               Schedule: {selectedContent.replace("schedule-", "")}
@@ -212,7 +246,7 @@ export default function DashboardLayout() {
               Match: {selectedContent.replace("match-", "")}
             </h2>
           ) : selectedContent.startsWith("activity-") ? (
-            <FetchActivityD sport={selectedContent.replace("activity-", "")} />
+            <FetchActivityDWrapper sport={selectedContent.replace("activity-", "")} />
           ) : selectedContent.startsWith("history-") ? (
             <h2 className="text-xl font-semibold capitalize text-[#1D276C]">
               History: {selectedContent.replace("history-", "")}
@@ -223,18 +257,19 @@ export default function DashboardLayout() {
                 {selectedContent.replace("type-", "")} Type of Sport
               </h2>
               <p className="text-gray-600 mt-2">
-                You selected:{" "}
-                <strong>{selectedContent.replace("type-", "")}</strong>
+                You selected: <strong>{selectedContent.replace("type-", "")}</strong>
               </p>
             </div>
-          ) : null}
+          ) : (
+            <h2 className="text-xl font-semibold text-[#1D276C]">Dashboard</h2>
+          )}
 
-          <button
+          {/* <button
             onClick={handleLogout}
             className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 transition mt-4"
           >
             Logout
-          </button>
+          </button> */}
         </main>
       </div>
     </div>

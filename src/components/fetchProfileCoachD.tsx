@@ -220,7 +220,7 @@ export default function PlayerProfileBySport({ sport }: Props){
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold text-[#1D276C] mb-4 capitalize">
-        Player Profiles by Sport Type
+        Coaches in Ecap
       </h2>
       <div className="mb-4 flex gap-4">
         <select

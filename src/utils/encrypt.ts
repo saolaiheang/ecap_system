@@ -6,5 +6,5 @@ dotenv.config();
 const { JWT_SECRET } = process.env;
 
 export const generateToken = (payload: TokenPayload) => {
-    return jwt.sign(payload, JWT_SECRET || "", { expiresIn: "365d" });
+    return jwt.sign(payload, JWT_SECRET || "", { expiresIn: "1h" });
   };

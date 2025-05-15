@@ -6,22 +6,23 @@ import News from "../../../components/news";
 import Coach from "../../../components/coach";
 import Player from "../../../components/player";
 import MatchLayout from "@/components/matchLayout";
-// import TestVideo from "@/components/video";
+import TestVideo from "@/components/video";
 
 export default function Homepage() {
   return (
     <div>
       <Header />
-      {/* <TestVideo/> */}
+      <TestVideo/>
 
 
       {/* Sections */}
       <div>
-        {/* <MatchLayout /> */}
         <TypesOfSport />
         <News />
-        <Coach />
-        <Player />
+        {/* <Coach /> */}
+        {/* <Player /> */}
+        <MatchLayout />
+
       </div>
     </div>
   );

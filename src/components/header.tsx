@@ -14,7 +14,7 @@ export default function Header() {
 
   return (
     <header className="bg-[#1D276C] shadow-md">
-      <div className="max-w-7xl flex justify-between items-center px-4 py-2 md:py-4">
+      <div className="max-w-7xl flex justify-between items-center px-6 py-4 md:py-4">
         {/* Logo */}
         <div className="flex items-center">
           <Image
@@ -31,7 +31,11 @@ export default function Header() {
           <Link href="/pages/home" className="hover:text-blue-400 transition duration-300">Home</Link>
           <Link href="/pages/about" className="hover:text-blue-400 transition duration-300">About</Link>
           <Link href="/pages/news" className="hover:text-blue-400 transition duration-300">News</Link>
+          <Link href="/pages/match" className="hover:text-blue-400 transition duration-300">Match</Link>
           <Link href="/pages/schedule" className="hover:text-blue-400 transition duration-300">Schedule</Link>
+          <Link href="/pages/coach" className="hover:text-blue-400 transition duration-300">Coach</Link>
+          <Link href="/pages/player" className="hover:text-blue-400 transition duration-300">Player</Link>
+
         </nav>
 
         {/* Mobile Hamburger */}
@@ -46,7 +50,11 @@ export default function Header() {
           <Link href="/pages/home" onClick={toggleMenu} className="block hover:text-blue-400">Home</Link>
           <Link href="/pages/about" onClick={toggleMenu} className="block hover:text-blue-400">About</Link>
           <Link href="/pages/news" onClick={toggleMenu} className="block hover:text-blue-400">News</Link>
+          <Link href="/pages/match" onClick={toggleMenu} className="block hover:text-blue-400">Match</Link>
           <Link href="/pages/schedule" onClick={toggleMenu} className="block hover:text-blue-400">Schedule</Link>
+          <Link href="/pages/coach" onClick={toggleMenu} className="block hover:text-blue-400">Coach</Link>
+          <Link href="/pages/player" onClick={toggleMenu} className="block hover:text-blue-400">Player</Link>
+
         </div>
       )}
     </header>

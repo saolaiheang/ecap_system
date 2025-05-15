@@ -44,7 +44,7 @@ export default function Player() {
         {players.map((player, i) => (
           <div
             key={i}
-            className="bg-white rounded-2xl shadow-md overflow-hidden border border-blue-100 hover:shadow-blue-400 transition duration-300"
+            className="bg-white rounded-2xl shadow-md overflow-hidden border border-blue-100 hover:shadow-blue-900 transition duration-300"
           >
             <div className="h-[300px] w-full overflow-hidden">
               <img
@@ -55,13 +55,13 @@ export default function Player() {
             </div>
 
             <div className="p-4 text-left space-y-2">
-              <p className="text-lg font-semibold text-blue-700">
+              <p className="text-lg font-semibold ">
                 Name: {player.name}
               </p>
-              <p className="text-md text-blue-600">
+              <p className="text-md ">
                 Position: {player.position}
               </p>
-              <p className="text-md text-blue-600">
+              <p className="text-md ">
                 Contact: {player.contact_info}
               </p>
             </div>

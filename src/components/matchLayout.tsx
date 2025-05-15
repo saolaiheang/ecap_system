@@ -70,7 +70,7 @@ function MatchCard({
 
 export default function MatchLayout() {
   return (
-    <div className="p-6">
+    <div className="p-8">
       <MatchCard
         teamA={{ name: "PSE", image: "/monika.jpg" }}
         teamB={{ name: "PSE", image: "/monika.jpg" }}

@@ -21,31 +21,36 @@ export default function HistorySection() {
 
   return (
     <section className="bg-white px-6 md:px-20 py-16">
-      <h2 className="text-4xl text-orange-500 font-bold text-center mb-16">
-        Our Journey
+      <h2 className="text-4xl text-blue-900 font-extrabold text-center mb-16">
+        🛤️ Our Journey
       </h2>
 
-      <div className="relative border-l-4 border-orange-500 pl-6">
+      <div className="relative border-l-4 border-blue-900 pl-6">
         {items.map((item, i) => (
-          <div key={i} className="mb-16 relative">
-            {/* Year */}
-            <div className="absolute -left-10 top-0 bg-orange-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-md">
-              {item.year.slice(-2)}
+          <div key={i} className="mb-16 relative group">
+            {/* Year circle */}
+            <div className="absolute -left-[33px] top-0 bg-blue-900 text-white w-[66px] h-[66px] rounded-full flex items-center justify-center font-bold text-lg shadow-lg z-10 border-4 border-white">
+              {item.year}
             </div>
 
+            {/* Timeline line extension */}
+            <div className="absolute -left-1 top-[66px] h-[calc(100%-66px)] w-2 bg-blue-200"></div>
+
             {/* Content block */}
-            <div className="bg-gray-50 p-6 rounded-lg shadow-md md:flex md:items-center gap-6">
+            <div className="bg-gray-50 p-6 rounded-xl shadow-lg md:flex md:items-center gap-6 transition-transform duration-300 group-hover:scale-[1.02]">
               <img
                 src={item.image}
                 alt={`History ${item.year}`}
-                className="w-full md:w-[220px] h-[140px] object-cover rounded"
+                className="w-full md:w-[240px] h-[160px] object-cover rounded-xl shadow-md"
               />
 
               <div className="mt-4 md:mt-0">
-                <h3 className="text-2xl font-semibold text-orange-500 mb-2">
+                <h3 className="text-2xl font-bold text-blue-900 mb-2">
                   {item.year}
                 </h3>
-                <p className="text-gray-700 leading-relaxed">{item.text}</p>
+                <p className="text-gray-700 leading-relaxed text-[15px] tracking-wide">
+                  {item.text}
+                </p>
               </div>
             </div>
           </div>

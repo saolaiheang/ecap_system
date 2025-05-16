@@ -13,7 +13,7 @@ export default function Header() {
   const toggleMenu = () => setIsOpen(!isOpen);
 
   return (
-    <header className="bg-[#1D276C] shadow-md">
+    <header className="bg-[#1D276C] shadow-md sticky top-0 z-50">
       <div className="max-w-7xl flex justify-between items-center px-6 py-4 md:py-4">
         {/* Logo */}
         <div className="flex items-center">
@@ -35,7 +35,6 @@ export default function Header() {
           <Link href="/pages/schedule" className="hover:text-blue-400 transition duration-300">Schedule</Link>
           <Link href="/pages/coach" className="hover:text-blue-400 transition duration-300">Coach</Link>
           <Link href="/pages/player" className="hover:text-blue-400 transition duration-300">Player</Link>
-
         </nav>
 
         {/* Mobile Hamburger */}
@@ -54,7 +53,6 @@ export default function Header() {
           <Link href="/pages/schedule" onClick={toggleMenu} className="block hover:text-blue-400">Schedule</Link>
           <Link href="/pages/coach" onClick={toggleMenu} className="block hover:text-blue-400">Coach</Link>
           <Link href="/pages/player" onClick={toggleMenu} className="block hover:text-blue-400">Player</Link>
-
         </div>
       )}
     </header>

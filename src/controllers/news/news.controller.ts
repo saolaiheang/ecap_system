@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { News, SportType } from "@/entities";
 import { AppDataSource } from "@/config";
 import { initializeDataSource } from "@/utils/inititializeDataSource";
+import cloudinary from "@/lib/cloudinary";
+import os from "os";
+import fs, { writeFile } from "fs/promises";
 
 interface NewsInput {
     title: string;
@@ -10,16 +13,26 @@ interface NewsInput {
     sport_type_id: string;
 }
 
+export const config = {
+    api: {
+        bodyParser: false,
+    },
+};
+
 export const createNews = async (req: NextRequest) => {
     try {
-        // await initializeDataSource();
         (async () => {
             await initializeDataSource();
             console.log("App is running...");
         })();
 
-        const { title, description, image, sport_type_id } = await req.json() as NewsInput;
+        // const { title, description, image, sport_type_id } = await req.json() as NewsInput;
 
+         const formData= await req.formData();
+         const title = formData.get("title") as string;
+         const description = formData.get("description") as string;
+         const image = formData.get("image") as File;
+         const sport_type_id = formData.get("sport_type_id") as string;
         // Validate required fields
         if (!title || !description || !sport_type_id) {
             return NextResponse.json(
@@ -28,9 +41,33 @@ export const createNews = async (req: NextRequest) => {
             );
         }
 
-        // Validate SportType exists
+        if (!image) {
+            return NextResponse.json(
+                { error: "Image file is required" },
+                { status: 400 }
+            );
+        }
+
+        if (!image.type.startsWith("image/")) {
+            return NextResponse.json(
+                { error: "Only image files are allowed" },
+                { status: 400 }
+            );
+        }
+
+        const tempFilePath = `${os.tmpdir()}/${image.name}-${Date.now()}`;
+                const fileBuffer = Buffer.from(await image.arrayBuffer());
+                await writeFile(tempFilePath, fileBuffer);
+        
+                const uploadResult = await cloudinary.uploader.upload(tempFilePath, {
+                    folder: "players",
+                    public_id: `${title}-${Date.now()}`,
+                });
+        
+                await fs.unlink(tempFilePath);
+
         const sportTypeRepository = AppDataSource.getRepository(SportType);
-        const sportType = await sportTypeRepository.findOne({ where: { id: sport_type_id } });
+        const sportType = await sportTypeRepository.findOne({ where: { id:sport_type_id } });
         if (!sportType) {
             return NextResponse.json(
                 { error: "Sport type not found" },
@@ -38,16 +75,14 @@ export const createNews = async (req: NextRequest) => {
             );
         }
 
-        // Create and save News
         const newsRepository = AppDataSource.getRepository(News);
         const news = newsRepository.create({
             title,
             description,
-            image: image, // Optional field
+            image:uploadResult.secure_url, 
             sport_type_id,
-            date: new Date(), // Set current date
+            date: new Date(), 
         });
-
         await newsRepository.save(news);
 
         return NextResponse.json(

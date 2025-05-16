@@ -19,8 +19,8 @@ export default function Homepage() {
       <div>
         <TypesOfSport />
         <News />
-        {/* <Coach /> */}
-        {/* <Player /> */}
+        <Coach />
+        <Player />
         <MatchLayout />
 
       </div>

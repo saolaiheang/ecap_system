@@ -14,10 +14,9 @@ interface Team {
 interface Props {
   sport: string;
 }
-interface Player {
+interface Coaches {
   id: string;
   name: string;
-  position: string;
   contact_info: string;
   image: string;
   team: {
@@ -27,19 +26,23 @@ interface Player {
   };
 }
 
+
 export default function PlayerProfileBySport({ sport }: Props) {
+
+
+export default function CoachesProfileBySport({ sport }: Props){
+
   const [sports, setSports] = useState<Sport[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<string>("");
-  const [players, setPlayers] = useState<Player[]>([]);
+  const [coaches, setCoaches] = useState<Coaches[]>([]);
   const [selectedSport, setSelectedSport] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
-  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+  const [selectedCoaches, setSelectedCoaches] = useState<Coaches | null>(null);
   const [formData, setFormData] = useState({
     name: "",
-    position: "",
     contact_info: "",
     image: ""
   });
@@ -52,84 +55,93 @@ export default function PlayerProfileBySport({ sport }: Props) {
     }
   };
 
-  const handleAddPlayer = async () => {
+  const handleAddCoaches = async () => {
     if (!selectedSport) return alert("Please select a sport type");
     const formDataPayload = new FormData();
     formDataPayload.append("name", formData.name);
-    formDataPayload.append("position", formData.position);
     formDataPayload.append("contact_info", formData.contact_info);
     formDataPayload.append("team_id", selectedTeam);
     formDataPayload.append("sport_id", selectedSport);
     formDataPayload.append("image", formData.image);
     try {
-      const res = await fetch(`/api/player/by-team/${selectedTeam}`, {
+      const res = await fetch(`/api/coaches/by-team/${selectedTeam}`, {
         method: "POST",
         body: formDataPayload
+
       });
       const newPlayer = await res.json();
       setPlayers((prev) => [...prev, newPlayer]);
       alert("Player added successfully");
       setFormData({ name: "", position: "", contact_info: "", image: "" });
+
+      })
+      if (res.ok) {
+        const newPlayer = await res.json();
+        setCoaches((prev) => [...prev, newPlayer]);
+        alert("Coach added successfully");
+        setFormData({ name: "", contact_info: "", image: "" });
+      } else {
+        alert("Not successful");
+      }
+
     } catch (err) {
-      console.error("Failed to add player", err);
+      console.error("Failed to add coach", err);
     }
   };
 
-  const handleUpdateClick = (player: Player) => {
+  const handleUpdateClick = (coach: Coaches) => {
     setIsUpdating(true);
-    setSelectedPlayer(player);
-    setSelectedTeam(player.team.name);
+    setSelectedCoaches(coach);
+    setSelectedTeam(coach.team.name);
     setFormData({
-      name: player.name,
-      position: player.position,
-      contact_info: player.contact_info,
+      name: coach.name,
+      contact_info: coach.contact_info,
       image: ""
     });
   };
 
-  const handleUpdatePlayer = async () => {
-    if (!selectedPlayer || !selectedSport) return alert("Please select a sport and player");
+  const handleUpdateCoach = async () => {
+    if (!selectedCoaches || !selectedSport) return alert("Please select a sport and player");
 
     const formDataPayload = new FormData();
     formDataPayload.append("name", formData.name);
-    formDataPayload.append("position", formData.position);
     formDataPayload.append("contact_info", formData.contact_info);
     if (formData.image) {
       formDataPayload.append("image", formData.image);
     }
 
     try {
-      const res = await fetch(`/api/player/${selectedPlayer.id}`, {
+      const res = await fetch(`/api/coaches/${selectedCoaches.id}`, {
         method: "PUT",
         body: formDataPayload
       });
       const updatedPlayer = await res.json();
-      setPlayers((prev) =>
+      setCoaches((prev) =>
         prev.map((p) => (p.id === updatedPlayer.id ? updatedPlayer : p))
       );
-      setFormData({ name: "", position: "", contact_info: "", image: "" });
+      setFormData({ name: "",  contact_info: "", image: "" });
       setIsUpdating(false);
-      setSelectedPlayer(null);
+      setSelectedCoaches(null);
       setSelectedTeam("");
-      alert("Player updated successfully");
+      alert("coach updated successfully");
     } catch (err) {
-      console.error("Failed to update player", err);
-      alert("Failed to update player");
+      console.error("Failed to update coach", err);
+      alert("Failed to update coach");
     }
   };
 
   const handleFormSubmit = () => {
     if (isUpdating) {
-      handleUpdatePlayer();
+      handleUpdateCoach();
     } else {
-      handleAddPlayer();
+      handleAddCoaches();
     }
   };
 
   const handleCancelUpdate = () => {
     setIsUpdating(false);
-    setSelectedPlayer(null);
-    setFormData({ name: "", position: "", contact_info: "", image: "" });
+    setSelectedCoaches(null);
+    setFormData({ name: "", contact_info: "", image: "" });
     setSelectedTeam("");
   };
 
@@ -171,42 +183,59 @@ export default function PlayerProfileBySport({ sport }: Props) {
   }, [selectedSport]);
 
   useEffect(() => {
-    const fetchPlayers = async () => {
+    const fectCoaches = async () => {
       if (!selectedSport) return;
       setLoading(true);
       try {
-        const res = await fetch(`/api/player/by-sport/${selectedSport}`);
+        const res = await fetch(`/api/coaches/by-sport/${selectedSport}`);
         const data = await res.json();
-        setPlayers(data.data);
+        setCoaches(data.coaches);
       } catch (err) {
-        console.error("Failed to fetch players", err);
+        console.error("Failed to fetch coaches", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPlayers();
+    fectCoaches();
   }, [selectedSport]);
+
 
   const handleDeletePlayer = async (id: string) => {
     if (confirm("Are you sure you want to delete this player?")) {
       try {
         await fetch(`/api/player/${id}`, {
           method: "DELETE"
+
+  const handleDeletecoach = async (id: string) => {
+    if (confirm("Are you sour you want to delete this coach")) {
+      try {
+        await fetch(`/api/coaches/${id}`, {
+          method: "DELETE",
+
         });
-        setPlayers((prevPlayers) => prevPlayers.filter((player) => player.id !== id));
-        alert("Player deleted successfully");
+        setCoaches((prevCoaches) => prevCoaches.filter((coach) => coach.id !== id));
+        alert("coach deleted successfully");
       } catch (err) {
-        console.error("Failed to delete player", err);
+        console.error("Failed to delete coach", err);
       }
     }
   };
+
 
   const filteredPlayers = players
     .filter((player) => player.name && player.position)
     .filter((player) =>
       player.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       player.position.toLowerCase().includes(searchQuery.toLowerCase())
+
+
+  }
+  const filteredCoaches = (coaches ?? [])
+    .filter((coach) => coach.name)
+    .filter((coach) =>
+      coach.name.toLowerCase().includes(searchQuery.toLowerCase())
+
     );
 
   return (
@@ -259,19 +288,12 @@ export default function PlayerProfileBySport({ sport }: Props) {
         <input
           name="name"
           type="text"
-          placeholder="Player Name"
+          placeholder="Coach Name"
           value={formData.name}
           onChange={handleChange}
           className="border p-2 rounded"
         />
-        <input
-          name="position"
-          type="text"
-          placeholder="Position"
-          value={formData.position}
-          onChange={handleChange}
-          className="border p-2 rounded"
-        />
+        
         <input
           name="contact_info"
           type="text"
@@ -306,9 +328,14 @@ export default function PlayerProfileBySport({ sport }: Props) {
 
       {loading && <p>Loading players...</p>}
 
+      {/* Loading Spinner */}
+      {loading && <p>Loading coaches...</p>}
+
+
       <table className="w-full border border-gray-300 shadow-md rounded overflow-hidden mt-4">
         <thead className="bg-[#1D276C] text-white text-sm">
           <tr>
+
             <th className="px-4 py-3 text-left">#</th>
             <th className="px-4 py-3 text-left">Image</th>
             <th className="px-4 py-3 text-left">Name</th>
@@ -348,17 +375,61 @@ export default function PlayerProfileBySport({ sport }: Props) {
                   <button
                     onClick={() => handleDeletePlayer(player.id)}
                     className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+
+            <th className="border px-4 py-2">#</th>
+            <th className="border px-4 py-2">Image</th>
+            <th className="border px-4 py-2">Name</th>
+            <th className="border px-4 py-2">Contact Info</th>
+            <th className="border px-4 py-2">Team Name</th>
+            <th className="border px-4 py-2">Division</th>
+            <th className="border px-4 py-2">Team Contact</th>
+            <th className="border px-4 py-2">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredCoaches.length > 0 ? (
+            filteredCoaches.map((coach, index) => (
+              <tr key={coach.id} >
+                <td className="border px-4 py-2">{index + 1}</td>
+                <td className="border px-4 py-2">
+                  <img
+                    src={coach.image}
+                    alt={coach.name}
+                    className="w-16 h-16 object-cover rounded-full"
+                  />
+                </td>
+                <td className="border px-4 py-2">{coach.name}</td>
+                <td className="border px-4 py-2">{coach.contact_info}</td>
+                <td className="border px-4 py-2">{coach.team.name}</td>
+                <td className="border px-4 py-2">{coach.team.division}</td>
+                <td className="border px-4 py-2">{coach.team.contact_info}</td>
+                <td>
+                  <button
+                    onClick={() => handleDeletecoach(coach.id)}
+                    className="bg-red-500 text-white px-2 py-1 ml-4 text-center rounded hover:bg-red-600 "
+
                     disabled={loading}
                   >
                     Delete
                   </button>
+
+
+                  <button onClick={() => handleUpdateClick(coach)} className="bg-yellow-500 text-white ml-4 px-2 py-1 rounded hover:bg-yellow-600">
+                    Update
+                  </button>
+
                 </td>
               </tr>
             ))
           ) : (
             <tr>
+
               <td colSpan={9} className="text-center py-6 text-gray-500">
                 No players found.
+
+              <td colSpan={8} className="text-center p-4 text-gray-500">
+                No coaches found.
+
               </td>
             </tr>
           )}

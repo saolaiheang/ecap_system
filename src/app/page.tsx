@@ -13,7 +13,7 @@ import AdminPage from "@/components/fetchTypeSport";
 export default function Home() {
   return (
     <div>
-      <Login/>
+      <Homepage/>
     </div>
   );
 }

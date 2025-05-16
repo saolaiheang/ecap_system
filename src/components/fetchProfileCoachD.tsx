@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState, ChangeEvent } from "react";
@@ -28,8 +27,7 @@ interface Player {
   };
 }
 
-
-export default function PlayerProfileBySport({ sport }: Props){
+export default function PlayerProfileBySport({ sport }: Props) {
   const [sports, setSports] = useState<Sport[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<string>("");
@@ -44,15 +42,15 @@ export default function PlayerProfileBySport({ sport }: Props){
     position: "",
     contact_info: "",
     image: ""
-  })
+  });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setFormData({ ...formData, [e.target.name]: e.target.files[0] })
+      setFormData({ ...formData, [e.target.name]: e.target.files[0] });
     } else {
-      setFormData({ ...formData, [e.target.name]: e.target.value })
+      setFormData({ ...formData, [e.target.name]: e.target.value });
     }
-  }
+  };
 
   const handleAddPlayer = async () => {
     if (!selectedSport) return alert("Please select a sport type");
@@ -67,7 +65,7 @@ export default function PlayerProfileBySport({ sport }: Props){
       const res = await fetch(`/api/player/by-team/${selectedTeam}`, {
         method: "POST",
         body: formDataPayload
-      })
+      });
       const newPlayer = await res.json();
       setPlayers((prev) => [...prev, newPlayer]);
       alert("Player added successfully");
@@ -75,7 +73,7 @@ export default function PlayerProfileBySport({ sport }: Props){
     } catch (err) {
       console.error("Failed to add player", err);
     }
-  }
+  };
 
   const handleUpdateClick = (player: Player) => {
     setIsUpdating(true);
@@ -99,7 +97,6 @@ export default function PlayerProfileBySport({ sport }: Props){
     if (formData.image) {
       formDataPayload.append("image", formData.image);
     }
-
 
     try {
       const res = await fetch(`/api/player/${selectedPlayer.id}`, {
@@ -136,9 +133,6 @@ export default function PlayerProfileBySport({ sport }: Props){
     setSelectedTeam("");
   };
 
-
-
-
   useEffect(() => {
     const fetchSports = async () => {
       try {
@@ -159,7 +153,6 @@ export default function PlayerProfileBySport({ sport }: Props){
 
     fetchSports();
   }, []);
-
 
   useEffect(() => {
     if (selectedSport) {
@@ -196,33 +189,33 @@ export default function PlayerProfileBySport({ sport }: Props){
   }, [selectedSport]);
 
   const handleDeletePlayer = async (id: string) => {
-    if (confirm("Are you sour you want to delete this player")) {
+    if (confirm("Are you sure you want to delete this player?")) {
       try {
         await fetch(`/api/player/${id}`, {
-          method: "DELETE",
+          method: "DELETE"
         });
         setPlayers((prevPlayers) => prevPlayers.filter((player) => player.id !== id));
         alert("Player deleted successfully");
       } catch (err) {
         console.error("Failed to delete player", err);
       }
-
     }
+  };
 
-
-  }
   const filteredPlayers = players
     .filter((player) => player.name && player.position)
     .filter((player) =>
       player.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       player.position.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold text-[#1D276C] mb-4 capitalize">
         Coaches in Ecap
       </h2>
-      <div className="mb-4 flex gap-4">
+
+      <div className="mb-4 flex flex-wrap gap-4">
         <select
           className="border p-2 rounded w-1/3"
           value={selectedSport}
@@ -239,6 +232,7 @@ export default function PlayerProfileBySport({ sport }: Props){
             <option disabled>No sports found</option>
           )}
         </select>
+
         <select
           className="border p-2 rounded w-1/3"
           value={selectedTeam}
@@ -252,16 +246,14 @@ export default function PlayerProfileBySport({ sport }: Props){
           ))}
         </select>
 
-        {/* Search Input */}
         <input
           type="text"
           placeholder="Search by Name or Position"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="border p-2 rounded w-2/3"
+          className="border p-2 rounded w-1/3"
         />
       </div>
-
 
       <div className="grid grid-cols-4 gap-4 mb-6">
         <input
@@ -294,7 +286,7 @@ export default function PlayerProfileBySport({ sport }: Props){
           onChange={handleChange}
           className="border p-2 rounded"
         />
-        <div className="flex gap-2">
+        <div className="flex gap-2 mt-2">
           <button
             onClick={handleFormSubmit}
             className="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700 transition"
@@ -312,60 +304,60 @@ export default function PlayerProfileBySport({ sport }: Props){
         </div>
       </div>
 
-      {/* Loading Spinner */}
       {loading && <p>Loading players...</p>}
 
-      {/* Player Table */}
-      <table className="w-full border-collapse border border-gray-300 mt-4">
-        <thead className="bg-gray-100">
+      <table className="w-full border border-gray-300 shadow-md rounded overflow-hidden mt-4">
+        <thead className="bg-[#1D276C] text-white text-sm">
           <tr>
-            <th className="border px-4 py-2">#</th>
-            <th className="border px-4 py-2">Image</th>
-            <th className="border px-4 py-2">Name</th>
-            <th className="border px-4 py-2">Position</th>
-            <th className="border px-4 py-2">Contact Info</th>
-            <th className="border px-4 py-2">Team Name</th>
-            <th className="border px-4 py-2">Division</th>
-            <th className="border px-4 py-2">Team Contact</th>
-            <th className="border px-4 py-2">Status</th>
+            <th className="px-4 py-3 text-left">#</th>
+            <th className="px-4 py-3 text-left">Image</th>
+            <th className="px-4 py-3 text-left">Name</th>
+            <th className="px-4 py-3 text-left">Position</th>
+            <th className="px-4 py-3 text-left">Contact</th>
+            <th className="px-4 py-3 text-left">Team</th>
+            <th className="px-4 py-3 text-left">Division</th>
+            <th className="px-4 py-3 text-left">Team Contact</th>
+            <th className="px-4 py-3 text-left">Actions</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="text-sm text-gray-700">
           {filteredPlayers.length > 0 ? (
             filteredPlayers.map((player, index) => (
-              <tr key={player.id} >
-                <td className="border px-4 py-2">{index + 1}</td>
-                <td className="border px-4 py-2">
+              <tr key={player.id} className="hover:bg-gray-50 transition">
+                <td className="px-4 py-3">{index + 1}</td>
+                <td className="px-4 py-3">
                   <img
                     src={player.image}
                     alt={player.name}
-                    className="w-16 h-16 object-cover rounded-full"
+                    className="w-12 h-12 object-cover rounded-full border"
                   />
                 </td>
-                <td className="border px-4 py-2">{player.name}</td>
-                <td className="border px-4 py-2">{player.position}</td>
-                <td className="border px-4 py-2">{player.contact_info}</td>
-                <td className="border px-4 py-2">{player.team.name}</td>
-                <td className="border px-4 py-2">{player.team.division}</td>
-                <td className="border px-4 py-2">{player.team.contact_info}</td>
-                <td>
+                <td className="px-4 py-3">{player.name}</td>
+                <td className="px-4 py-3">{player.position}</td>
+                <td className="px-4 py-3">{player.contact_info}</td>
+                <td className="px-4 py-3">{player.team.name}</td>
+                <td className="px-4 py-3">{player.team.division}</td>
+                <td className="px-4 py-3">{player.team.contact_info}</td>
+                <td className="px-4 py-3 flex gap-2">
+                  <button
+                    onClick={() => handleUpdateClick(player)}
+                    className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
+                  >
+                    Update
+                  </button>
                   <button
                     onClick={() => handleDeletePlayer(player.id)}
-                    className="bg-red-500 text-white px-2 py-1 ml-4 text-center rounded hover:bg-red-600 "
+                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                     disabled={loading}
                   >
                     Delete
-                  </button>
-
-                  <button onClick={() => handleUpdateClick(player)} className="bg-yellow-500 text-white ml-4 px-2 py-1 rounded hover:bg-yellow-600">
-                    Update
                   </button>
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={8} className="text-center p-4 text-gray-500">
+              <td colSpan={9} className="text-center py-6 text-gray-500">
                 No players found.
               </td>
             </tr>
@@ -375,4 +367,3 @@ export default function PlayerProfileBySport({ sport }: Props){
     </div>
   );
 }
-

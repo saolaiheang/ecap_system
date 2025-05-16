@@ -89,7 +89,7 @@ export const createCoach = async (req: NextRequest, { params }: { params: { id: 
         const coach = coachRepository.create({
             name,
             contact_info,
-            imageFile,
+            image: uploadResult.secure_url,
             sport,
             team
         });

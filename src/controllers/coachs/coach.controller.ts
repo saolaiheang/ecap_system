@@ -162,3 +162,110 @@ export const getCoachesByteam = async (rep: NextRequest, { params }: { params: {
         }
     }
 }
+
+
+export const getCoachesBysport = async ({ params }: { params: { id: string } }) => {
+    try {
+        await initializeDataSource();
+        const { id: sport_id } = params;
+        const coachRepository = AppDataSource.getRepository(Coach);
+        const coaches = await coachRepository.find({ where: { sport: { id: sport_id } }, relations: ["team", "sport"] });
+        return NextResponse.json(
+            {
+                coaches
+            }
+        )
+    } catch (error) {
+        console.error("Error getting coaches:", error);
+        return NextResponse.json(
+            { error: "Error getting coaches" },
+            { status: 500 }
+        );
+    }
+}
+
+
+export const deleteCoachById = async ( { params }: { params: { id: string } }) => {
+
+    try {
+        await initializeDataSource();
+        const { id } = params;
+        const coachRepository = AppDataSource.getRepository(Coach);
+        await coachRepository.delete(id);
+        return NextResponse.json(
+            { message: "Coach deleted" }
+        )
+    } catch (error) {
+        console.error("Error deleting coach:", error);
+        return NextResponse.json(
+            { error: "Error deleting coach" },
+            { status: 500 }
+        );
+    }
+}
+
+
+export const updateCoachById = async (req: NextRequest, { params }: { params: { id: string } }) => {
+    try {
+        const { id } = params;
+        await initializeDataSource();
+        const coachRepository = AppDataSource.getRepository(Coach);
+        const coach = await coachRepository.findOneBy({id});
+        if (!coach) {
+            return NextResponse.json(
+                { error: "coach not found" },
+                { status: 404 }
+            );
+        }
+        const formData = await req.formData();
+        const name = formData.get("name") as string;
+        const contact_info = formData.get("contact_info") as string;
+        const imageFile = formData.get("image") as File;
+
+        // Update the basic fields
+        if (name) coach.name = name;
+        if (contact_info) coach.contact_info = contact_info;
+
+        // If an image is included, upload it to Cloudinary
+        if (imageFile) {
+            if (!imageFile.type.startsWith("image/")) {
+                return NextResponse.json(
+                    { error: "Only image files are allowed" },
+                    { status: 400 }
+                );
+            }
+
+            // Save the image temporarily
+            const tempFilePath = `${os.tmpdir()}/${imageFile.name}-${Date.now()}`;
+            const fileBuffer = Buffer.from(await imageFile.arrayBuffer());
+            await writeFile(tempFilePath, fileBuffer);
+
+            // Upload to Cloudinary
+            const uploadResult = await cloudinary.uploader.upload(tempFilePath, {
+                folder: "coachs",
+                public_id: `${name}-${Date.now()}`,
+            });
+
+            // Delete the temporary file after upload
+            await fs.unlink(tempFilePath);
+
+            // Update the image URL in the database
+            coach.image = uploadResult.secure_url;
+        }
+
+        // Save the updated player to the database
+        await coachRepository.save(coach);
+
+        return NextResponse.json(
+            { message: "Player updated successfully", data: coach },
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error("Error updating player:", error);
+        return NextResponse.json(
+            { error: "Error updating player" },
+            { status: 500 }
+        );
+    }
+
+}

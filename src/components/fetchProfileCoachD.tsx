@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState, ChangeEvent } from "react";
@@ -28,7 +27,11 @@ interface Coaches {
 }
 
 
+export default function PlayerProfileBySport({ sport }: Props) {
+
+
 export default function CoachesProfileBySport({ sport }: Props){
+
   const [sports, setSports] = useState<Sport[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<string>("");
@@ -42,15 +45,15 @@ export default function CoachesProfileBySport({ sport }: Props){
     name: "",
     contact_info: "",
     image: ""
-  })
+  });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setFormData({ ...formData, [e.target.name]: e.target.files[0] })
+      setFormData({ ...formData, [e.target.name]: e.target.files[0] });
     } else {
-      setFormData({ ...formData, [e.target.name]: e.target.value })
+      setFormData({ ...formData, [e.target.name]: e.target.value });
     }
-  }
+  };
 
   const handleAddCoaches = async () => {
     if (!selectedSport) return alert("Please select a sport type");
@@ -64,6 +67,13 @@ export default function CoachesProfileBySport({ sport }: Props){
       const res = await fetch(`/api/coaches/by-team/${selectedTeam}`, {
         method: "POST",
         body: formDataPayload
+
+      });
+      const newPlayer = await res.json();
+      setPlayers((prev) => [...prev, newPlayer]);
+      alert("Player added successfully");
+      setFormData({ name: "", position: "", contact_info: "", image: "" });
+
       })
       if (res.ok) {
         const newPlayer = await res.json();
@@ -73,10 +83,11 @@ export default function CoachesProfileBySport({ sport }: Props){
       } else {
         alert("Not successful");
       }
+
     } catch (err) {
       console.error("Failed to add coach", err);
     }
-  }
+  };
 
   const handleUpdateClick = (coach: Coaches) => {
     setIsUpdating(true);
@@ -98,7 +109,6 @@ export default function CoachesProfileBySport({ sport }: Props){
     if (formData.image) {
       formDataPayload.append("image", formData.image);
     }
-
 
     try {
       const res = await fetch(`/api/coaches/${selectedCoaches.id}`, {
@@ -135,9 +145,6 @@ export default function CoachesProfileBySport({ sport }: Props){
     setSelectedTeam("");
   };
 
-
-
-
   useEffect(() => {
     const fetchSports = async () => {
       try {
@@ -158,7 +165,6 @@ export default function CoachesProfileBySport({ sport }: Props){
 
     fetchSports();
   }, []);
-
 
   useEffect(() => {
     if (selectedSport) {
@@ -194,19 +200,34 @@ export default function CoachesProfileBySport({ sport }: Props){
     fectCoaches();
   }, [selectedSport]);
 
+
+  const handleDeletePlayer = async (id: string) => {
+    if (confirm("Are you sure you want to delete this player?")) {
+      try {
+        await fetch(`/api/player/${id}`, {
+          method: "DELETE"
+
   const handleDeletecoach = async (id: string) => {
     if (confirm("Are you sour you want to delete this coach")) {
       try {
         await fetch(`/api/coaches/${id}`, {
           method: "DELETE",
+
         });
         setCoaches((prevCoaches) => prevCoaches.filter((coach) => coach.id !== id));
         alert("coach deleted successfully");
       } catch (err) {
         console.error("Failed to delete coach", err);
       }
-
     }
+  };
+
+
+  const filteredPlayers = players
+    .filter((player) => player.name && player.position)
+    .filter((player) =>
+      player.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      player.position.toLowerCase().includes(searchQuery.toLowerCase())
 
 
   }
@@ -214,13 +235,16 @@ export default function CoachesProfileBySport({ sport }: Props){
     .filter((coach) => coach.name)
     .filter((coach) =>
       coach.name.toLowerCase().includes(searchQuery.toLowerCase())
+
     );
+
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold text-[#1D276C] mb-4 capitalize">
         Coaches in Ecap
       </h2>
-      <div className="mb-4 flex gap-4">
+
+      <div className="mb-4 flex flex-wrap gap-4">
         <select
           className="border p-2 rounded w-1/3"
           value={selectedSport}
@@ -237,6 +261,7 @@ export default function CoachesProfileBySport({ sport }: Props){
             <option disabled>No sports found</option>
           )}
         </select>
+
         <select
           className="border p-2 rounded w-1/3"
           value={selectedTeam}
@@ -250,16 +275,14 @@ export default function CoachesProfileBySport({ sport }: Props){
           ))}
         </select>
 
-        {/* Search Input */}
         <input
           type="text"
           placeholder="Search by Name or Position"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="border p-2 rounded w-2/3"
+          className="border p-2 rounded w-1/3"
         />
       </div>
-
 
       <div className="grid grid-cols-4 gap-4 mb-6">
         <input
@@ -285,7 +308,7 @@ export default function CoachesProfileBySport({ sport }: Props){
           onChange={handleChange}
           className="border p-2 rounded"
         />
-        <div className="flex gap-2">
+        <div className="flex gap-2 mt-2">
           <button
             onClick={handleFormSubmit}
             className="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700 transition"
@@ -303,13 +326,56 @@ export default function CoachesProfileBySport({ sport }: Props){
         </div>
       </div>
 
+      {loading && <p>Loading players...</p>}
+
       {/* Loading Spinner */}
       {loading && <p>Loading coaches...</p>}
 
-      {/* Player Table */}
-      <table className="w-full border-collapse border border-gray-300 mt-4">
-        <thead className="bg-gray-100">
+
+      <table className="w-full border border-gray-300 shadow-md rounded overflow-hidden mt-4">
+        <thead className="bg-[#1D276C] text-white text-sm">
           <tr>
+
+            <th className="px-4 py-3 text-left">#</th>
+            <th className="px-4 py-3 text-left">Image</th>
+            <th className="px-4 py-3 text-left">Name</th>
+            <th className="px-4 py-3 text-left">Position</th>
+            <th className="px-4 py-3 text-left">Contact</th>
+            <th className="px-4 py-3 text-left">Team</th>
+            <th className="px-4 py-3 text-left">Division</th>
+            <th className="px-4 py-3 text-left">Team Contact</th>
+            <th className="px-4 py-3 text-left">Actions</th>
+          </tr>
+        </thead>
+        <tbody className="text-sm text-gray-700">
+          {filteredPlayers.length > 0 ? (
+            filteredPlayers.map((player, index) => (
+              <tr key={player.id} className="hover:bg-gray-50 transition">
+                <td className="px-4 py-3">{index + 1}</td>
+                <td className="px-4 py-3">
+                  <img
+                    src={player.image}
+                    alt={player.name}
+                    className="w-12 h-12 object-cover rounded-full border"
+                  />
+                </td>
+                <td className="px-4 py-3">{player.name}</td>
+                <td className="px-4 py-3">{player.position}</td>
+                <td className="px-4 py-3">{player.contact_info}</td>
+                <td className="px-4 py-3">{player.team.name}</td>
+                <td className="px-4 py-3">{player.team.division}</td>
+                <td className="px-4 py-3">{player.team.contact_info}</td>
+                <td className="px-4 py-3 flex gap-2">
+                  <button
+                    onClick={() => handleUpdateClick(player)}
+                    className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
+                  >
+                    Update
+                  </button>
+                  <button
+                    onClick={() => handleDeletePlayer(player.id)}
+                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+
             <th className="border px-4 py-2">#</th>
             <th className="border px-4 py-2">Image</th>
             <th className="border px-4 py-2">Name</th>
@@ -341,21 +407,29 @@ export default function CoachesProfileBySport({ sport }: Props){
                   <button
                     onClick={() => handleDeletecoach(coach.id)}
                     className="bg-red-500 text-white px-2 py-1 ml-4 text-center rounded hover:bg-red-600 "
+
                     disabled={loading}
                   >
                     Delete
                   </button>
 
+
                   <button onClick={() => handleUpdateClick(coach)} className="bg-yellow-500 text-white ml-4 px-2 py-1 rounded hover:bg-yellow-600">
                     Update
                   </button>
+
                 </td>
               </tr>
             ))
           ) : (
             <tr>
+
+              <td colSpan={9} className="text-center py-6 text-gray-500">
+                No players found.
+
               <td colSpan={8} className="text-center p-4 text-gray-500">
                 No coaches found.
+
               </td>
             </tr>
           )}
@@ -364,4 +438,3 @@ export default function CoachesProfileBySport({ sport }: Props){
     </div>
   );
 }
-

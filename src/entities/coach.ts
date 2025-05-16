@@ -4,6 +4,7 @@
 import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn,BeforeInsert } from "typeorm";
 import { Team } from "./team";
 import { v4 as uuid } from "uuid";
+import { SportType } from "./typeOfsport";
 
 @Entity()
 export class Coach {
@@ -18,10 +19,16 @@ export class Coach {
 
     @Column({nullable:true})
     image:string;
+    @Column({nullable:true})
+    sport_id: string;
 
     @ManyToOne("Team", "coaches")
     @JoinColumn({ name: "team_id" })
     team: Team;
+
+    @ManyToOne("SportType", "players")
+    @JoinColumn({ name: "sport_id" })
+    sport: SportType;
 
     @BeforeInsert()
     generateId() {

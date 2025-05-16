@@ -6,7 +6,11 @@ import { AppDataSource } from "@/config";
 
 export const createTypeOfSport = async (req: NextRequest) => {
     try {
-        await initializeDataSource();
+        // await initializeDataSource();
+        (async () => {
+            await initializeDataSource();
+            console.log("App is running...");
+        })();
         const { name, description,image } = await req.json();
 
         if (!name || !description) {

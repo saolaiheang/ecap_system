@@ -12,7 +12,11 @@ interface NewsInput {
 
 export const createNews = async (req: NextRequest) => {
     try {
-        await initializeDataSource();
+        // await initializeDataSource();
+        (async () => {
+            await initializeDataSource();
+            console.log("App is running...");
+        })();
 
         const { title, description, image, sport_type_id } = await req.json() as NewsInput;
 

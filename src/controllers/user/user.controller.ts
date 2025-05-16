@@ -17,7 +17,11 @@ export const createUser = async (req: NextRequest) => {
             );
         }
 
-       await initializeDataSource();
+    //    await initializeDataSource();
+    (async () => {
+        await initializeDataSource();
+        console.log("App is running...");
+    })();
 
         const userRepository = AppDataSource.getRepository(User);
         const user = new User();
@@ -45,9 +49,10 @@ export const login = async (email:string,password: string | undefined) => {
     try {
         
 
-        if (!AppDataSource.isInitialized) {
-            await AppDataSource.initialize();
-        }
+        (async () => {
+            await initializeDataSource();
+            console.log("App is running...");
+        })();
 
         const userRepository = AppDataSource.getRepository(User);
         const user = await userRepository.findOneBy({ email });

@@ -14,7 +14,12 @@ interface CompetitionInput {
 
 export const createCompetition = async (req: NextRequest) => {
     try {
-        await initializeDataSource();
+        // await initializeDataSource();
+
+        (async () => {
+            await initializeDataSource();
+            console.log("App is running...");
+        })();
 
         const { name, location, start_date, sport_type_id,image } = await req.json() as CompetitionInput;
 

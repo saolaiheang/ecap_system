@@ -5,7 +5,11 @@ import { Team, SportType } from "@/entities";
 import { initializeDataSource } from "@/utils/inititializeDataSource";
 export const createTeam = async (req: NextRequest) => {
     try {
-        await initializeDataSource();
+        // await initializeDataSource();
+        (async () => {
+            await initializeDataSource();
+            console.log("App is running...");
+        })();
         const { name, division, sport_id, contact_info ,image} = await req.json();
         if (!name || !division || !sport_id) {
             return NextResponse.json(

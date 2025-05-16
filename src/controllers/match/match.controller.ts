@@ -15,7 +15,11 @@ interface MatchInput {
 
 export const createMatch = async (req: NextRequest) => {
     try {
-        await initializeDataSource();
+        // await initializeDataSource();
+        (async () => {
+            await initializeDataSource();
+            console.log("App is running...");
+        })();
 
         const { match_date, location, competition_id, sport_type_id, teamA_id, teamB_id } = await req.json() as MatchInput;
 

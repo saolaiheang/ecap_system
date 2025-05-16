@@ -59,7 +59,13 @@ export async function createPlayer(req: NextRequest, { params }: { params: { id:
             );
         }
 
-        await initializeDataSource();
+        // await initializeDataSource();
+
+        (async () => {
+            await initializeDataSource();
+            console.log("App is running...");
+        })();
+        
         const teamRepository = AppDataSource.getRepository(Team);
         const team = await teamRepository.findOne({ where: { id: team_id } });
 

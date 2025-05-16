@@ -22,7 +22,13 @@ export const config = {
 export const createCoach = async (req: NextRequest, { params }: { params: { id: string } }) => {
     try {
         const { id: team_id } = params;
-        await initializeDataSource();
+        // await initializeDataSource();
+
+
+        (async () => {
+            await initializeDataSource();
+            console.log("App is running...");
+        })();
         // const { name, contact_info, image } = await req.json() as CoachInput;
 
         const formData = await req.formData();
@@ -75,16 +81,16 @@ export const createCoach = async (req: NextRequest, { params }: { params: { id: 
             );
         }
 
-         const tempFilePath = `${os.tmpdir()}/${imageFile.name}-${Date.now()}`;
-                const fileBuffer = Buffer.from(await imageFile.arrayBuffer());
-                await writeFile(tempFilePath, fileBuffer);
-        
-                const uploadResult = await cloudinary.uploader.upload(tempFilePath, {
-                    folder: "players",
-                    public_id: `${name}-${Date.now()}`,
-                });
-        
-                await fs.unlink(tempFilePath);
+        const tempFilePath = `${os.tmpdir()}/${imageFile.name}-${Date.now()}`;
+        const fileBuffer = Buffer.from(await imageFile.arrayBuffer());
+        await writeFile(tempFilePath, fileBuffer);
+
+        const uploadResult = await cloudinary.uploader.upload(tempFilePath, {
+            folder: "players",
+            public_id: `${name}-${Date.now()}`,
+        });
+
+        await fs.unlink(tempFilePath);
         const coachRepository = AppDataSource.getRepository(Coach);
         const coach = coachRepository.create({
             name,

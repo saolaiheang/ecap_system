@@ -264,12 +264,12 @@ export default function DashboardLayout() {
             <h2 className="text-xl font-semibold text-[#1D276C]">Dashboard</h2>
           )}
 
-          {/* <button
+          <button
             onClick={handleLogout}
             className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 transition mt-4"
           >
             Logout
-          </button> */}
+          </button>
         </main>
       </div>
     </div>

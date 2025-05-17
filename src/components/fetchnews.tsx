@@ -23,13 +23,13 @@ export default function FetchNews({ sport }: { sport: string }) {
   const [selectedSport, setSelectedSport] = useState<string>("");
   const [newsList, setNewsList] = useState<News[]>([]);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-  });
+  const [formData, setFormData] = useState({ title: "", description: "" });
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [editNewsId, setEditNewsId] = useState<string | null>(null);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -40,31 +40,77 @@ export default function FetchNews({ sport }: { sport: string }) {
     }
   };
 
-  const handleAddNews = async () => {
+  const fetchNews = async (sportId: string) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/news?sport_type_id=${sportId}`);
+      const data = await res.json();
+      setNewsList(data.data);
+    } catch (err) {
+      console.error("Failed to fetch news", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddOrUpdateNews = async () => {
     if (!selectedSport) return alert("Please select a sport");
-    if (!imageFile) return alert("Please upload an image");
 
     const form = new FormData();
     form.append("title", formData.title);
     form.append("description", formData.description);
     form.append("sport_type_id", selectedSport);
-    form.append("image", imageFile);
+    if (imageFile) form.append("image", imageFile);
 
     try {
-      const response = await fetch("/api/news", {
-        method: "POST",
-        body: form,
-      });
+      const response = await fetch(
+        editNewsId ? `/api/news/${editNewsId}` : "/api/news",
+        {
+          method: editNewsId ? "PUT" : "POST",
+          body: form,
+        }
+      );
 
-      const newNews = await response.json();
-      setNewsList((prev) => [...prev, newNews]);
-      alert("News added successfully");
+      if (!response.ok) throw new Error("Failed to submit news");
+
+      if (editNewsId) {
+        alert("News updated successfully");
+      } else {
+        alert("News added successfully");
+      }
 
       setFormData({ title: "", description: "" });
       setImageFile(null);
+      setEditNewsId(null);
+      await fetchNews(selectedSport); // refresh data after add/update
     } catch (error) {
-      console.error("Failed to add news:", error);
-      alert("Failed to add news");
+      console.error("Failed to submit news:", error);
+      alert("Failed to submit news");
+    }
+  };
+
+  const handleEdit = (news: News) => {
+    setEditNewsId(news.id);
+    setFormData({ title: news.title, description: news.description });
+    setSelectedSport(news.sport_type?.id || "");
+    setImageFile(null);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this news?")) return;
+
+    try {
+      const res = await fetch(`/api/news/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Delete failed");
+
+      alert("News deleted");
+      await fetchNews(selectedSport); // refresh after delete
+    } catch (error) {
+      console.error("Failed to delete news:", error);
+      alert("Failed to delete news");
     }
   };
 
@@ -83,26 +129,19 @@ export default function FetchNews({ sport }: { sport: string }) {
   }, []);
 
   useEffect(() => {
-    const fetchNews = async () => {
-      if (!selectedSport) return;
-      setLoading(true);
-      try {
-        const res = await fetch(`/api/news`);
-        const data = await res.json();
-        setNewsList(data.data);
-      } catch (err) {
-        console.error("Failed to fetch news", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchNews();
+    if (selectedSport) {
+      fetchNews(selectedSport);
+    } else {
+      setNewsList([]);
+    }
   }, [selectedSport]);
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold text-[#1D276C] mb-4">News Management</h2>
+      <h2 className="text-2xl font-bold text-[#1D276C] mb-4">
+        News Management
+      </h2>
+
       <div className="flex gap-4 mb-4">
         <select
           className="border p-2 rounded w-1/3"
@@ -142,10 +181,10 @@ export default function FetchNews({ sport }: { sport: string }) {
           className="border p-2 rounded"
         />
         <button
-          onClick={handleAddNews}
+          onClick={handleAddOrUpdateNews}
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition col-span-3"
         >
-          Add News
+          {editNewsId ? "Update News" : "Add News"}
         </button>
       </div>
 
@@ -160,12 +199,13 @@ export default function FetchNews({ sport }: { sport: string }) {
               <th className="border px-4 py-2">Title</th>
               <th className="border px-4 py-2">Description</th>
               <th className="border px-4 py-2">Sport</th>
+              <th className="border px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
             {newsList.length > 0 ? (
               newsList.map((news, index) => (
-                <tr key={news.id}>
+                <tr key={news.id ?? `${news.title}-${index}`}>
                   <td className="border px-4 py-2">{index + 1}</td>
                   <td className="border px-4 py-2">
                     <img
@@ -179,11 +219,25 @@ export default function FetchNews({ sport }: { sport: string }) {
                   <td className="border px-4 py-2">
                     {news.sport_type?.name || "Unknown"}
                   </td>
+                  <td className="border px-4 py-2 space-x-2">
+                    <button
+                      onClick={() => handleEdit(news)}
+                      className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(news.id)}
+                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={5} className="text-center py-4 text-gray-500">
+                <td colSpan={6} className="text-center py-4 text-gray-500">
                   No news available.
                 </td>
               </tr>

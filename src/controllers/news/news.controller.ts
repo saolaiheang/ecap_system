@@ -5,6 +5,7 @@ import { initializeDataSource } from "@/utils/inititializeDataSource";
 import cloudinary from "@/lib/cloudinary";
 import os from "os";
 import fs, { writeFile } from "fs/promises";
+import { error } from "console";
 
 interface NewsInput {
     title: string;
@@ -21,11 +22,8 @@ export const config = {
 
 export const createNews = async (req: NextRequest) => {
     try {
-        (async () => {
+        
             await initializeDataSource();
-            console.log("App is running...");
-        })();
-
         // const { title, description, image, sport_type_id } = await req.json() as NewsInput;
 
          const formData= await req.formData();
@@ -261,3 +259,30 @@ export const updateNews = async (
         );
     }
 };
+
+
+export const getAllNewsBysport=async(req:NextRequest,{params}:{params:{id:string}})=>{
+    try{
+        const {id}=params;
+        await initializeDataSource();
+        const newsRepository=AppDataSource.getRepository(News);
+        const news=await newsRepository.find({where:{sport_type_id:id}})
+
+        if(!news){
+            return NextResponse.json(
+                {error:"News not found"},
+                {status:404}
+            )
+        }
+        return NextResponse.json({
+            message:"News by sport successfully",data:news
+        },{status:200})
+
+    }catch(err){
+        return NextResponse.json(
+            {error:"Can't get all news by this sport",err:err},
+            {status:500}
+        )
+
+    }
+}

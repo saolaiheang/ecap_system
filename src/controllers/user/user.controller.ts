@@ -18,11 +18,10 @@ export const createUser = async (req: NextRequest) => {
         }
 
     //    await initializeDataSource();
-    (async () => {
+    
         await initializeDataSource();
         console.log("App is running...");
-    })();
-
+   
         const userRepository = AppDataSource.getRepository(User);
         const user = new User();
         user.name = userName;
@@ -47,13 +46,8 @@ export const createUser = async (req: NextRequest) => {
 
 export const login = async (email:string,password: string | undefined) => {
     try {
-        
-
-        (async () => {
-            await initializeDataSource();
-            console.log("App is running...");
-        })();
-
+        await initializeDataSource();
+        console.log("App is running...");
         const userRepository = AppDataSource.getRepository(User);
         const user = await userRepository.findOneBy({ email });
 

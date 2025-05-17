@@ -3,7 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { SportType } from "@/entities";
 import { initializeDataSource } from "@/utils/inititializeDataSource"; 
 import { AppDataSource } from "@/config";
-
+import cloudinary from "@/lib/cloudinary";
+import os from 'os';
+import fs,{writeFile} from "fs/promises"
+import { error } from "console";
 export const createTypeOfSport = async (req: NextRequest) => {
     try {
         // await initializeDataSource();
@@ -11,7 +14,11 @@ export const createTypeOfSport = async (req: NextRequest) => {
             await initializeDataSource();
             console.log("App is running...");
         })();
-        const { name, description,image } = await req.json();
+        // const { name, description,image } = await req.json();
+        const formData= await req.formData();
+        const name =formData.get("name") as string;
+        const description=formData.get("description") as string;
+        const image = formData.get("image") as File;
 
         if (!name || !description) {
             return NextResponse.json(
@@ -19,11 +26,32 @@ export const createTypeOfSport = async (req: NextRequest) => {
                 { status: 400 }
             );
         }
+        if(!image){
+            return NextResponse.json(
+                {error:"Image file is required"},
+                {status:400}
+            )
+        }
+        if(!image.type.startsWith("image/")){
+            return NextResponse.json(
+                {error:"Only image file are allowed"},
+                {status:400}
+            )
+        }
+
+        const tempFilePath=`${os.tmpdir()}/${image.name}-${Date.now()}`;
+        const fileBuffer=Buffer.from(await image.arrayBuffer());
+        await writeFile(tempFilePath,fileBuffer);
+        const uploadResult= await cloudinary.uploader.upload(tempFilePath,{
+            folder:"typeOfsport",
+            public_id:`${name}-${Date.now()}`
+        })
+        await fs.unlink(tempFilePath);
 
         const typeOfSport = AppDataSource.getRepository(SportType).create({
             name,
             description,
-            image
+            image:uploadResult.secure_url
         });
 
         await AppDataSource.manager.save(typeOfSport);
@@ -93,7 +121,41 @@ export const updateTypeOfSport = async (
     try {
         await initializeDataSource();
         const { id } = context.params;
-        const { name, description } = await req.json();
+
+        const formData= await req.formData();
+        const name =formData.get("name") as string;
+        const description=formData.get("description") as string;
+        const image = formData.get("image") as File;
+        // const { name, description } = await req.json();
+
+
+        if (!name || !description) {
+            return NextResponse.json(
+                { error: "Name and description are required" },
+                { status: 400 }
+            );
+        }
+        if(!image){
+            return NextResponse.json(
+                {error:"Image file is required"},
+                {status:400}
+            )
+        }
+        if(!image.type.startsWith("image/")){
+            return NextResponse.json(
+                {error:"Only image file are allowed"},
+                {status:400}
+            )
+        }
+
+        const tempFilePath=`${os.tmpdir()}/${image.name}-${Date.now()}`;
+        const fileBuffer=Buffer.from(await image.arrayBuffer());
+        await writeFile(tempFilePath,fileBuffer);
+        const uploadResult= await cloudinary.uploader.upload(tempFilePath,{
+            folder:"typeOfsport",
+            public_id:`${name}-${Date.now()}`
+        })
+        await fs.unlink(tempFilePath);
 
         const typeOfSport = await AppDataSource.getRepository(SportType).findOneBy({
             id,
@@ -107,6 +169,7 @@ export const updateTypeOfSport = async (
 
         typeOfSport.name = name || typeOfSport.name;
         typeOfSport.description = description || typeOfSport.description;
+        typeOfSport.image=uploadResult.secure_url
 
         await AppDataSource.manager.save(typeOfSport);
         return NextResponse.json(

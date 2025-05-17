@@ -2,6 +2,7 @@ import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn ,BeforeInsert} fro
 import { SportType } from "./typeOfsport";
 import { Team } from "./team";
 import { v4 as uuidv4 } from "uuid";
+import { Coach } from "./coach";
 
 @Entity()
 export class ScheduleTraining {
@@ -14,11 +15,14 @@ export class ScheduleTraining {
     @Column()
     team_id: string;
 
-    @Column({ type: "date" })
-    date: Date;
+    @Column()
+    date:string;
 
     @Column({ length: 200 })
     time: string;
+
+    @Column()
+    coach_id:string;
 
     @Column({ length: 200 })
     location: string;
@@ -26,6 +30,10 @@ export class ScheduleTraining {
     @ManyToOne(() => SportType)
     @JoinColumn({ name: "sport_type_id" })
     sportType: SportType;
+    
+    @ManyToOne(()=>Coach)
+    @JoinColumn({name:"coach_id"})
+    coach:Coach;
 
     @ManyToOne("Team","scheduleTrainings")
     @JoinColumn({ name: "team_id" })

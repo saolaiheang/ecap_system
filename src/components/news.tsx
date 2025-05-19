@@ -45,7 +45,7 @@ export default function News() {
   return (
     <>
       {loading ? (
-        <div className="px-8 py-6 text-xl">Loading...</div>
+        <div className="px-[200px] py-6 text-xl">Loading...</div>
       ) : !news || news.length === 0 ? (
         <div className="px-8 py-6 text-xl text-red-500">No news found.</div>
       ) : (

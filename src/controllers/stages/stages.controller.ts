@@ -25,6 +25,7 @@ const updateStageSchema = createStageSchema.partial();
 export const createStage = async (req: NextRequest, { params }: { params: { id: string } }) => {
     try {
         const { id } = params;
+        console.log(id)
         await initializeDataSource();
 
         const body = await req.json();

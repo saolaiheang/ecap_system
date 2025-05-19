@@ -36,7 +36,7 @@ export const getAllSchedules = async (req:NextRequest) => {
         await initializeDataSource();
         console.log("✅ Database connected successfully...");
         const scheduleRepository = AppDataSource.getRepository(ScheduleTraining);
-        const schedules = await scheduleRepository.find({relations:["coach","sportType"]});
+        const schedules = await scheduleRepository.find({relations:["coach","sportType","team"]});
         return NextResponse.json(
             { message: "Schedules retrieved successfully", data: schedules },
             { status: 200 }

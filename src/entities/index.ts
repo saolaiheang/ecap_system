@@ -6,9 +6,7 @@ export {Team} from './team'
 export {Competition} from './competition'
 export {Coach} from './coach'
 export {Player} from './player'
-export {MatchTeam} from './match_team'
 export {ScheduleTraining} from './schedule_training'
-export {MatchResult} from './match_result'
 export {Stage} from './stage';
 export {History} from './history'
 

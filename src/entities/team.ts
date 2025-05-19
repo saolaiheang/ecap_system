@@ -4,9 +4,10 @@ import { Entity, PrimaryColumn, Column, ManyToOne, OneToMany, JoinColumn,BeforeI
 import { SportType } from "./typeOfsport";
 import { Player } from "./player";
 import { Coach } from "./coach";
+import { Match } from "./match";
 import { ScheduleTraining } from "./schedule_training";
-import { MatchTeam } from "./match_team";
 import {v4 as uuidv4} from'uuid'
+import { match } from "assert";
 
 @Entity()
 export class Team {
@@ -30,6 +31,10 @@ export class Team {
 
     @OneToMany("Player", "team")
     players: Player[];
+    @OneToMany(() => Match, (match) => match.teamA)
+    teamA_matches: Match[];
+    @OneToMany(() =>Match,(match)=>match.teamB)
+    teamB_matches:Match[];
 
     @OneToMany("Coach","team")
     coaches: Coach[];
@@ -37,8 +42,6 @@ export class Team {
     @OneToMany("ScheduleTraining","team")
     scheduleTrainings: ScheduleTraining[];
 
-    @OneToMany('MatchTeam','team')
-    matchTeams: MatchTeam[];
 
     @BeforeInsert()
     generateId() {

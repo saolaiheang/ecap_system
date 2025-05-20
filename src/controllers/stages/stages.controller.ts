@@ -19,7 +19,6 @@ const mapToStageType = (type: "group" | "semifinal" | "final"): StageType => {
     return StageType[type.toUpperCase() as keyof typeof StageType];
 };
 
-const updateStageSchema = createStageSchema.partial();
 
 
 export const createStage = async (req: NextRequest, { params }: { params: { id: string } }) => {
@@ -56,9 +55,10 @@ export const createStage = async (req: NextRequest, { params }: { params: { id: 
 export const getStages = async (req: NextRequest, { params }: { params: { id: string } }) => {
     try {
         await initializeDataSource();
-        const { id: competition_id } = params;
+        const { id } = params;
+        console.log(id)
         const stageRepository = AppDataSource.getRepository(Stage);
-        const stages = await stageRepository.find({ where: { competition_id } });
+        const stages = await stageRepository.findOneBy( { competition_id:id });
         return NextResponse.json(stages);
     }
     catch (err) {
@@ -67,15 +67,15 @@ export const getStages = async (req: NextRequest, { params }: { params: { id: st
 }
 export const getStage = async (req: NextRequest, { params }: {
     params: {
-        id
+        stage_id
         : string
     }
 }) => {
     try {
         await initializeDataSource();
-        const { id } = params;
+        const { stage_id } = params;
         const stageRepository = AppDataSource.getRepository(Stage);
-        const stage = await stageRepository.findOneBy({ id });
+        const stage = await stageRepository.findOneBy({ id:stage_id });
         if (!stage) {
             return NextResponse.json({ message: "Stage not found" }, { status: 404 });
         }
@@ -85,12 +85,12 @@ export const getStage = async (req: NextRequest, { params }: {
         return NextResponse.json({ message: "Error fetching stage" }, { status: 500 });
     }
 }
-export const updateStage = async (req: NextRequest, { params }: { params: { id: string } }) => {
+export const updateStage = async (req: NextRequest, { params }: { params: { stage_id: string } }) => {
     try {
         await initializeDataSource();
-        const { id } = params;
+        const { stage_id } = params;
         const stageRepository = AppDataSource.getRepository(Stage);
-        const stage = await stageRepository.findOneBy({ id });
+        const stage = await stageRepository.findOneBy({ id:stage_id });
         if (!stage) {
             return NextResponse.json({ message: "Stage not found" }, { status: 404 });
         }
@@ -104,16 +104,16 @@ export const updateStage = async (req: NextRequest, { params }: { params: { id: 
         return NextResponse.json({ message: "Error updating stage" }, { status: 500 });
     }
 }
-export const deleteStage = async (req: NextRequest, { params }: { params: { id: string } }) => {
+export const deleteStage = async (req: NextRequest, { params }: { params: { stage_id: string } }) => {
     try {
         await initializeDataSource();
-        const { id } = params;
+        const { stage_id } = params;
         const stageRepository = AppDataSource.getRepository(Stage);
-        const stage = await stageRepository.findOneBy({ id });
+        const stage = await stageRepository.findOneBy({ id:stage_id });
         if (!stage) {
             return NextResponse.json({ message: "Stage not found" }, { status: 404 });
         }
-        await stageRepository.delete(id);
+        await stageRepository.delete(stage_id);
         return NextResponse.json({ message: "Stage deleted" });
 
     } catch (err) {

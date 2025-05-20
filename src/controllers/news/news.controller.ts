@@ -266,7 +266,7 @@ export const getAllNewsBysport=async(req:NextRequest,{params}:{params:{id:string
         const {id}=params;
         await initializeDataSource();
         const newsRepository=AppDataSource.getRepository(News);
-        const news=await newsRepository.find({where:{sport_type_id:id}})
+        const news=await newsRepository.find({where:{sport_type_id:id},relations:["sportType"]})
 
         if(!news){
             return NextResponse.json(

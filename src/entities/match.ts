@@ -6,7 +6,7 @@ import { Team } from "./team";
 import { v4 as uuidv4 } from "uuid";
 
 
-enum MatchStatus {
+export enum MatchStatus {
   SCHEDULED = "scheduled",
   IN_PROGRESS = "in_progress",
   COMPLETED = "completed",
@@ -18,7 +18,7 @@ export class Match {
   id: string;
 
   @Column({ type: "date" })
-  match_date: Date;
+  matchDate: Date;
 
   @Column({ length: 255 })
   location: string;

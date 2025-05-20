@@ -15,6 +15,8 @@ interface News {
   sport_type?: {
     id: string;
     name: string;
+    description:string;
+    image:string;
   };
 }
 
@@ -43,7 +45,7 @@ export default function FetchNews({ sport }: { sport: string }) {
   const fetchNews = async (sportId: string) => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/news?sport_type_id=${sportId}`);
+      const res = await fetch(`/api/news/by-sport/${sportId}`);
       const data = await res.json();
       setNewsList(data.data);
     } catch (err) {
@@ -54,7 +56,15 @@ export default function FetchNews({ sport }: { sport: string }) {
   };
 
   const handleAddOrUpdateNews = async () => {
-    if (!selectedSport) return alert("Please select a sport");
+    if (!selectedSport) {
+      alert("Please select a sport before submitting.");
+      return;
+    }
+
+    if (!formData.title || !formData.description) {
+      alert("Please fill out both the title and description.");
+      return;
+    }
 
     const form = new FormData();
     form.append("title", formData.title);
@@ -73,11 +83,7 @@ export default function FetchNews({ sport }: { sport: string }) {
 
       if (!response.ok) throw new Error("Failed to submit news");
 
-      if (editNewsId) {
-        alert("News updated successfully");
-      } else {
-        alert("News added successfully");
-      }
+      alert(editNewsId ? "News updated successfully" : "News added successfully");
 
       setFormData({ title: "", description: "" });
       setImageFile(null);
@@ -156,6 +162,12 @@ export default function FetchNews({ sport }: { sport: string }) {
           ))}
         </select>
       </div>
+
+      {selectedSport && (
+        <p className="mb-4 text-green-700 font-medium">
+          Adding news for: {sports.find((s) => s.id === selectedSport)?.name}
+        </p>
+      )}
 
       <div className="grid grid-cols-3 gap-4 mb-6">
         <input

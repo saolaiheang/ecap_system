@@ -12,17 +12,15 @@ export default function Homepage() {
   return (
     <div>
       <Header />
-      <TestVideo/>
+      <TestVideo />
 
-
-      {/* Sections */}
       <div>
-        <TypesOfSport />
-        <News />
-        <Coach />
-        <Player />
         <MatchLayout />
 
+        <TypesOfSport />
+        <News />
+        {/* <Coach /> */}
+        {/* <Player /> */}
       </div>
     </div>
   );

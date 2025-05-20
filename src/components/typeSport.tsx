@@ -35,7 +35,7 @@ export default function TypesOfSport() {
   }, []);
 
   return (
-    <section className="px-[200px] py-6 bg-blue-50">
+    <section className="px-[200px] py-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-blue-900 tracking-tight">
           Types of Sport

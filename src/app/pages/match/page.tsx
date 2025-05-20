@@ -1,13 +1,14 @@
-"use client";
+// "use client";
 
 import Header from "@/components/header";
+import MatchLayout from "@/components/matchLayout";
 
 
 export default function Match(){
     return(
         <div>
             <Header/>
-            <Match/>
+            <MatchLayout/>
         </div>
     )
 }

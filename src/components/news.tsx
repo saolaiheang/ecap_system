@@ -49,7 +49,7 @@ export default function News() {
       ) : !news || news.length === 0 ? (
         <div className="px-8 py-6 text-xl text-red-500">No news found.</div>
       ) : (
-        <section className="px-8 py-6">
+        <section className="px-[200px] py-6">
           <h2 className="text-3xl font-bold text-blue-900 mb-4">Announcements</h2>
 
           {/* Featured news */}

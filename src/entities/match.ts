@@ -18,7 +18,9 @@ export class Match {
   id: string;
 
   @Column({ type: "date" })
-  matchDate: Date;
+  match_date: Date;
+  @Column({ type: "time" })
+  match_time: string;
 
   @Column({ length: 255 })
   location: string;

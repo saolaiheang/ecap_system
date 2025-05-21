@@ -16,9 +16,10 @@ import FetchActivityD from "@/components/fetchActivityD";
 import ProfileDashboard from "@/components/fetchprofileD";
 import FetchProfileCoach from "@/components/fetchProfileCoachD";
 import { FC } from "react";
-import FetchMatch from "@/components/fetchMatchD";
+import FetchMatch from "@/components/fetchMatch";
 import FetchHisotry from "@/components/fetchHistoryD";
 import FetchSchedule from "@/components/fetchSchedule";
+import CompetitionManager from "@/components/fetchcompetition";
 
 interface CommonProps {
   sport: string;
@@ -27,14 +28,17 @@ interface CommonProps {
 const FetchNewsWrapper: FC<CommonProps> = ({ sport }) => (
   <FetchNews sport={sport} />
 );
-const FetchMatchWrapper: FC<CommonProps> = ({ sport }) => (
-  <FetchMatch sport={sport} />
+const FetchCompetitionWrapper: FC<CommonProps> = ({ sport }) => (
+  <CompetitionManager sport={sport} />
 );
 const FetchActivityDWrapper: FC<CommonProps> = ({ sport }) => (
   <FetchActivityD sport={sport} />
 );
 const ProfileDashboardWrapper: FC<CommonProps> = ({ sport }) => (
   <ProfileDashboard sport={sport} />
+);
+const FetchMatchWrapper: FC<CommonProps> = ({ sport }) => (
+  <FetchMatch sport={sport} />
 );
 const FetchProfileCoachWrapper: FC<CommonProps> = ({ sport }) => (
   <FetchProfileCoach sport={sport} />
@@ -130,6 +134,14 @@ export default function DashboardLayout() {
 
           <button
             className="flex items-center px-3 py-3 text-sm hover:bg-[#e66dbd] rounded transition"
+            onClick={() => setSelectedContent("competition")}
+          >
+            <FaNewspaper className="mr-3" />
+            Competition
+          </button>
+
+          <button
+            className="flex items-center px-3 py-3 text-sm hover:bg-[#e66dbd] rounded transition"
             onClick={() => setSelectedContent("activity")}
           >
             <FaChartLine className="mr-3" />
@@ -147,13 +159,15 @@ export default function DashboardLayout() {
             <FetchProfileCoachWrapper sport="coach" />
           ) :selectedContent === "schedule" ? (
             <FetchScheduleWrapper sport="default" />
-          ) : selectedContent === "match" ? (
-            <FetchMatchWrapper sport="default" />
+          ) : selectedContent === "competition" ? (
+            <FetchCompetitionWrapper sport="default" />
           ) : selectedContent === "activity" ? (
             <FetchActivityDWrapper sport="default" />
           ) : selectedContent === "history" ? (
             <FetchHistoryWrapper sport="default" />
-          ) :
+          ) :selectedContent === "match" ? (
+            <FetchMatchWrapper sport="default" />
+          ) : 
           (
             <h2 className="text-xl font-semibold text-[#1D276C]">Dashboard</h2>
           )}

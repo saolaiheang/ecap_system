@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-    createCompetition,
+    createCompetition,getAllCompetitions
 } from "@/controllers/competitions/competition.controller";
 
 
@@ -16,3 +16,6 @@ export const POST = async (req: NextRequest) => {
         );
     }
 };
+export const GET=async(req:NextRequest)=>{
+    return await getAllCompetitions(req);
+}

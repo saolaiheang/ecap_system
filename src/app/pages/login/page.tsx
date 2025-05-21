@@ -5,19 +5,34 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faLock, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-
+import {jwtDecode} from "jwt-decode";
+interface DecodedToken {
+  exp: number;
+}
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
+  
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
-      router.push("/pages/adminpage");
+
+    try{
+      const decoded:DecodedToken=jwtDecode(token as string);
+      const currentTime=Date.now()/1000;
+      if (decoded.exp > currentTime) {
+        router.push("/pages/adminpage"); 
+      } else {
+        localStorage.removeItem("token"); 
+      }
+
+    }catch(err){
+      console.log(err);
+      localStorage.removeItem("token"); 
     }
+  
   }, [router]);
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -40,6 +55,7 @@ export default function LoginPage() {
       if (!res.ok) throw new Error(data.message || "Login failed");
 
       localStorage.setItem("token", data.token);
+
       router.push("/pages/adminpage");
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred.");

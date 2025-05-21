@@ -3,27 +3,33 @@ import { NextRequest, NextResponse } from "next/server";
 import { AppDataSource } from "@/config";
 import { Competition, SportType } from "@/entities";
 import { initializeDataSource } from "@/utils/inititializeDataSource";
-
+import fs, { writeFile } from "fs/promises";
+import cloudinary from "@/lib/cloudinary";
+import os from "os";
 interface CompetitionInput {
     name: string;
     location: string;
     start_date: Date;
     sport_type_id: string;
-    image:string;
+    image: string;
 }
-
+export const config = {
+    api: {
+        bodyParser: false,
+    },
+};
 export const createCompetition = async (req: NextRequest) => {
     try {
-        // await initializeDataSource();
+        await initializeDataSource();
 
-        (async () => {
-            await initializeDataSource();
-            console.log("App is running...");
-        })();
+        const formData = await req.formData();
+        const name = formData.get("name") as string;
+        const location = formData.get("location") as string;
+        const sport_type_id = formData.get("sport_type_id") as string;
+        const start_date = formData.get("start_date") as string;
+        const imageFile = formData.get("image") as File;
 
-        const { name, location, start_date, sport_type_id,image } = await req.json() as CompetitionInput;
-
-        if (!name || !location || !start_date || !sport_type_id) {
+        if (!name || !location || !start_date || !sport_type_id || !imageFile) {
             return NextResponse.json(
                 { error: "Name, location, start_date, and sport_type_id are required" },
                 { status: 400 }
@@ -39,13 +45,38 @@ export const createCompetition = async (req: NextRequest) => {
             );
         }
 
+        if (!imageFile) {
+            return NextResponse.json(
+                { error: "Image file is required" },
+                { status: 400 }
+            );
+        }
+
+        if (!imageFile.type.startsWith("image/")) {
+            return NextResponse.json(
+                { error: "Only image files are allowed" },
+                { status: 400 }
+            );
+        }
+
+        const tempFilePath = `${os.tmpdir()}/${imageFile.name}-${Date.now()}`;
+        const fileBuffer = Buffer.from(await imageFile.arrayBuffer());
+        await writeFile(tempFilePath, fileBuffer);
+
+        const uploadResult = await cloudinary.uploader.upload(tempFilePath, {
+            folder: "players",
+            public_id: `${name}-${Date.now()}`,
+        });
+
+        await fs.unlink(tempFilePath);
+
         const competitionRepository = AppDataSource.getRepository(Competition);
         const competition = competitionRepository.create({
             name,
             location,
             start_date,
             sport_type_id,
-            image
+            image: uploadResult.secure_url
         });
 
         await competitionRepository.save(competition);
@@ -63,11 +94,11 @@ export const createCompetition = async (req: NextRequest) => {
     }
 };
 
-export const getCompetitionByTypeOfSport =  async (params: { id: string } ) => {
+export const getCompetitionByTypeOfSport = async (params: { id: string }) => {
     try {
         await initializeDataSource();
 
-        const { id:sport_id } =params;
+        const { id: sport_id } = params;
         const competitionRepository = AppDataSource.getRepository(Competition);
 
         const competitions = await competitionRepository.find({
@@ -93,6 +124,32 @@ export const getCompetitionByTypeOfSport =  async (params: { id: string } ) => {
         );
     }
 };
+export const getAllCompetitions = async (req: NextRequest) => {
+    try {
+        await initializeDataSource();
+        const competitionRepository = AppDataSource.getRepository(Competition);
+        const competitions = await competitionRepository.find({
+            relations: ["sportType"],
+        });
+        if (competitions.length === 0) {
+            return NextResponse.json(
+                { message: "No competitions found" },
+                { status: 404 }
+            );
+        }
+        return NextResponse.json(
+            { data: competitions },
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error("Error getting all competitions:", error);
+        return NextResponse.json(
+            { error: "Internal Server Error" },
+            { status: 500 }
+        );
+    }
+
+}
 
 
 export const getCompetitionById = async (params: { id: string, competition_id: string }) => {
@@ -138,10 +195,58 @@ export const updateCompetition = async (req: NextRequest, context: { params: { i
         await initializeDataSource();
 
         const { id } = context.params;
-        const { name, location, start_date, sport_type_id } = await req.json() as CompetitionInput;
+        
+        const formData = await req.formData();
+        const name = formData.get("name") as string;
+        const location = formData.get("location") as string;
+        const sport_type_id = formData.get("sport_type_id") as string;
+        const start_date = formData.get("start_date") as string;
+        const imageFile = formData.get("image") as File;
+
+        if (!name || !location || !start_date || !sport_type_id || !imageFile) {
+            return NextResponse.json(
+                { error: "Name, location, start_date, and sport_type_id are required" },
+                { status: 400 }
+            );
+        }
+
+        const sportTypeRepository = AppDataSource.getRepository(SportType);
+        const sportType = await sportTypeRepository.findOne({ where: { id: sport_type_id } });
+        if (!sportType) {
+            return NextResponse.json(
+                { error: "Sport type not found" },
+                { status: 404 }
+            );
+        }
+
+        if (!imageFile) {
+            return NextResponse.json(
+                { error: "Image file is required" },
+                { status: 400 }
+            );
+        }
+
+        if (!imageFile.type.startsWith("image/")) {
+            return NextResponse.json(
+                { error: "Only image files are allowed" },
+                { status: 400 }
+            );
+        }
+
+        const tempFilePath = `${os.tmpdir()}/${imageFile.name}-${Date.now()}`;
+        const fileBuffer = Buffer.from(await imageFile.arrayBuffer());
+        await writeFile(tempFilePath, fileBuffer);
+
+        const uploadResult = await cloudinary.uploader.upload(tempFilePath, {
+            folder: "players",
+            public_id: `${name}-${Date.now()}`,
+        });
+
+        await fs.unlink(tempFilePath);
 
         const competitionRepository = AppDataSource.getRepository(Competition);
-        const sportTypeRepository = AppDataSource.getRepository(SportType);
+       
+
 
         const competition = await competitionRepository.findOne({ where: { id } });
         if (!competition) {
@@ -161,11 +266,7 @@ export const updateCompetition = async (req: NextRequest, context: { params: { i
             }
         }
 
-        competition.name = name || competition.name;
-        competition.location = location || competition.location;
-        competition.start_date = start_date || competition.start_date;
-        competition.sport_type_id = sport_type_id || competition.sport_type_id;
-
+       
         await competitionRepository.save(competition);
 
         return NextResponse.json(

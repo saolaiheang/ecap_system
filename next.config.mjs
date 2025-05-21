@@ -17,14 +17,7 @@ export const nextConfig = {
   },
 
   images: {
-    domains: [
-      'upload.wikimedia.org',
-      'encrypted-tbn0.gstatic.com',
-      'city-png.b-cdn.net',
-      'wallpapers.com',
-      "upload.wikimedia.org",
-      "encrypted-tbn0.gstatic.com",
-    ],
+    domains: ['res.cloudinary.com'],
   },
 };
 

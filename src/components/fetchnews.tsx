@@ -12,11 +12,12 @@ interface News {
   title: string;
   description: string;
   image: string;
-  sport_type?: {
+  sport_type_id?: string;
+  sportType?: {
     id: string;
     name: string;
-    description:string;
-    image:string;
+    description: string;
+    image: string | null;
   };
 }
 
@@ -83,12 +84,14 @@ export default function FetchNews({ sport }: { sport: string }) {
 
       if (!response.ok) throw new Error("Failed to submit news");
 
-      alert(editNewsId ? "News updated successfully" : "News added successfully");
+      alert(
+        editNewsId ? "News updated successfully" : "News added successfully"
+      );
 
       setFormData({ title: "", description: "" });
       setImageFile(null);
       setEditNewsId(null);
-      await fetchNews(selectedSport); // refresh data after add/update
+      await fetchNews(selectedSport);
     } catch (error) {
       console.error("Failed to submit news:", error);
       alert("Failed to submit news");
@@ -98,7 +101,7 @@ export default function FetchNews({ sport }: { sport: string }) {
   const handleEdit = (news: News) => {
     setEditNewsId(news.id);
     setFormData({ title: news.title, description: news.description });
-    setSelectedSport(news.sport_type?.id || "");
+    setSelectedSport(news.sportType?.id || "");
     setImageFile(null);
   };
 
@@ -113,7 +116,7 @@ export default function FetchNews({ sport }: { sport: string }) {
       if (!res.ok) throw new Error("Delete failed");
 
       alert("News deleted");
-      await fetchNews(selectedSport); // refresh after delete
+      await fetchNews(selectedSport);
     } catch (error) {
       console.error("Failed to delete news:", error);
       alert("Failed to delete news");
@@ -143,14 +146,14 @@ export default function FetchNews({ sport }: { sport: string }) {
   }, [selectedSport]);
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold text-[#1D276C] mb-4">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto">
+      <h2 className="text-2xl md:text-3xl font-bold text-[#1D276C] mb-6 md:text-left">
         News Management
       </h2>
 
-      <div className="flex gap-4 mb-4">
+      <div className="mb-6">
         <select
-          className="border p-2 rounded w-1/3"
+          className="border border-gray-300 p-2 rounded-md"
           value={selectedSport}
           onChange={(e) => setSelectedSport(e.target.value)}
         >
@@ -163,99 +166,107 @@ export default function FetchNews({ sport }: { sport: string }) {
         </select>
       </div>
 
-      {selectedSport && (
-        <p className="mb-4 text-green-700 font-medium">
-          Adding news for: {sports.find((s) => s.id === selectedSport)?.name}
-        </p>
-      )}
-
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
         <input
           name="title"
           type="text"
           placeholder="News Title"
           value={formData.title}
           onChange={handleChange}
-          className="border p-2 rounded"
+          className="border border-gray-300 p-2 rounded-md w-full"
         />
-        <textarea
+
+        <input
           name="description"
+          type="text"
           placeholder="News Description"
           value={formData.description}
           onChange={handleChange}
-          className="border p-2 rounded col-span-2"
+          className="border border-gray-300 p-2 rounded-md w-full"
         />
+
         <input
           name="image"
           type="file"
           accept="image/*"
           onChange={handleFileChange}
-          className="border p-2 rounded"
+          className="border border-gray-300 p-2 rounded-md w-full"
         />
+
         <button
           onClick={handleAddOrUpdateNews}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition col-span-3"
+          className=" bg-[#1D276C] hover:bg-[#152057] text-white font-semibold px-4 py-3 rounded-md transition w-full md:col-span-3"
         >
           {editNewsId ? "Update News" : "Add News"}
         </button>
       </div>
 
       {loading ? (
-        <p>Loading news...</p>
+        <p className="text-center text-gray-600">Loading news...</p>
       ) : (
-        <table className="w-full border-collapse border border-gray-300">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="border px-4 py-2">#</th>
-              <th className="border px-4 py-2">Image</th>
-              <th className="border px-4 py-2">Title</th>
-              <th className="border px-4 py-2">Description</th>
-              <th className="border px-4 py-2">Sport</th>
-              <th className="border px-4 py-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {newsList.length > 0 ? (
-              newsList.map((news, index) => (
-                <tr key={news.id ?? `${news.title}-${index}`}>
-                  <td className="border px-4 py-2">{index + 1}</td>
-                  <td className="border px-4 py-2">
-                    <img
-                      src={news.image}
-                      alt={news.title}
-                      className="w-16 h-16 object-cover rounded"
-                    />
-                  </td>
-                  <td className="border px-4 py-2">{news.title}</td>
-                  <td className="border px-4 py-2">{news.description}</td>
-                  <td className="border px-4 py-2">
-                    {news.sport_type?.name || "Unknown"}
-                  </td>
-                  <td className="border px-4 py-2 space-x-2">
-                    <button
-                      onClick={() => handleEdit(news)}
-                      className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(news.id)}
-                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                    >
-                      Delete
-                    </button>
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-collapse border border-gray-300 text-sm md:text-base">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="border px-4 py-2 text-center">#</th>
+                <th className="border px-4 py-2 text-center">Image</th>
+                <th className="border px-4 py-2 text-center">Title</th>
+                <th className="border px-4 py-2 text-center">Description</th>
+                <th className="border px-4 py-2 text-center">Sport</th>
+                <th className="border px-4 py-2 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {newsList.length > 0 ? (
+                newsList.map((news, index) => (
+                  <tr key={news.id}>
+                    <td className="border px-4 py-2 text-center">
+                      {index + 1}
+                    </td>
+                    <td className="border px-4 py-2">
+                      <div className="flex justify-center items-center">
+                        <img
+                          src={news.image}
+                          alt={news.title}
+                          className="w-16 h-16 object-cover rounded"
+                        />
+                      </div>
+                    </td>
+                    <td className="border px-4 py-2 text-center">
+                      {news.title}
+                    </td>
+                    <td className="border px-4 py-2">{news.description}</td>
+                    <td className="border px-4 py-2 text-center">
+                      {news.sportType?.name}
+                    </td>
+                    <td className="border px-4 py-2">
+                      <div className="flex justify-center items-center space-x-2">
+                        <button
+                          onClick={() => handleDelete(news.id)}
+                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+                        >
+                          Delete
+                        </button>
+                        <button
+                          onClick={() => handleEdit(news)}
+                          className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded"
+                        >
+                          Update
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={6} className="text-center py-6 text-gray-500">
+                    No news available.
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={6} className="text-center py-4 text-gray-500">
-                  No news available.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

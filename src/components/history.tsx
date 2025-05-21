@@ -33,7 +33,7 @@ export default function HistorySection() {
   }, []);
 
   return (
-    <section className="bg-white px-6 md:px-20 py-16 ">
+    <section className="bg-white px-6 md:px-20 py-16 lg:px-[5px] ">
       <h2 className="text-4xl text-blue-900 font-extrabold text-center mb-16">
         🛤️ Our History
       </h2>

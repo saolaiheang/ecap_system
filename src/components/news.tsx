@@ -1,14 +1,12 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 
 interface NewsItem {
   id: string;
   title: string;
   description: string;
-  image: string; // base64 encoded or full URL
+  image: string;
   date: string;
 }
 
@@ -21,11 +19,10 @@ export default function News() {
       try {
         const res = await fetch("/api/news");
         const data = await res.json();
-        console.log("Fetched News Data:", data.data);
         if (Array.isArray(data.data)) {
-          // Sort by date descending and take the last 4 items
           const sorted = data.data.sort(
-            (a: NewsItem, b: NewsItem) => new Date(b.date).getTime() - new Date(a.date).getTime()
+            (a: NewsItem, b: NewsItem) =>
+              new Date(b.date).getTime() - new Date(a.date).getTime()
           );
           setNews(sorted.slice(0, 4));
         } else {
@@ -37,51 +34,65 @@ export default function News() {
         setLoading(false);
       }
     };
-  
+
     fetchNews();
   }, []);
-  
 
   return (
     <>
       {loading ? (
-        <div className="px-[200px] py-6 text-xl">Loading...</div>
+        <div className="px-4 sm:px-10 md:px-[100px] py-8 text-lg sm:text-xl text-blue-800 font-medium">
+          Loading...
+        </div>
       ) : !news || news.length === 0 ? (
-        <div className="px-8 py-6 text-xl text-red-500">No news found.</div>
+        <div className="px-4 sm:px-10 md:px-[100px] py-8 text-lg sm:text-xl text-red-500">
+          No news found.
+        </div>
       ) : (
-        <section className="px-[200px] py-6">
-          <h2 className="text-3xl font-bold text-blue-900 mb-4">Announcements</h2>
+        <section className="px-4 lg:px-[150px] sm:px-10 md:px-[100px] py-10 font-sans animate-fade-in">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-900 mb-6 sm:mb-8">
+            Announcements
+          </h2>
 
-          {/* Featured news */}
-          <div className="relative h-[500px] rounded-xl overflow-hidden">
-            <Image
-              src={`data:image/jpeg;base64,${news[0].image}`}
+          {/* Featured News */}
+          <div className="relative h-[300px] sm:h-[400px] md:h-[460px] rounded-2xl overflow-hidden shadow-lg group transition-transform duration-500 hover:scale-[1.01]">
+            <img
+              src={news[0].image}
               alt={news[0].title}
-              fill
-              className="object-cover w-full"
+              className="object-cover w-full h-full"
             />
-            <div className="absolute inset-0 bg-black bg-opacity-50 text-white flex items-center justify-center text-center p-4">
-              <h3 className="text-xl md:text-2xl font-semibold leading-tight">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+            <div className="absolute bottom-6 left-6 sm:bottom-8 sm:left-8 text-white max-w-[90%] sm:max-w-xl">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold drop-shadow-lg">
                 {news[0].title}
               </h3>
+              <p className="text-xs sm:text-sm mt-2 text-gray-200 drop-shadow-sm">
+                {news[0].date}
+              </p>
             </div>
           </div>
 
-          {/* Other news */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
+          {/* Other News */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mt-10 sm:mt-12">
             {news.slice(1).map((item) => (
-              <div key={item.id} className="rounded-xl overflow-hidden shadow-md bg-white">
-                <Image
-                  src={item.image.startsWith("data:image") ? item.image : `data:image/jpeg;base64,${item.image}`}
+              <div
+                key={item.id}
+                className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col"
+              >
+                <img
+                  src={item.image}
                   alt={item.title}
-                  width={400}
-                  height={200}
-                  className="object-cover w-full h-40"
+                  className="w-full h-[180px] object-cover"
+                  referrerPolicy="no-referrer"
                 />
-                <div className="p-4">
-                  <h1 className="text-[20px] font-medium">{item.title}</h1>
-                  <p className="text-sm text-gray-600 mt-2">{item.description}</p>
-                  <p className="text-xs text-gray-400 mt-1">{item.date}</p>
+                <div className="p-4 sm:p-5 flex flex-col flex-grow">
+                  <h4 className="text-lg sm:text-xl font-semibold text-blue-900 line-clamp-2">
+                    {item.title}
+                  </h4>
+                  <p className="text-gray-600 text-sm mt-2 line-clamp-3">
+                    {item.description}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-auto pt-3">{item.date}</p>
                 </div>
               </div>
             ))}

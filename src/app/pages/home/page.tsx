@@ -15,7 +15,7 @@ export default function Homepage() {
       <TestVideo />
 
       <div>
-        <MatchLayout />
+        {/* <MatchLayout /> */}
 
         <TypesOfSport />
         <News />

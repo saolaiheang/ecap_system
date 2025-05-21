@@ -51,31 +51,34 @@ export default function Coach() {
     fetchCoaches();
   }, []);
 
-  if (loading) return <p className="px-8 py-6">Loading coaches...</p>;
-  if (error) return <p className="px-8 py-6 text-red-500">{error}</p>;
+  if (loading) return <p className="px-6 py-6 text-blue-600 text-lg font-medium">Loading coaches...</p>;
+  if (error) return <p className="px-6 py-6 text-red-500">{error}</p>;
 
   return (
-    <section className="px-8 py-6">
-      <h2 className="text-4xl font-bold text-blue-600 mb-8 ">Coach List</h2>
+    <section className="px-6 sm:px-10 md:px-16 lg:px-[120px] py-12 font-sans">
+      <h2 className="text-3xl sm:text-4xl font-bold text-blue-800 mb-10 text-center">Meet Our Coaches</h2>
+
       {!coaches.length && (
-        <div className="text-center text-red-500 mb-4">No coaches to display</div>
+        <p className="text-center text-red-500 text-lg font-medium">No coaches to display</p>
       )}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 lg:px-[150px]">
         {coaches.map((coach) => (
           <div
             key={coach.id}
-            className="bg-white rounded-2xl shadow-md border border-blue-100 hover:shadow-blue-400 transition duration-300"
+            className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-blue-300 transition-shadow duration-300 border border-gray-100 group"
           >
-            <div className="h-[300px] w-full overflow-hidden">
+            <div className="h-[260px] overflow-hidden relative">
               <img
                 src={coach.image || "https://via.placeholder.com/300x300"}
                 alt={coach.name}
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </div>
-            <div className="p-4 text-left space-y-2">
-              <p className="text-lg font-semibold text-blue-700">Name: {coach.name}</p>
-              <p className="text-md text-blue-600">Contact: {coach.contact_info}</p>
+            <div className="p-5">
+              <p className="text-lg font-semibold text-black mb-1">{coach.name}</p>
+              <p className="text-sm text-gray-600">📞 {coach.contact_info}</p>
             </div>
           </div>
         ))}

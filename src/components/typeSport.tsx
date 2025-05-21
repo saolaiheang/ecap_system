@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 
 interface SportType {
   id: string;
@@ -35,20 +34,20 @@ export default function TypesOfSport() {
   }, []);
 
   return (
-    <section className="px-[200px] py-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-blue-900 tracking-tight">
+    <section className="px-4 sm:px-6 md:px-[100px] lg:px-[150px] py-10">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold text-blue-900 tracking-tight">
           Types of Sport
         </h1>
         <button
           onClick={() => setShowAll(!showAll)}
-          className="text-blue-600 hover:text-blue-800 transition duration-200 font-semibold underline-offset-4 hover:underline"
+          className="text-blue-600 hover:text-blue-800 transition duration-200 font-semibold underline-offset-4 hover:underline self-start sm:self-auto"
         >
           {showAll ? "Show less" : "See all"}
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {displayedSports.map((sport) => (
           <div
             key={sport.id}
@@ -57,14 +56,13 @@ export default function TypesOfSport() {
             <img
               src={sport.image}
               alt={sport.name}
-              width={300}
-              height={200}
-              className="w-full object-cover group-hover:scale-105 transition-transform duration-300"
+              className="w-full h-48 sm:h-52 md:h-56 object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-blue-900 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition duration-300"></div>
             <div className="absolute bottom-0 p-4 text-white">
-              <h2 className="text-[25px] font-bold">{sport.name}</h2>
-              <p className="text-[17px] mt-1 group-hover:text-blue-100 hover:font-bold transition">
+              <h2 className="text-lg sm:text-xl font-bold">{sport.name}</h2>
+              <p className="text-sm sm:text-base mt-1 group-hover:text-blue-100 hover:font-semibold transition line-clamp-2">
                 {sport.description}
               </p>
             </div>

@@ -155,19 +155,42 @@ export const updateMatch = async (req: NextRequest, { params }: { params: { id: 
     if (!match) {
       return NextResponse.json({ error: "Match not found" }, { status: 404 })
     }
-    const { match_date, match_time, location,status } = await req.json();
+    const { match_date, match_time, location, status } = await req.json();
     const updatedMatch = await matchRepository.update(match_id, {
       match_date,
       match_time,
       location,
       status: status ?? MatchStatus.SCHEDULED,
     });
-    
-    return NextResponse.json({message:"Match update successfully",data:updatedMatch })
+
+    return NextResponse.json({ message: "Match update successfully", data: updatedMatch })
   } catch (err) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : String(err) },
       { status: 500 }
     );
   }
+}
+
+
+export const getAllMatch = async (req: NextRequest) => {
+  try {
+    await initializeDataSource();
+
+    const matchRepository = AppDataSource.getRepository(Match);
+    const matches = await matchRepository.find({
+      relations: ["teamA", "teamB", "sportType"],
+      where: { status: MatchStatus.SCHEDULED }
+    });
+    console.log(matches)
+    return NextResponse.json({ data: matches })
+
+  }
+  catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : String(err) },
+      { status: 500 }
+    );
+  }
+
 }

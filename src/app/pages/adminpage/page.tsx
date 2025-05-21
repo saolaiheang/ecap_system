@@ -18,6 +18,7 @@ import FetchProfileCoach from "@/components/fetchProfileCoachD";
 import { FC } from "react";
 import FetchMatch from "@/components/fetchMatchD";
 import FetchHisotry from "@/components/fetchHistoryD";
+import FetchSchedule from "@/components/fetchSchedule";
 
 interface CommonProps {
   sport: string;
@@ -40,6 +41,9 @@ const FetchProfileCoachWrapper: FC<CommonProps> = ({ sport }) => (
 );
 const FetchHistoryWrapper: FC<CommonProps> = ({ sport }) => (
   <FetchHisotry sport={sport} />
+);
+const FetchScheduleWrapper: FC<CommonProps> = ({ sport }) => (
+  <FetchSchedule sport={sport} />
 );
 
 export default function DashboardLayout() {
@@ -141,10 +145,8 @@ export default function DashboardLayout() {
             <ProfileDashboardWrapper sport="player" />
           ) : selectedContent === "profile-coach" ? (
             <FetchProfileCoachWrapper sport="coach" />
-          ) : selectedContent === "schedule" ? (
-            <h2 className="text-xl font-semibold text-[#1D276C]">
-              Schedule Section
-            </h2>
+          ) :selectedContent === "schedule" ? (
+            <FetchScheduleWrapper sport="default" />
           ) : selectedContent === "match" ? (
             <FetchMatchWrapper sport="default" />
           ) : selectedContent === "activity" ? (

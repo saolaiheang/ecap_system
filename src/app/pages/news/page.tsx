@@ -1,15 +1,13 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Header from "@/components/header";
 
 interface NewsItem {
   id: string;
   title: string;
   description: string;
-  image: string; // base64 encoded or full URL
+  image: string;
   date: string;
 }
 
@@ -22,7 +20,6 @@ export default function Newspage() {
       try {
         const res = await fetch("/api/news");
         const data = await res.json();
-        console.log("Fetched News Data:", data.data);
         if (Array.isArray(data.data)) {
           setNews(data.data);
         } else {
@@ -40,46 +37,51 @@ export default function Newspage() {
 
   return (
     <>
-          <Header/>
+      <Header />
 
       {loading ? (
-        <div className="px-8 py-6 text-xl">Loading...</div>
+        <div className="px-4 py-6 text-lg sm:text-xl text-blue-700 font-medium">Loading...</div>
       ) : !news || news.length === 0 ? (
-        <div className="px-8 py-6 text-xl text-red-500">No news found.</div>
+        <div className="px-4 py-6 text-lg sm:text-xl text-red-500">No news found.</div>
       ) : (
-        <section className="px-[200px] py-6">
-          {/* <h2 className="text-3xl font-bold text-blue-900 mb-4">Announcements</h2> */}
-
+        <section className="px-4 sm:px-8 md:px-16 lg:px-[150px] py-10 font-sans animate-fade-in">
           {/* Featured news */}
-          <div className="relative h-[500px] rounded-xl overflow-hidden">
-            <Image
-              src={`data:image/jpeg;base64,${news[0].image}`}
+          <div className="relative h-[280px] sm:h-[380px] md:h-[460px] rounded-2xl overflow-hidden shadow-lg mb-12">
+            <img
+              src={news[0].image}
               alt={news[0].title}
-              fill
-              className="object-cover w-full"
+              className="object-cover w-full h-full"
             />
-            <div className="absolute inset-0 bg-black bg-opacity-50 text-white flex items-center justify-center text-center p-4">
-              <h3 className="text-xl md:text-2xl font-semibold leading-tight">
-                {news[0].title}
-              </h3>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-end p-6 sm:p-10">
+              <div className="text-white max-w-3xl">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold leading-snug drop-shadow-md">
+                  {news[0].title}
+                </h3>
+                <p className="text-sm sm:text-base text-gray-300 mt-2 drop-shadow-sm">
+                  {news[0].date}
+                </p>
+              </div>
             </div>
           </div>
 
           {/* Other news */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {news.slice(1).map((item) => (
-              <div key={item.id} className="rounded-xl overflow-hidden shadow-md bg-white">
-                <Image
-                  src={item.image.startsWith("data:image") ? item.image : `data:image/jpeg;base64,${item.image}`}
+              <div
+                key={item.id}
+                className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition duration-300 hover:-translate-y-1"
+              >
+                <img
+                  src={item.image}
                   alt={item.title}
-                  width={400}
-                  height={200}
-                  className="object-cover w-full h-40"
+                  className="w-full h-[180px] sm:h-[200px] object-cover"
                 />
-                <div className="p-4">
-                  <h1 className="text-[20px] font-medium">{item.title}</h1>
-                  <p className="text-sm text-gray-600 mt-2">{item.description}</p>
-                  <p className="text-xs text-gray-400 mt-1">{item.date}</p>
+                <div className="p-5 flex flex-col h-full">
+                  <h4 className="text-lg font-semibold text-blue-900 line-clamp-2">
+                    {item.title}
+                  </h4>
+                  <p className="text-sm text-gray-600 mt-2 line-clamp-3">{item.description}</p>
+                  <p className="text-xs text-gray-400 mt-auto pt-4">{item.date}</p>
                 </div>
               </div>
             ))}

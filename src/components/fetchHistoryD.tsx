@@ -2,189 +2,225 @@
 
 import { useEffect, useState, ChangeEvent } from "react";
 
-interface Sport {
+interface History {
   id: string;
-  name: string;
+  year: string;
+  title: string;
+  description: string;
+  imageUrl: string;
 }
 
-interface Match {
-  id: string;
-  team_a: string;
-  team_b: string;
-  date: string;
-  location: string;
-  sport_type?: {
-    id: string;
-    name: string;
-  };
-}
-
-export default function FetchHisotry({ sport }: { sport: string }) {
-  const [sports, setSports] = useState<Sport[]>([]);
-  const [selectedSport, setSelectedSport] = useState<string>("");
-  const [matchList, setMatchList] = useState<Match[]>([]);
+export default function FetchHistories() {
+  const [histories, setHistories] = useState<History[]>([]);
+  const [formData, setFormData] = useState({ year: "", title: "", description: "" });
+  const [imageUrl, setImageFile] = useState<File | null>(null);
+  const [editId, setEditId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    team_a: "",
-    team_b: "",
-    date: "",
-    location: "",
-  });
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleAddMatch = async () => {
-    if (!selectedSport) return alert("Please select a sport");
-
+  // ✅ Fetch history data
+  const fetchHistories = async () => {
+    setLoading(true);
     try {
-      const response = await fetch("/api/match", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...formData,
-          sport_type_id: selectedSport,
-        }),
-      });
-
-      const newMatch = await response.json();
-      setMatchList((prev) => [...prev, newMatch]);
-      alert("Match added successfully");
-
-      setFormData({ team_a: "", team_b: "", date: "", location: "" });
-    } catch (error) {
-      console.error("Failed to add match:", error);
-      alert("Failed to add match");
+      const res = await fetch("/api/histories");
+      const data = await res.json();
+      console.log("Fetched histories:", data); // DEBUG LOG
+      // 🟡 Make sure this matches the actual key from the API response
+      setHistories(data.data || data.histories || []);
+    } catch (err) {
+      console.error("Failed to fetch histories", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    const fetchSports = async () => {
-      try {
-        const res = await fetch("/api/typeofsport");
-        const data = await res.json();
-        setSports(data.typeOfSport);
-      } catch (err) {
-        console.error("Failed to fetch sports", err);
-      }
-    };
-
-    fetchSports();
+    fetchHistories();
   }, []);
 
-  useEffect(() => {
-    const fetchMatches = async () => {
-      if (!selectedSport) return;
-      setLoading(true);
-      try {
-        const res = await fetch(`/api/history`);
-        const data = await res.json();
-        setMatchList(data.data);
-      } catch (err) {
-        console.error("Failed to fetch matches", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // ✅ Handle input text changes
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-    fetchMatches();
-  }, [selectedSport]);
+  // ✅ Handle file input
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0]) setImageFile(e.target.files[0]);
+  };
+
+  // ✅ Submit (create or update)
+  const handleSubmit = async () => {
+    if (!formData.title || !formData.year || !formData.description) {
+      alert("Please fill out all fields");
+      return;
+    }
+
+    const form = new FormData();
+    form.append("year", formData.year);
+    form.append("title", formData.title);
+    form.append("description", formData.description);
+    if (imageUrl) {
+      form.append("imageUrl", imageUrl); // ✅ required for backend
+    } else {
+      alert("Please upload an image");
+      return;
+    }
+    try {
+      const res = await fetch(editId ? `/api/histories/${editId}` : "/api/histories", {
+        method: editId ? "PUT" : "POST",
+        body: form,
+      });
+      console.log(form)
+
+    
+      const responseText = await res.text(); // 👈 get the server's response body
+    
+      console.log("Server response:", responseText); // 👈 log the full text
+    
+      if (!res.ok) {
+        console.error("Failed to submit. Server responded with:", responseText);
+        throw new Error("Failed to submit");
+      }
+    
+      alert(editId ? "Updated successfully" : "Created successfully");
+      setFormData({ title: "", year: "", description: "" });
+      setImageFile(null);
+      setEditId(null);
+      fetchHistories();
+    } catch (err) {
+      console.error("Error submitting:", err);
+      alert("Error occurred");
+    }
+    
+  };
+
+  // ✅ Edit handler
+  const handleEdit = (history: History) => {
+    setEditId(history.id);
+    setFormData({
+      title: history.title,
+      year: history.year,
+      description: history.description,
+    });
+    setImageFile(null);
+  };
+
+  // ✅ Delete handler
+  const handleDelete = async (id: string) => {
+    if (!confirm("Delete this history?")) return;
+
+    try {
+      const res = await fetch(`/api/histories/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Failed to delete");
+      alert("Deleted");
+      fetchHistories();
+    } catch (err) {
+      console.error(err);
+      alert("Delete failed");
+    }
+  };
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold text-[#1D276C] mb-4">History Management</h2>
-      <div className="flex gap-4 mb-4">
-        <select
-          className="border p-2 rounded w-1/3"
-          value={selectedSport}
-          onChange={(e) => setSelectedSport(e.target.value)}
-        >
-          <option value="">Select a Sport</option>
-          {sports.map((sport) => (
-            <option key={sport.id} value={sport.id}>
-              {sport.name}
-            </option>
-          ))}
-        </select>
-      </div>
+    <div className="p-6 max-w-5xl mx-auto">
+      <h2 className="text-2xl font-bold mb-4 text-[#1D276C]">History Management</h2>
 
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      {/* Form Inputs */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <input
-          name="team_a"
-          type="text"
-          placeholder="Team A"
-          value={formData.team_a}
+          name="year"
+          placeholder="Year"
+          value={formData.year}
           onChange={handleChange}
-          className="border p-2 rounded"
+          className="border p-2 rounded-md"
         />
         <input
-          name="team_b"
-          type="text"
-          placeholder="Team B"
-          value={formData.team_b}
+          name="title"
+          placeholder="Title"
+          value={formData.title}
           onChange={handleChange}
-          className="border p-2 rounded"
+          className="border p-2 rounded-md"
         />
         <input
-          name="date"
-          type="text"
-          placeholder="Match Date"
-          value={formData.date}
+          name="description"
+          placeholder="Description"
+          value={formData.description}
           onChange={handleChange}
-          className="border p-2 rounded"
+          className="border p-2 rounded-md"
         />
         <input
-          name="location"
-          type="text"
-          placeholder="Location"
-          value={formData.location}
-          onChange={handleChange}
-          className="border p-2 rounded"
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="border p-2 rounded-md"
         />
         <button
-          onClick={handleAddMatch}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition col-span-2"
+          onClick={handleSubmit}
+          className="bg-[#1D276C] text-white font-bold py-2 rounded-md md:col-span-4 hover:bg-[#152057]"
         >
-          Add Match
+          {editId ? "Update History" : "Add History"}
         </button>
       </div>
 
+      {/* Table */}
       {loading ? (
-        <p>Loading matches...</p>
+        <p>Loading histories...</p>
       ) : (
-        <table className="w-full border-collapse border border-gray-300">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="border px-4 py-2">#</th>
-              <th className="border px-4 py-2">Team A</th>
-              <th className="border px-4 py-2">Team B</th>
-              <th className="border px-4 py-2">Date</th>
-              <th className="border px-4 py-2">Location</th>
-              <th className="border px-4 py-2">Sport</th>
-            </tr>
-          </thead>
-          <tbody>
-            {matchList.length > 0 ? (
-              matchList.map((match, index) => (
-                <tr key={match.id}>
-                  <td className="border px-4 py-2">{index + 1}</td>
-                  <td className="border px-4 py-2">{match.team_a}</td>
-                  <td className="border px-4 py-2">{match.team_b}</td>
-                  <td className="border px-4 py-2">{match.date}</td>
-                  <td className="border px-4 py-2">{match.location}</td>
-                  <td className="border px-4 py-2">{match.sport_type?.name || "Unknown"}</td>
-                </tr>
-              ))
-            ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full border border-gray-300 text-sm">
+            <thead className="bg-gray-100">
               <tr>
-                <td colSpan={6} className="text-center py-4 text-gray-500">
-                  No matches available.
-                </td>
+                <th className="border p-2">#</th>
+                <th className="border p-2">Image</th>
+                <th className="border p-2">Year</th>
+                <th className="border p-2">Title</th>
+                <th className="border p-2">Description</th>
+                <th className="border p-2">Actions</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {histories.length > 0 ? (
+                histories.map((item, idx) => (
+                  <tr key={item.id}>
+                    <td className="border p-2 text-center">{idx + 1}</td>
+                    <td className="border p-2 text-center">
+                      <img
+                        src={item.imageUrl || "/placeholder.jpg"}
+                        alt={item.title}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                    </td>
+                    <td className="border p-2 text-center">{item.year}</td>
+                    <td className="border p-2">{item.title}</td>
+                    <td className="border p-2">{item.description}</td>
+                    <td className="border p-2 text-center space-x-2">
+                      <button
+                        onClick={() => handleEdit(item)}
+                        className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={6} className="text-center text-gray-500 p-4">
+                    No history records found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

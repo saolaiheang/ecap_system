@@ -3,14 +3,26 @@ import { NextRequest, NextResponse } from "next/server";
 import { AppDataSource } from "@/config";
 import { Team, SportType } from "@/entities";
 import { initializeDataSource } from "@/utils/inititializeDataSource";
+import fs, { writeFile } from "fs/promises";
+import cloudinary from "@/lib/cloudinary";
+import os from "os";
+export const config = {
+    api: {
+        bodyParser: false,
+    },
+};
+
 export const createTeam = async (req: NextRequest) => {
     try {
-        // await initializeDataSource();
-        (async () => {
-            await initializeDataSource();
-            console.log("App is running...");
-        })();
-        const { name, division, sport_id, contact_info ,image} = await req.json();
+        await initializeDataSource();
+
+        const formData = await req.formData();
+        const name = formData.get("name") as string;
+        const division = formData.get("division") as string;
+        const contact_info = formData.get("contact_info") as string;
+        const sport_id = formData.get("sport_id") as string;
+        const imageFile = formData.get("image") as File;
+       
         if (!name || !division || !sport_id) {
             return NextResponse.json(
                 { error: "Name, division, and sport_id are required" },
@@ -27,12 +39,38 @@ export const createTeam = async (req: NextRequest) => {
                 { status: 404 }
             );
         }
+
+        if (!imageFile) {
+            return NextResponse.json(
+                { error: "Image file is required" },
+                { status: 400 }
+            );
+        }
+
+        if (!imageFile.type.startsWith("image/")) {
+            return NextResponse.json(
+                { error: "Only image files are allowed" },
+                { status: 400 }
+            );
+        }
+
+         const tempFilePath = `${os.tmpdir()}/${imageFile.name}-${Date.now()}`;
+                const fileBuffer = Buffer.from(await imageFile.arrayBuffer());
+                await writeFile(tempFilePath, fileBuffer);
+        
+                const uploadResult = await cloudinary.uploader.upload(tempFilePath, {
+                    folder: "teams",
+                    public_id: `${name}-${Date.now()}`,
+                });
+        
+                await fs.unlink(tempFilePath);
         const team = teamRepository.create({
             name,
             division,
+            contact_info,
             sportType,
-            contact_info: contact_info || null,
-            image: image || null
+            image: uploadResult.secure_url,
+           
         });
 
         await teamRepository.save(team);
@@ -102,11 +140,39 @@ export const getTeams = async (req: NextRequest) => {
     }
 };
 
-export const updateTeam= async (req: NextRequest, context: { params: { id: string } }) => {
+export const updateTeam= async (req: NextRequest, {params}: { params: { id: string } }) => {
     try {
         await initializeDataSource();
-        const { id } = context.params;
-        const { name, division,contact_info } = await req.json();
+        const { id } =params;
+        const formData = await req.formData();
+        const name = formData.get("name") as string;
+        const division = formData.get("division") as string;
+        const contact_info = formData.get("contact_info") as string;
+        const imageFile = formData.get("image") as File;
+        if (!imageFile) {
+            return NextResponse.json(
+                { error: "Image file is required" },
+                { status: 400 }
+            );
+        }
+
+        if (!imageFile.type.startsWith("image/")) {
+            return NextResponse.json(
+                { error: "Only image files are allowed" },
+                { status: 400 }
+            );
+        }
+
+         const tempFilePath = `${os.tmpdir()}/${imageFile.name}-${Date.now()}`;
+                const fileBuffer = Buffer.from(await imageFile.arrayBuffer());
+                await writeFile(tempFilePath, fileBuffer);
+        
+                const uploadResult = await cloudinary.uploader.upload(tempFilePath, {
+                    folder: "teams",
+                    public_id: `${name}-${Date.now()}`,
+                });
+        
+                await fs.unlink(tempFilePath);
         const teamRepository = AppDataSource.getRepository(Team);
         const team = await teamRepository.findOne({ where: { id } });
         if (!team) {
@@ -123,6 +189,9 @@ export const updateTeam= async (req: NextRequest, context: { params: { id: strin
         }
         if (contact_info) {
             team.contact_info = contact_info;
+        }
+        if(imageFile){
+            team.image = uploadResult.secure_url;
         }
         await teamRepository.save(team);
         return NextResponse.json(

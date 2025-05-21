@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { Player, Team, SportType } from "@/entities";
 import { initializeDataSource } from "@/utils/inititializeDataSource";
 import { AppDataSource } from "@/config";
-import formidable, { IncomingForm } from "formidable";
 import fs, { writeFile } from "fs/promises";
 import cloudinary from "@/lib/cloudinary";
 import os from "os";
@@ -59,12 +58,12 @@ export async function createPlayer(req: NextRequest, { params }: { params: { id:
             );
         }
 
-        // await initializeDataSource();
+        await initializeDataSource();
 
-        (async () => {
-            await initializeDataSource();
-            console.log("App is running...");
-        })();
+        // (async () => {
+        //     await initializeDataSource();
+        //     console.log("App is running...");
+        // })();
         
         const teamRepository = AppDataSource.getRepository(Team);
         const team = await teamRepository.findOne({ where: { id: team_id } });

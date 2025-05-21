@@ -175,8 +175,8 @@ export const updateMatch = async (req: NextRequest, { params }: { params: { id: 
 
 export const getAllMatch = async (req: NextRequest) => {
   try {
-    await initializeDataSource();
 
+    await initializeDataSource();
     const matchRepository = AppDataSource.getRepository(Match);
     const matches = await matchRepository.find({
       relations: ["teamA", "teamB", "sportType"],

@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "./button";
+import TypesOfSport from "./typeSport";
+import { useSearchParams } from "react-router-dom";
 
 interface Competition {
   id: string;
@@ -12,13 +14,23 @@ interface Competition {
   teamB: { name: string };
   sportType: { name: string };
 }
+interface SportType {
+  id: string;
+  name: string;
+}
+
+interface Team {
+  id: string;
+  name: string;
+}
 
 export default function FetchMatch() {
   const [competitions, setCompetitions] = useState<Competition[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [typeofsport, setSportTypes] = useState<SportType[]>([]);
 
-  // Form state
   const [form, setForm] = useState({
     match_date: "",
     match_time: "",
@@ -26,18 +38,18 @@ export default function FetchMatch() {
     sport_type_id: "",
     teamA_id: "",
     teamB_id: "",
-    status: "scheduled",
-    stage_id: "",
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const fetchCompetitions = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/matches");
+      const res = await fetch("/api/match_friendly/b");
       if (!res.ok) throw new Error("Failed to fetch matches.");
       const data = await res.json();
       setCompetitions(data.data || []);
@@ -45,6 +57,27 @@ export default function FetchMatch() {
       setError("Failed to load matches.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSportTypes = async () => {
+    try {
+      const res = await fetch("/api/typeofsport");
+      const data = await res.json();
+      setSportTypes(data.typeOfSport || []);
+    } catch {
+      console.error("Failed to fetch sport types.");
+    }
+  };
+
+  const fetchTeams = async () => {
+    try {
+      const res = await fetch("/api/team");
+      if (!res.ok) throw new Error("Failed to fetch teams.");
+      const data = await res.json();
+      setTeams(data.data || []);
+    } catch (err) {
+      console.error("Error loading teams:", err);
     }
   };
 
@@ -75,8 +108,6 @@ export default function FetchMatch() {
         sport_type_id: "",
         teamA_id: "",
         teamB_id: "",
-        status: "scheduled",
-        stage_id: "",
       });
     } catch (err) {
       alert("Error adding match.");
@@ -85,6 +116,8 @@ export default function FetchMatch() {
 
   useEffect(() => {
     fetchCompetitions();
+    fetchTeams();
+    fetchSportTypes();
   }, []);
 
   if (loading) return <p className="px-8 py-6">Loading competitions...</p>;
@@ -122,38 +155,52 @@ export default function FetchMatch() {
             className="border p-2 rounded"
             placeholder="Location"
           />
-          <input
-            type="text"
-            name="sport_type_id"
-            value={form.sport_type_id}
-            onChange={handleInputChange}
-            className="border p-2 rounded"
-            placeholder="Sport Type ID"
-          />
-          <input
-            type="text"
+
+<select
+  name="sport_type_id"
+  value={form.sport_type_id}
+  onChange={handleInputChange}
+  className="border p-2 rounded"
+>
+  <option value="">Select Sport Type</option>
+  {typeofsport.map((sport) => (
+    <option key={sport.id} value={sport.id}>
+      {sport.name}
+    </option>
+  ))}
+</select>
+
+
+          {/* Team A Dropdown */}
+          <select
             name="teamA_id"
             value={form.teamA_id}
             onChange={handleInputChange}
             className="border p-2 rounded"
-            placeholder="Team A ID"
-          />
-          <input
-            type="text"
+          >
+            <option value="">Select Team A</option>
+            {teams.map((team) => (
+              <option key={team.id} value={team.id}>
+                {team.name}
+              </option>
+            ))}
+          </select>
+
+          {/* Team B Dropdown */}
+          <select
             name="teamB_id"
             value={form.teamB_id}
             onChange={handleInputChange}
             className="border p-2 rounded"
-            placeholder="Team B ID"
-          />
-          <input
-            type="text"
-            name="stage_id"
-            value={form.stage_id}
-            onChange={handleInputChange}
-            className="border p-2 rounded"
-            placeholder="Stage ID"
-          />
+          >
+            <option value="">Select Team B</option>
+            {teams.map((team) => (
+              <option key={team.id} value={team.id}>
+                {team.name}
+              </option>
+            ))}
+          </select>
+
         </div>
         <div className="mt-4">
           <Button

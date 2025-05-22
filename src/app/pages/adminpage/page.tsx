@@ -20,6 +20,7 @@ import FetchMatch from "@/components/fetchMatch";
 import FetchHisotry from "@/components/fetchHistoryD";
 import FetchSchedule from "@/components/fetchSchedule";
 import CompetitionManager from "@/components/fetchcompetition";
+import FetchTeam from "@/components/fetchTeam";
 
 interface CommonProps {
   sport: string;
@@ -48,6 +49,9 @@ const FetchHistoryWrapper: FC<CommonProps> = ({ sport }) => (
 );
 const FetchScheduleWrapper: FC<CommonProps> = ({ sport }) => (
   <FetchSchedule sport={sport} />
+);
+const FetchTeamWrapper: FC<CommonProps> = ({ sport }) => (
+  <FetchTeam sport={sport} />
 );
 
 export default function DashboardLayout() {
@@ -118,6 +122,14 @@ export default function DashboardLayout() {
 
           <button
             className="flex items-center px-3 py-3 text-sm hover:bg-[#e66dbd] rounded transition"
+            onClick={() => setSelectedContent("team")}
+          >
+            <FaUsers className="mr-3" />
+            Team
+          </button>
+
+          <button
+            className="flex items-center px-3 py-3 text-sm hover:bg-[#e66dbd] rounded transition"
             onClick={() => setSelectedContent("match")}
           >
             <FaUsers className="mr-3" />
@@ -167,7 +179,9 @@ export default function DashboardLayout() {
             <FetchHistoryWrapper sport="default" />
           ) :selectedContent === "match" ? (
             <FetchMatchWrapper sport="default" />
-          ) : 
+          ) : selectedContent === "team" ? (
+            <FetchTeamWrapper sport="default" />
+          ) :
           (
             <h2 className="text-xl font-semibold text-[#1D276C]">Dashboard</h2>
           )}

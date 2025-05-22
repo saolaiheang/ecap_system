@@ -1,5 +1,5 @@
 
-import { Entity, PrimaryColumn, Column, ManyToOne, OneToMany, JoinColumn, BeforeInsert, BeforeUpdate } from "typeorm";
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, BeforeInsert, BeforeUpdate } from "typeorm";
 import { Stage } from "./stage";
 import { SportType } from "./typeOfsport";
 import { Team } from "./team";

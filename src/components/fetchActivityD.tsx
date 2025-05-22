@@ -18,9 +18,9 @@ export default function FetchActivityD({ sport }: Props) {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        // const response = await fetch(`/api/activity?sport=${sport}`);
-        // const data = await response.json();
-        // setActivities(data.activities || []);
+        const response = await fetch(`/api/activity?sport=${sport}`);
+        const data = await response.json();
+        setActivities(data.activities || []);
       } catch (error) {
         console.error("Error fetching activity data:", error);
       } finally {

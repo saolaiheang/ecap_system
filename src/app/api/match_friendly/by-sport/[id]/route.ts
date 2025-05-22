@@ -6,4 +6,4 @@ export const POST=async(req:NextRequest,context:{params:{id:string}})=>{
 }
 export const GET=async(req:NextRequest,context:{params:{id:string}})=>{
     return await getMatchFriendlyBySport(req,context);
-    }  
+    } 

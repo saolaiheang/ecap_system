@@ -1,6 +1,5 @@
 "use client";
 import Image from "next/image";
-import piture from "../../public/image/b.jpg"
 import Header from "./header";
 import Player from "./player";
 
@@ -17,8 +16,8 @@ export default function SinglepageFootball() {
       </div>
 
       <div className="image-container mb-8">
-        <img
-          src={piture}
+        <Image
+          src="/image/b.jpg"
           alt="Basketball Group"
           className="main-image w-full h-auto rounded-lg shadow-lg"
         />

@@ -31,7 +31,7 @@ export const createScheduleTraining = async (req: NextRequest) => {
 
 }
 
-export const getAllSchedules = async (req:NextRequest) => {
+export const getAllSchedules = async (_req:NextRequest) => {
     try {
         await initializeDataSource();
         console.log("✅ Database connected successfully...");

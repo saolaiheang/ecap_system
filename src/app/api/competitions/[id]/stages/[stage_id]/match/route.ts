@@ -1,4 +1,4 @@
-import { NextRequest,NextResponse } from "next/server";
+import { NextRequest} from "next/server";
 import { createMatch,getAllMatchByStage } from "@/controllers/matches/matches.controller";
 
 export const POST=async(req:NextRequest,context:{params:{id:string,stage_id:string}})=>{

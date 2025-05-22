@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { FaClock, FaMapMarkerAlt } from "react-icons/fa";
-
+import Image from "next/image";
 interface Team {
   name: string;
   image: string | null;
@@ -41,7 +41,7 @@ function MatchCard({
     <div className="max-w-xs rounded-xl overflow-hidden shadow-lg bg-white">
       <div className="bg-[#2C357C] text-white p-4 flex justify-between items-center rounded-t-xl">
         <div className="text-center">
-          <img
+          <Image
             src={teamA.image || defaultImage}
             alt={teamA.name}
             className="w-12 h-12 rounded-full mx-auto"
@@ -52,7 +52,7 @@ function MatchCard({
         <p className="text-xl font-semibold">VS</p>
 
         <div className="text-center">
-          <img
+          <Image
             src={teamB.image || defaultImage}
             alt={teamB.name}
             className="w-12 h-12 rounded-full mx-auto"
@@ -92,8 +92,10 @@ export default function MatchLayout() {
         if (!res.ok) throw new Error("Failed to fetch matches");
         const data = await res.json();
         setMatches(data.data || []);
-      } catch (err: any) {
-        setError(err.message || "Something went wrong");
+      } catch (error) {
+        console.error("Failed to fetch sport types:", error);
+
+        setError( "Something went wrong");
       } finally {
         setLoading(false);
       }

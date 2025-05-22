@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import Logo from "../../public/image/pseLogo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
 
@@ -18,7 +17,7 @@ export default function Header() {
         <Link href="/pages/home">
           <div className="flex items-center cursor-pointer transition-transform duration-300 hover:scale-105 active:scale-95">
             <Image
-              src={Logo}
+              src="/image/pseLogo.png"
               alt="PSE Logo"
               width={150}
               height={90}

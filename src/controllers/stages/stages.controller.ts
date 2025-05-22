@@ -4,8 +4,7 @@ import { initializeDataSource } from "@/utils/inititializeDataSource";
 import { AppDataSource } from "@/config";
 import { z } from "zod";
 import { StageType } from "@/entities/stage";
-import { middleware } from "@/middleware/auth"
-import { validate } from "class-validator";
+
 
 
 const createStageSchema = z.object({
@@ -46,13 +45,14 @@ export const createStage = async (req: NextRequest, { params }: { params: { id: 
 
 
     } catch (err) {
+        console.error(err);
         return NextResponse.json({ message: "Error creating stage" }, { status: 500 });
 
     }
 
 }
 
-export const getStages = async (req: NextRequest, { params }: { params: { id: string } }) => {
+export const getStages = async (_req: NextRequest, { params }: { params: { id: string } }) => {
     try {
         await initializeDataSource();
         const { id } = params;
@@ -62,10 +62,10 @@ export const getStages = async (req: NextRequest, { params }: { params: { id: st
         return NextResponse.json(stages);
     }
     catch (err) {
-        return NextResponse.json({ message: "Error fetching stages" }, { status: 500 });
+        return NextResponse.json({ message: "Error fetching stages" ,err}, { status: 500 });
     }
 }
-export const getStage = async (req: NextRequest, { params }: {
+export const getStage = async (_req: NextRequest, { params }: {
     params: {
         stage_id
         : string
@@ -82,6 +82,7 @@ export const getStage = async (req: NextRequest, { params }: {
         return NextResponse.json(stage);
     }
     catch (err) {
+        console.log(err)
         return NextResponse.json({ message: "Error fetching stage" }, { status: 500 });
     }
 }
@@ -101,10 +102,10 @@ export const updateStage = async (req: NextRequest, { params }: { params: { stag
         return NextResponse.json(stage);
     }
     catch (err) {
-        return NextResponse.json({ message: "Error updating stage" }, { status: 500 });
+        return NextResponse.json({ message: "Error updating stage" ,err}, { status: 500 });
     }
 }
-export const deleteStage = async (req: NextRequest, { params }: { params: { stage_id: string } }) => {
+export const deleteStage = async (_req: NextRequest, { params }: { params: { stage_id: string } }) => {
     try {
         await initializeDataSource();
         const { stage_id } = params;
@@ -117,6 +118,6 @@ export const deleteStage = async (req: NextRequest, { params }: { params: { stag
         return NextResponse.json({ message: "Stage deleted" });
 
     } catch (err) {
-        return NextResponse.json({ message: "Error deleting stage" }, { status: 500 });
+        return NextResponse.json({ message: "Error deleting stage",err }, { status: 500 });
     }
 }

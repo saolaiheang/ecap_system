@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
+import Image from "next/image";
 interface CoachInput {
   id: string;
   name: string;
@@ -41,8 +41,10 @@ export default function Coach() {
         }
 
         setCoaches(coachList);
-      } catch (err: any) {
-        setError(err.message || "Something went wrong");
+      } catch (err) {
+        console.error("Failed to fetch coach:", err);
+
+        setError( "Something went wrong");
       } finally {
         setLoading(false);
       }
@@ -69,7 +71,7 @@ export default function Coach() {
             className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-blue-300 transition-shadow duration-300 border border-gray-100 group"
           >
             <div className="h-[260px] overflow-hidden relative">
-              <img
+              <Image
                 src={coach.image || "https://via.placeholder.com/300x300"}
                 alt={coach.name}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

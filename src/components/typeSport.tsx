@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
+import Image from "next/image";
 interface SportType {
   id: string;
   name: string;
@@ -53,7 +53,7 @@ export default function TypesOfSport() {
             key={sport.id}
             className="relative rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition duration-300 group"
           >
-            <img
+            <Image
               src={sport.image}
               alt={sport.name}
               className="w-full h-48 sm:h-52 md:h-56 object-cover group-hover:scale-105 transition-transform duration-300"

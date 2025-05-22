@@ -6,7 +6,6 @@ import { AppDataSource } from "@/config";
 import cloudinary from "@/lib/cloudinary";
 import os from 'os';
 import fs,{writeFile} from "fs/promises"
-import { error } from "console";
 export const createTypeOfSport = async (req: NextRequest) => {
     try {
         // await initializeDataSource();
@@ -68,7 +67,7 @@ export const createTypeOfSport = async (req: NextRequest) => {
     }
 };
 
-export const getTypeOfSport = async (req: NextRequest) => {
+export const getTypeOfSport = async (_req: NextRequest) => {
     try {
         await initializeDataSource();
         const typeOfSport = await AppDataSource.getRepository(SportType).find();
@@ -86,7 +85,7 @@ export const getTypeOfSport = async (req: NextRequest) => {
 };
 
 export const getTypeOfSportById = async (
-    req: NextRequest,
+    _req: NextRequest,
     context: { params: { id: string } }
 ) => {
     try {

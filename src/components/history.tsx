@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
+import Image from "next/image";
 type HistoryItem = {
   id: string;
   year: string;
@@ -22,8 +22,10 @@ export default function HistorySection() {
         if (!res.ok) throw new Error("Failed to fetch history");
         const data = await res.json();
         setItems(data.data);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (error) {
+        console.error("Failed to fetch history", error);
+
+        setError("Failed to fetch history");
       } finally {
         setLoading(false);
       }
@@ -56,7 +58,7 @@ export default function HistorySection() {
 
                 {/* Content block */}
                 <div className="bg-gray-50 p-6 rounded-xl shadow-lg md:flex md:items-center gap-6 transition-transform duration-300 group-hover:scale-[1.02]">
-                  <img
+                  <Image
                     src={item.imageUrl}
                     alt={item.title}
                     className="w-full md:w-[240px] h-[160px] object-cover rounded-xl shadow-md"

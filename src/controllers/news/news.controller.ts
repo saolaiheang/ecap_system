@@ -5,14 +5,7 @@ import { initializeDataSource } from "@/utils/inititializeDataSource";
 import cloudinary from "@/lib/cloudinary";
 import os from "os";
 import fs, { writeFile } from "fs/promises";
-import { error } from "console";
 
-interface NewsInput {
-    title: string;
-    description: string;
-    image?: string;
-    sport_type_id: string;
-}
 
 export const config = {
     api: {
@@ -96,7 +89,7 @@ export const createNews = async (req: NextRequest) => {
     }
 };
 
-export const getNews = async (req: NextRequest) => {
+export const getNews = async (_req: NextRequest) => {
     try {
         await initializeDataSource();
         const newsRepository = AppDataSource.getRepository(News);
@@ -115,7 +108,7 @@ export const getNews = async (req: NextRequest) => {
 };
 
 export const getNewsByIdTypeOfSport = async (
-    req: NextRequest,
+    _req: NextRequest,
     context: { params: { id: string } }
 ) => {
     try {
@@ -140,7 +133,7 @@ export const getNewsByIdTypeOfSport = async (
 };
 
 export const deleteNews = async (
-    req: NextRequest,
+    _req: NextRequest,
     context: { params: { id: string } }
 ) => {
     try {
@@ -261,7 +254,7 @@ export const updateNews = async (
 };
 
 
-export const getAllNewsBysport=async(req:NextRequest,{params}:{params:{id:string}})=>{
+export const getAllNewsBysport=async(_req:NextRequest,{params}:{params:{id:string}})=>{
     try{
         const {id}=params;
         await initializeDataSource();

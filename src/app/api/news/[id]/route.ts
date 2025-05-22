@@ -6,7 +6,7 @@ export const GET = async (req: NextRequest, context: { params: { id: string } })
         return news
 
     } catch (error) {
-        return NextResponse.json({ error: "Error getting news" })
+        return NextResponse.json({ error: "Error getting news",message:error })
     }
 
 }
@@ -16,7 +16,7 @@ export const DELETE = async(req:NextRequest,context:{params:{id:string}})=>{
         return news
 
     } catch (error) {
-        return NextResponse.json({ error: "Error getting news" })
+        return NextResponse.json({ error: "Error getting news",message:error })
     }
 
 }
@@ -26,7 +26,7 @@ export const PUT= async (req:NextRequest, context:{params:{id:string}})=>{
         return news
 
     } catch (error) {
-        return NextResponse.json({ error: "Error getting news" })
+        return NextResponse.json({ error: "Error getting news",message:error })
     }
 
 }

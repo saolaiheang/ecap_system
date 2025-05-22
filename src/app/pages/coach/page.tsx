@@ -2,7 +2,7 @@
 
 import Header from "@/components/header";
 import { useEffect, useState } from "react";
-
+import Image from "next/image";
 interface CoachInput {
   id: string;
   name: string;
@@ -42,8 +42,9 @@ export default function Coachpage() {
         }
 
         setCoaches(coachList);
-      } catch (err: any) {
-        setError(err.message || "Something went wrong");
+      } catch (err) {
+        console.error(err)
+        setError("Internal server err");
       } finally {
         setLoading(false);
       }
@@ -76,7 +77,7 @@ export default function Coachpage() {
               className="rounded-3xl overflow-hidden shadow-lg border border-gray-200 bg-white group hover:shadow-blue-400 transition duration-300"
             >
               <div className="h-[260px] overflow-hidden relative">
-                <img
+                <Image
                   src={coach.image || "https://via.placeholder.com/300x300"}
                   alt={coach.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

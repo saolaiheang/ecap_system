@@ -14,6 +14,10 @@ interface Competition {
   teamB: { name: string };
   sportType: { name: string };
 }
+
+interface Props {
+  sport: string;
+
 interface SportType {
   id: string;
   name: string;
@@ -22,14 +26,17 @@ interface SportType {
 interface Team {
   id: string;
   name: string;
+
 }
 
-export default function FetchMatch() {
+export default function FetchMatch({ sport }: Props) {
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
   const [typeofsport, setSportTypes] = useState<SportType[]>([]);
+
 
   const [form, setForm] = useState({
     match_date: "",
@@ -54,7 +61,7 @@ export default function FetchMatch() {
       const data = await res.json();
       setCompetitions(data.data || []);
     } catch (err) {
-      setError("Failed to load matches.");
+      setError(`Failed to load matches. ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setLoading(false);
     }
@@ -88,7 +95,7 @@ export default function FetchMatch() {
       if (!res.ok) throw new Error("Failed to delete match");
       setCompetitions((prev) => prev.filter((c) => c.id !== id));
     } catch (err) {
-      alert("Error deleting match.");
+      alert(`Error deleting match.${err instanceof Error ? err.message : String(err)}`);
     }
   };
 
@@ -110,15 +117,16 @@ export default function FetchMatch() {
         teamB_id: "",
       });
     } catch (err) {
-      alert("Error adding match.");
+      alert(`Error adding match.${err instanceof Error ? err.message : String(err)}`);
     }
   };
 
   useEffect(() => {
     fetchCompetitions();
-    fetchTeams();
-    fetchSportTypes();
-  }, []);
+  }, [sport]);
+  
+
+
 
   if (loading) return <p className="px-8 py-6">Loading competitions...</p>;
   if (error) return <p className="px-8 py-6 text-red-500">{error}</p>;

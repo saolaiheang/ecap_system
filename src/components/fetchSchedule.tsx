@@ -41,8 +41,11 @@ interface Team {
   name: string;
   division: string;
 }
+interface Props {
+  sport: string;
+}
 
-export default function FetchSchedule() {
+export default function FetchSchedule({sport}:Props) {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(false);
   const [coaches, setCoaches] = useState<Coach[]>([]);
@@ -194,6 +197,17 @@ export default function FetchSchedule() {
     });
   };
 
+
+  useEffect(() => {
+    if (sport) {
+      const sportObj = sports.find(s => s.name === sport);
+      if (sportObj) {
+        setFormData(prev => ({ ...prev, sport_type_id: sportObj.id }));
+      }
+    }
+  }, [sport, sports]);
+
+  
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="mb-8 border border-gray-300 rounded p-4 bg-gray-50">

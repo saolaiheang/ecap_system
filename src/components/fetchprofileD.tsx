@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState, ChangeEvent } from "react";
-
+import Image from "next/image";
 interface Sport {
   id: string;
   name: string;
@@ -195,6 +195,12 @@ export default function PlayerProfileBySport({ sport }: Props){
     fetchPlayers();
   }, [selectedSport]);
 
+  useEffect(() => {
+    if (sport) {
+      setSelectedSport(sport);
+    }
+  }, [sport]);
+
   const handleDeletePlayer = async (id: string) => {
     if (confirm("Are you sour you want to delete this player")) {
       try {
@@ -336,7 +342,7 @@ export default function PlayerProfileBySport({ sport }: Props){
               <tr key={player.id} >
                 <td className="border px-4 py-2">{index + 1}</td>
                 <td className="border px-4 py-2">
-                  <img
+                  <Image
                     src={player.image}
                     alt={player.name}
                     className="w-16 h-16 object-cover rounded-full"

@@ -4,7 +4,6 @@ import { initializeDataSource } from "@/utils/inititializeDataSource";
 import { Match, SportType, Stage, Team } from "@/entities";
 import { AppDataSource } from "@/config";
 import { MatchStatus } from "@/entities/match";
-import { date } from "zod";
 export const createMatch = async (req: NextRequest, { params }: { params: { id: string; stage_id: string } }) => {
   try {
     const { stage_id, id: competition_id } = params;
@@ -57,7 +56,7 @@ export const createMatch = async (req: NextRequest, { params }: { params: { id: 
   }
 };
 
-export const getAllMatchByStage = async (req: NextRequest, { params }: { params: { id: string, stage_id: string } }) => {
+export const getAllMatchByStage = async (_req: NextRequest, { params }: { params: { id: string, stage_id: string } }) => {
   try {
 
     const { stage_id, id: competition_id } = params;
@@ -106,7 +105,7 @@ export const getMatchById = async (_req: NextRequest, { params }: { params: { id
   }
 }
 
-export const deleteMatch = async (req: NextRequest, { params }: { params: { id: string, stage_id: string, match_id: string } }) => {
+export const deleteMatch = async (_req: NextRequest, { params }: { params: { id: string, stage_id: string, match_id: string } }) => {
   try {
     const { stage_id, id: competition_id, match_id } = params;
     await initializeDataSource();
@@ -173,7 +172,7 @@ export const updateMatch = async (req: NextRequest, { params }: { params: { id: 
 }
 
 
-export const getAllMatch = async (req: NextRequest) => {
+export const getAllMatch = async (_req: NextRequest) => {
   try {
 
     await initializeDataSource();

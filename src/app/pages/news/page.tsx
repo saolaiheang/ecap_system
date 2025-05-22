@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Header from "@/components/header";
-
+import Image from "next/image";
 interface NewsItem {
   id: string;
   title: string;
@@ -47,7 +47,7 @@ export default function Newspage() {
         <section className="px-4 sm:px-8 md:px-16 lg:px-[150px] py-10 font-sans animate-fade-in">
           {/* Featured news */}
           <div className="relative h-[280px] sm:h-[380px] md:h-[460px] rounded-2xl overflow-hidden shadow-lg mb-12">
-            <img
+            <Image
               src={news[0].image}
               alt={news[0].title}
               className="object-cover w-full h-full"
@@ -71,7 +71,7 @@ export default function Newspage() {
                 key={item.id}
                 className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition duration-300 hover:-translate-y-1"
               >
-                <img
+                <Image
                   src={item.image}
                   alt={item.title}
                   className="w-full h-[180px] sm:h-[200px] object-cover"

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, ChangeEvent } from "react";
-
+import Image from "next/image";
 interface History {
   id: string;
   year: string;
@@ -17,14 +17,12 @@ export default function FetchHistories() {
   const [editId, setEditId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Fetch history data
   const fetchHistories = async () => {
     setLoading(true);
     try {
       const res = await fetch("/api/histories");
       const data = await res.json();
       console.log("Fetched histories:", data); // DEBUG LOG
-      // 🟡 Make sure this matches the actual key from the API response
       setHistories(data.data || data.histories || []);
     } catch (err) {
       console.error("Failed to fetch histories", err);
@@ -186,7 +184,7 @@ export default function FetchHistories() {
                   <tr key={item.id}>
                     <td className="border p-2 text-center">{idx + 1}</td>
                     <td className="border p-2 text-center">
-                      <img
+                      <Image
                         src={item.imageUrl || "/placeholder.jpg"}
                         alt={item.title}
                         className="w-16 h-16 object-cover rounded"

@@ -3,6 +3,7 @@
 
 import { useState, useEffect, ChangeEvent, useRef } from "react";
 import { useRouter } from "next/navigation";
+import React from "react";
 import Image from "next/image";
 interface Competition {
   id: string;
@@ -18,11 +19,7 @@ interface SportType {
   name: string;
 }
 
-interface Props {
-  sport: string;
-}
-
-export default function CompetitionManager({ sport }: Props) {
+export default function CompetitionManager() {
   const [sportTypes, setSportTypes] = useState<SportType[]>([]);
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [competitionForm, setCompetitionForm] = useState({
@@ -129,16 +126,11 @@ export default function CompetitionManager({ sport }: Props) {
       alert("Competition created successfully!");
     } catch (err) {
       console.error("Error creating competition:", err);
-      setError( "Failed to create competition. Please try again.");
+      setError( `Failed to create competition. Please try again.${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setIsLoading(false);
     }
   };
-  useEffect(() => {
-    if (sport) {
-      setSelectedSportId(sport);
-    }
-  }, [sport]);
 
   const handleEditClick = (comp: Competition) => {
     setEditingCompetitionId(comp.id);
@@ -150,8 +142,6 @@ export default function CompetitionManager({ sport }: Props) {
     });
     setSelectedSportId(selectedSportId || ""); // Assuming sport_type_id is returned
   };
-
-  
 
   const handleUpdateClick = async (id: string) => {
     if (!selectedSportId) {
@@ -199,7 +189,7 @@ export default function CompetitionManager({ sport }: Props) {
       alert("Competition updated successfully!");
     } catch (err) {
       console.error("Failed to update competition:", err);
-      setError( "Failed to update competition. Please try again.");
+      setError( `Failed to update competition. Please try again.${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setIsLoading(false);
     }

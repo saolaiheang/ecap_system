@@ -35,8 +35,10 @@ export default function SchedulePage() {
         if (!res.ok) throw new Error("Failed to fetch schedule");
         const data = await res.json();
         setSchedule(data.data);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err) {
+        console.error("Failed to fetch schedule:", err);
+
+        setError("An unexpected error occurred.");
       } finally {
         setLoading(false);
       }

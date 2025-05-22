@@ -1,5 +1,4 @@
 "use client";
-
 import Image from "next/image";
 import { Button } from "@/components/button";
 export default function CompetitionLayout() {
@@ -38,7 +37,7 @@ export default function CompetitionLayout() {
             key={i}
             className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200"
           >
-            <img
+            <Image
               src={comp.image}
               alt={comp.title}
               width={800}

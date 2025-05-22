@@ -7,13 +7,7 @@ import fs, { writeFile } from "fs/promises";
 import cloudinary from "@/lib/cloudinary";
 import os from "os";
 
-interface CoachInput {
-    name: string,
-    contact_info: string,
-    image: string,
-    team_id: string,
-    sport_id: string
-}
+
 export const config = {
     api: {
         bodyParser: false,
@@ -121,7 +115,7 @@ export const createCoach = async (req: NextRequest, { params }: { params: { id: 
 
 }
 
-export const getCoaches = async (req: NextRequest) => {
+export const getCoaches = async (_: NextRequest) => {
     try {
         await initializeDataSource();
         const coachRepository = AppDataSource.getRepository(Coach);
@@ -222,11 +216,9 @@ export const updateCoachById = async (req: NextRequest, { params }: { params: { 
         const contact_info = formData.get("contact_info") as string;
         const imageFile = formData.get("image") as File;
 
-        // Update the basic fields
         if (name) coach.name = name;
         if (contact_info) coach.contact_info = contact_info;
 
-        // If an image is included, upload it to Cloudinary
         if (imageFile) {
             if (!imageFile.type.startsWith("image/")) {
                 return NextResponse.json(
@@ -235,12 +227,10 @@ export const updateCoachById = async (req: NextRequest, { params }: { params: { 
                 );
             }
 
-            // Save the image temporarily
             const tempFilePath = `${os.tmpdir()}/${imageFile.name}-${Date.now()}`;
             const fileBuffer = Buffer.from(await imageFile.arrayBuffer());
             await writeFile(tempFilePath, fileBuffer);
 
-            // Upload to Cloudinary
             const uploadResult = await cloudinary.uploader.upload(tempFilePath, {
                 folder: "coachs",
                 public_id: `${name}-${Date.now()}`,

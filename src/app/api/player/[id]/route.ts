@@ -1,5 +1,5 @@
 import { deletePlayerById,updatePlayerById } from "@/controllers/players/players.controller";
-import { NextRequest,NextResponse } from "next/server"
+import { NextRequest } from "next/server"
 export const DELETE=async(req:NextRequest,context:{params:{id:string}})=>{
     return await deletePlayerById(req,context)
 }

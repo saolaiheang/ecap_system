@@ -6,13 +6,7 @@ import { initializeDataSource } from "@/utils/inititializeDataSource";
 import fs, { writeFile } from "fs/promises";
 import cloudinary from "@/lib/cloudinary";
 import os from "os";
-interface CompetitionInput {
-    name: string;
-    location: string;
-    start_date: Date;
-    sport_type_id: string;
-    image: string;
-}
+
 export const config = {
     api: {
         bodyParser: false,
@@ -124,7 +118,7 @@ export const getCompetitionByTypeOfSport = async (params: { id: string }) => {
         );
     }
 };
-export const getAllCompetitions = async (req: NextRequest) => {
+export const getAllCompetitions = async (_req: NextRequest) => {
     try {
         await initializeDataSource();
         const competitionRepository = AppDataSource.getRepository(Competition);
@@ -246,7 +240,13 @@ export const updateCompetition = async (req: NextRequest, context: { params: { i
 
         const competitionRepository = AppDataSource.getRepository(Competition);
        
-
+        const parsedStartDate = new Date(start_date);
+        if (isNaN(parsedStartDate.getTime())) {
+          return NextResponse.json(
+            { error: "Invalid start date format" },
+            { status: 400 }
+          );
+        }
 
         const competition = await competitionRepository.findOne({ where: { id } });
         if (!competition) {
@@ -255,6 +255,11 @@ export const updateCompetition = async (req: NextRequest, context: { params: { i
                 { status: 404 }
             );
         }
+        competition.name = name;
+        competition.location = location;
+        competition.start_date =parsedStartDate;
+        competition.sportType = sportType;
+        competition.image = uploadResult.secure_url;
 
         if (sport_type_id) {
             const sportType = await sportTypeRepository.findOne({ where: { id: sport_type_id } });
@@ -282,7 +287,7 @@ export const updateCompetition = async (req: NextRequest, context: { params: { i
     }
 };
 
-export const deleteCompetition = async (req: NextRequest, context: { params: { id: string } }) => {
+export const deleteCompetition = async (_req: NextRequest, context: { params: { id: string } }) => {
     try {
         await initializeDataSource();
 

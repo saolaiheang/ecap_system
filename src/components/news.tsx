@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
+import Image from "next/image";
 interface NewsItem {
   id: string;
   title: string;
@@ -56,7 +56,7 @@ export default function News() {
 
           {/* Featured News */}
           <div className="relative h-[300px] sm:h-[400px] md:h-[460px] rounded-2xl overflow-hidden shadow-lg group transition-transform duration-500 hover:scale-[1.01]">
-            <img
+            <Image
               src={news[0].image}
               alt={news[0].title}
               className="object-cover w-full h-full"
@@ -79,7 +79,7 @@ export default function News() {
                 key={item.id}
                 className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col"
               >
-                <img
+                <Image
                   src={item.image}
                   alt={item.title}
                   className="w-full h-[180px] object-cover"

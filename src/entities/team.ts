@@ -7,7 +7,6 @@ import { Coach } from "./coach";
 import { Match } from "./match";
 import { ScheduleTraining } from "./schedule_training";
 import {v4 as uuidv4} from'uuid'
-import { match } from "assert";
 
 @Entity()
 export class Team {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
+import Image from "next/image";
 interface PlayerInput {
   name: string;
   position: string;
@@ -24,8 +24,10 @@ export default function Player() {
         }
         const data = await res.json();
         setPlayers(data.data || []);
-      } catch (err: any) {
-        setError(err.message || "Something went wrong");
+      } catch (error) {
+        console.error("Failed to fetch player", error);
+
+        setError("Something went wrong");
       } finally {
         setLoading(false);
       }
@@ -47,7 +49,7 @@ export default function Player() {
             className="bg-white rounded-2xl shadow-md overflow-hidden border border-blue-100 hover:shadow-blue-900 transition duration-300"
           >
             <div className="h-[300px] w-full overflow-hidden">
-              <img
+              <Image
                 src={player.image || "https://via.placeholder.com/300x300"}
                 alt={player.name}
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"

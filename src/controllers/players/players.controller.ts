@@ -9,14 +9,7 @@ import os from "os";
 
 
 
-interface PlayerInput {
-    name: string;
-    position: string;
-    contact_info: string;
-    team_id?: string;
-    sport_id?: string;
-    image?: string;
-}
+
 
 
 export const config = {
@@ -195,7 +188,7 @@ export const getPlayersByteams = async (req: NextRequest, { params }: { params: 
 };
 
 
-export const getPlayers = async (req: NextRequest) => {
+export const getPlayers = async (_req: NextRequest) => {
     try {
         await initializeDataSource();
         const playerRepository = AppDataSource.getRepository(Player);

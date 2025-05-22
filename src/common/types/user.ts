@@ -4,5 +4,5 @@ import { RoleType } from '../../common';
 export interface TokenPayload {
   id: string;
   role: RoleType;
-  [key: string]: any;
+  [key: string]: string | number | RoleType;
 }

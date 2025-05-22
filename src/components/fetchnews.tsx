@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, ChangeEvent } from "react";
-
+import Image from "next/image";
 interface Sport {
   id: string;
   name: string;
@@ -97,6 +97,12 @@ export default function FetchNews({ sport }: { sport: string }) {
       alert("Failed to submit news");
     }
   };
+
+  useEffect(() => {
+    if (sport) {
+      setSelectedSport(sport);
+    }
+  }, [sport]);
 
   const handleEdit = (news: News) => {
     setEditNewsId(news.id);
@@ -225,7 +231,7 @@ export default function FetchNews({ sport }: { sport: string }) {
                     </td>
                     <td className="border px-4 py-2">
                       <div className="flex justify-center items-center">
-                        <img
+                        <Image
                           src={news.image}
                           alt={news.title}
                           className="w-16 h-16 object-cover rounded"

@@ -63,7 +63,7 @@ export const createHistory = async (req: NextRequest) => {
     }
 }
 
-export const getAllHistory = async (req: NextRequest) => {
+export const getAllHistory = async (_req: NextRequest) => {
     try {
         await initializeDataSource();
         const historyRepository = AppDataSource.getRepository(History);
@@ -80,7 +80,7 @@ export const getAllHistory = async (req: NextRequest) => {
     }
 }
 
-export const deleteHistory = async (req: NextRequest, { params }: { params: { id: string } }) => {
+export const deleteHistory = async (_req: NextRequest, { params }: { params: { id: string } }) => {
     try {
         await initializeDataSource();
         const { id } = params;

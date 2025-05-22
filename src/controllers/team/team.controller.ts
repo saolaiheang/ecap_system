@@ -120,7 +120,7 @@ export const getTeamsByTypeOf= async (req: NextRequest, context: { params: { id:
     }
 };
 
-export const getTeams = async (req: NextRequest) => {
+export const getTeams = async (_req: NextRequest) => {
     try {
         await initializeDataSource();
         const teamRepository = AppDataSource.getRepository(Team);

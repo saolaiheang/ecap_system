@@ -12,7 +12,7 @@ console.log("Migrations Path:", migrationPath);
 
 dotenv.config();
 
-const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, NODE_ENV } =
+const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME } =
   process.env;
 
 export const AppDataSource = new DataSource({

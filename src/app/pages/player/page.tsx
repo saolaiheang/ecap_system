@@ -2,7 +2,7 @@
 
 import Header from "@/components/header";
 import { useEffect, useState } from "react";
-
+import Image from "next/image";
 interface PlayerInput {
   id?: string;
   name: string;
@@ -40,8 +40,9 @@ export default function Playerpage() {
         // Assuming API response shape: { data: PlayerInput[] } or PlayerInput[]
         const playerList = Array.isArray(data) ? data : data.data || [];
         setPlayers(playerList);
-      } catch (err: any) {
-        setError(err.message || "Something went wrong");
+      } catch (err) {
+        console.error(err)
+        setError( "Something went wrong");
       } finally {
         setLoading(false);
       }
@@ -72,7 +73,7 @@ export default function Playerpage() {
               className="bg-white rounded-3xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-blue-400 transition duration-300"
             >
               <div className="h-[280px] w-full overflow-hidden relative">
-                <img
+                <Image
                   src={player.image || "https://via.placeholder.com/300x300"}
                   alt={player.name}
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"

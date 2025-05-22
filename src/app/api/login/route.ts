@@ -1,7 +1,7 @@
 import { login } from "@/controllers/user/user.controller";
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-export const POST = async (req: NextRequest, res: NextResponse) => {
+export const POST = async (req: NextRequest) => {
   try {
     if (req.method !== "POST") {
       return NextResponse.json({ error: "Method not allowed" }, { status: 405 });

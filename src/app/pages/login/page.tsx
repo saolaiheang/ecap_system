@@ -57,8 +57,9 @@ export default function LoginPage() {
       localStorage.setItem("token", data.token);
 
       router.push("/pages/adminpage");
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred.");
+    } catch (err) {
+      console.log(err)
+      setError( "An unexpected error occurred.");
     }
   };
 

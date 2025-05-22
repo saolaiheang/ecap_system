@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState, ChangeEvent } from "react";
-
+import Image from "next/image";
 interface Sport {
   id: string;
   name: string;
@@ -43,6 +43,12 @@ export default function CoachesProfileBySport({ sport }: Props){
     contact_info: "",
     image: ""
   })
+
+  useEffect(() => {
+    if (sport) {
+      setSelectedSport(sport);
+    }
+  }, [sport]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -326,7 +332,7 @@ export default function CoachesProfileBySport({ sport }: Props){
               <tr key={coach.id} >
                 <td className="border px-4 py-2">{index + 1}</td>
                 <td className="border px-4 py-2">
-                  <img
+                  <Image
                     src={coach.image}
                     alt={coach.name}
                     className="w-16 h-16 object-cover rounded-full"

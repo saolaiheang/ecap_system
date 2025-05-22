@@ -147,6 +147,7 @@ export default function PlayerProfileBySport({ sport }: Props){
 
         if (data && Array.isArray(data.typeOfSport)) {
           setSports(data.typeOfSport);
+          console.log("sport",data.typeOfSport)
         } else {
           console.error("Invalid response structure:", data);
           setSports([]);
@@ -163,11 +164,14 @@ export default function PlayerProfileBySport({ sport }: Props){
 
   useEffect(() => {
     if (selectedSport) {
+      console.log("Fetching team for sport id:", selectedSport);
+
       const fetchTeams = async () => {
         try {
           const res = await fetch(`/api/team/by-sport/${selectedSport}`);
           const data = await res.json();
           setTeams(data.data);
+          console.log(data.data)
         } catch (err) {
           console.error("Failed to fetch teams", err);
         }
@@ -181,6 +185,7 @@ export default function PlayerProfileBySport({ sport }: Props){
     const fetchPlayers = async () => {
       if (!selectedSport) return;
       setLoading(true);
+      console.log("Fetching players for sport id:", selectedSport);
       try {
         const res = await fetch(`/api/player/by-sport/${selectedSport}`);
         const data = await res.json();
@@ -197,6 +202,7 @@ export default function PlayerProfileBySport({ sport }: Props){
 
   useEffect(() => {
     if (sport) {
+      console.log("Prop sport selected:", sport);
       setSelectedSport(sport);
     }
   }, [sport]);
@@ -223,6 +229,8 @@ export default function PlayerProfileBySport({ sport }: Props){
       player.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       player.position.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+    
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold text-[#1D276C] mb-4 capitalize">
@@ -258,7 +266,6 @@ export default function PlayerProfileBySport({ sport }: Props){
           ))}
         </select>
 
-        {/* Search Input */}
         <input
           type="text"
           placeholder="Search by Name or Position"
@@ -345,6 +352,8 @@ export default function PlayerProfileBySport({ sport }: Props){
                   <Image
                     src={player.image}
                     alt={player.name}
+                    width={40}
+                    height={40}
                     className="w-16 h-16 object-cover rounded-full"
                   />
                 </td>

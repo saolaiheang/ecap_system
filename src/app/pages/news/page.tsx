@@ -50,6 +50,8 @@ export default function Newspage() {
             <Image
               src={news[0].image}
               alt={news[0].title}
+              width={150}
+              height={100}
               className="object-cover w-full h-full"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-end p-6 sm:p-10">
@@ -74,6 +76,8 @@ export default function Newspage() {
                 <Image
                   src={item.image}
                   alt={item.title}
+                  width={150}
+                  height={150}
                   className="w-full h-[180px] sm:h-[200px] object-cover"
                 />
                 <div className="p-5 flex flex-col h-full">

@@ -80,6 +80,8 @@ export default function Coachpage() {
                 <Image
                   src={coach.image || "https://via.placeholder.com/300x300"}
                   alt={coach.name}
+                  width={100}
+                  height={100}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

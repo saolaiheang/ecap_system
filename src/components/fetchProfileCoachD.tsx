@@ -44,11 +44,7 @@ export default function CoachesProfileBySport({ sport }: Props){
     image: ""
   })
 
-  useEffect(() => {
-    if (sport) {
-      setSelectedSport(sport);
-    }
-  }, [sport]);
+
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -152,6 +148,7 @@ export default function CoachesProfileBySport({ sport }: Props){
 
         if (data && Array.isArray(data.typeOfSport)) {
           setSports(data.typeOfSport);
+          console.log(data.typeOfSport)
         } else {
           console.error("Invalid response structure:", data);
           setSports([]);
@@ -168,6 +165,8 @@ export default function CoachesProfileBySport({ sport }: Props){
 
   useEffect(() => {
     if (selectedSport) {
+      console.log("Fetching team for sport id:", selectedSport);
+
       const fetchTeams = async () => {
         try {
           const res = await fetch(`/api/team/by-sport/${selectedSport}`);
@@ -216,6 +215,15 @@ export default function CoachesProfileBySport({ sport }: Props){
 
 
   }
+
+
+  useEffect(() => {
+    if (sport) {
+      console.log("Prop sport selected:", sport);
+      setSelectedSport(sport);
+    }
+  }, [sport]);
+  
   const filteredCoaches = (coaches ?? [])
     .filter((coach) => coach.name)
     .filter((coach) =>
@@ -335,6 +343,8 @@ export default function CoachesProfileBySport({ sport }: Props){
                   <Image
                     src={coach.image}
                     alt={coach.name}
+                    width={50}
+                    height={50}
                     className="w-16 h-16 object-cover rounded-full"
                   />
                 </td>

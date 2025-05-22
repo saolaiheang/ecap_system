@@ -44,6 +44,8 @@ function MatchCard({
           <Image
             src={teamA.image || defaultImage}
             alt={teamA.name}
+            width={100}
+            height={100}
             className="w-12 h-12 rounded-full mx-auto"
           />
           <p className="text-sm mt-2">{teamA.name}</p>
@@ -55,6 +57,8 @@ function MatchCard({
           <Image
             src={teamB.image || defaultImage}
             alt={teamB.name}
+            width={100}
+            height={100}
             className="w-12 h-12 rounded-full mx-auto"
           />
           <p className="text-sm mt-2">{teamB.name}</p>

@@ -76,6 +76,8 @@ export default function Playerpage() {
                 <Image
                   src={player.image || "https://via.placeholder.com/300x300"}
                   alt={player.name}
+                  width={100}
+                  height={100}
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                 />
               </div>

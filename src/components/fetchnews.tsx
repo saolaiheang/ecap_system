@@ -46,9 +46,12 @@ export default function FetchNews({ sport }: { sport: string }) {
   const fetchNews = async (sportId: string) => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/news/by-sport/${sportId}`);
+      const res = await fetch(
+        `/api/news/by-sport/${sportId}`
+      );
       const data = await res.json();
       setNewsList(data.data);
+      console.log("new", data.data);
     } catch (err) {
       console.error("Failed to fetch news", err);
     } finally {
@@ -151,6 +154,9 @@ export default function FetchNews({ sport }: { sport: string }) {
     }
   }, [selectedSport]);
 
+
+
+
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto">
       <h2 className="text-2xl md:text-3xl font-bold text-[#1D276C] mb-6 md:text-left">
@@ -223,8 +229,8 @@ export default function FetchNews({ sport }: { sport: string }) {
               </tr>
             </thead>
             <tbody>
-              {newsList.length > 0 ? (
-                newsList.map((news, index) => (
+              {Array.isArray(newsList) &&newsList.length > 0 ? (
+                newsList.map((news,index) => (
                   <tr key={news.id}>
                     <td className="border px-4 py-2 text-center">
                       {index + 1}
@@ -232,9 +238,11 @@ export default function FetchNews({ sport }: { sport: string }) {
                     <td className="border px-4 py-2">
                       <div className="flex justify-center items-center">
                         <Image
-                          src={news.image}
-                          alt={news.title}
-                          className="w-16 h-16 object-cover rounded"
+                          src={news?.image || "/placeholder.jpg"}
+                          alt={news?.title || "News Image"}
+                          width={64}
+                          height={64}
+                          className="object-cover"
                         />
                       </div>
                     </td>

@@ -17,6 +17,7 @@ interface Competition {
 
 interface Props {
   sport: string;
+}
 
 interface SportType {
   id: string;
@@ -56,7 +57,7 @@ export default function FetchMatch({ sport }: Props) {
   const fetchCompetitions = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/match_friendly/b");
+      const res = await fetch("/api/match_friendly/");
       if (!res.ok) throw new Error("Failed to fetch matches.");
       const data = await res.json();
       setCompetitions(data.data || []);
@@ -123,6 +124,8 @@ export default function FetchMatch({ sport }: Props) {
 
   useEffect(() => {
     fetchCompetitions();
+    fetchSportTypes();
+    fetchTeams();
   }, [sport]);
   
 

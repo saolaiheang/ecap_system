@@ -266,7 +266,7 @@ export default function DashboardLayout() {
                   className="cursor-pointer hover:underline"
                   onClick={() => setSelectedContent("profile-coach")}
                 >
-                  Coach
+                  Coach erty
                 </p>
               </div>
             )}

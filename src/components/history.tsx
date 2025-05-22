@@ -61,6 +61,8 @@ export default function HistorySection() {
                   <Image
                     src={item.imageUrl}
                     alt={item.title}
+                    width={150}
+                    height={100}
                     className="w-full md:w-[240px] h-[160px] object-cover rounded-xl shadow-md"
                   />
 

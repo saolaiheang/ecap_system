@@ -1,7 +1,8 @@
+// next.config.mjs
+
+import path from 'path';
+
 /** @type {import('next').NextConfig} */
-// const path = require('path');
-
-
 export const nextConfig = {
   webpack(config) {
     // Allow dynamic expressions without warning
@@ -10,17 +11,15 @@ export const nextConfig = {
     // Add alias support
     config.resolve.alias = {
       ...config.resolve.alias,
-      "@": path.resolve(__dirname, "src"),
+      "@": path.resolve(process.cwd(), "src"), // Use process.cwd() in .mjs
     };
 
     return config;
   },
 
   images: {
-    domains: ['res.cloudinary.com'],
+    domains: ['res.cloudinary.com'], // ✅ Allow Cloudinary
   },
 };
 
-// module.exports = nextConfig;
-
-
+export default nextConfig; // ✅ Required for Next.js to pick it up

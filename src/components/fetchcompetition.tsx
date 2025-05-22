@@ -351,7 +351,10 @@ export default function CompetitionManager({ sport }: Props) {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {comp.image ? (
-                      <Image src={comp.image} alt={comp.name} className="h-12 w-12 object-cover rounded" />
+                      <Image src={comp.image}
+                      width={150}
+                      height={100}
+                       alt={comp.name} className="h-12 w-12 object-cover rounded" />
                     ) : (
                       "No image"
                     )}

@@ -25,6 +25,7 @@ export default function TypesOfSport() {
         } else {
           console.error("Unexpected data format", data);
         }
+        console.log('sports',data.typeOfSport)
       } catch (error) {
         console.error("Failed to fetch types of sport:", error);
       }
@@ -48,27 +49,34 @@ export default function TypesOfSport() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {displayedSports.map((sport) => (
-          <div
-            key={sport.id}
-            className="relative rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition duration-300 group"
-          >
-            <Image
-              src={sport.image}
-              alt={sport.name}
-              className="w-full h-48 sm:h-52 md:h-56 object-cover group-hover:scale-105 transition-transform duration-300"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-blue-900 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition duration-300"></div>
-            <div className="absolute bottom-0 p-4 text-white">
-              <h2 className="text-lg sm:text-xl font-bold">{sport.name}</h2>
-              <p className="text-sm sm:text-base mt-1 group-hover:text-blue-100 hover:font-semibold transition line-clamp-2">
-                {sport.description}
-              </p>
-            </div>
-          </div>
-        ))}
+  {sports.length === 0 && (
+    <p className="text-red-500 col-span-full text-center text-lg">
+      No sports found.
+    </p>
+  )}
+
+  {displayedSports.map((sport) => (
+    <div
+      key={sport.id}
+      className="relative h-60 rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition duration-300 group"
+    >
+      <Image
+        src={sport?.image || "/placeholder.jpg"}
+        alt={sport.name || "News Image"}
+        fill
+        className="object-cover"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-blue-900 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition duration-300"></div>
+      <div className="absolute bottom-0 p-4 text-white">
+        <h2 className="text-lg sm:text-xl font-bold">{sport.name}</h2>
+        <p className="text-sm sm:text-base mt-1 group-hover:text-blue-100 hover:font-semibold transition line-clamp-2">
+          {sport.description}
+        </p>
       </div>
+    </div>
+  ))}
+</div>
+
     </section>
   );
 }

@@ -12,6 +12,7 @@ interface NewsItem {
 
 export default function News() {
   const [news, setNews] = useState<NewsItem[]>([]);
+  console.log("new", news);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,15 +20,18 @@ export default function News() {
       try {
         const res = await fetch("/api/news");
         const data = await res.json();
-        if (Array.isArray(data.data)) {
-          const sorted = data.data.sort(
-            (a: NewsItem, b: NewsItem) =>
-              new Date(b.date).getTime() - new Date(a.date).getTime()
-          );
-          setNews(sorted.slice(0, 4));
-        } else {
-          console.error("API response is not an array:", data.data);
-        }
+        // if (Array.isArray(data.data)) {
+        //   const sorted = data.data.sort(
+        //     (a: NewsItem, b: NewsItem) =>
+        //       new Date(b.date).getTime() - new Date(a.date).getTime()
+        //   );
+
+        //   setNews(sorted.slice(0, 4));
+        // } else {
+        //   console.error("API response is not an array:", data.data);
+        // }
+        setNews(data.data);
+        console.log("new", data.data[0].title);
       } catch (error) {
         console.error("Error fetching news:", error);
       } finally {
@@ -55,11 +59,13 @@ export default function News() {
           </h2>
 
           {/* Featured News */}
+
           <div className="relative h-[300px] sm:h-[400px] md:h-[460px] rounded-2xl overflow-hidden shadow-lg group transition-transform duration-500 hover:scale-[1.01]">
             <Image
-              src={news[0].image}
-              alt={news[0].title}
-              className="object-cover w-full h-full"
+              src={news[0]?.image || "/placeholder.jpg"}
+              alt={news[0].title || "News Image"}
+              fill // ✅ makes the image stretch to fit the parent
+              className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
             <div className="absolute bottom-6 left-6 sm:bottom-8 sm:left-8 text-white max-w-[90%] sm:max-w-xl">
@@ -74,25 +80,33 @@ export default function News() {
 
           {/* Other News */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mt-10 sm:mt-12">
-            {news.slice(1).map((item) => (
+            {news.map((item) => (
               <div
                 key={item.id}
                 className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col"
               >
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-[180px] object-cover"
-                  referrerPolicy="no-referrer"
-                />
+                <div className="relative w-full h-52">
+                  {" "}
+                  {/* ✅ Fix added here */}
+                  <Image
+                    src={item?.image || "/placeholder.jpg"}
+                    alt={item?.title || "News Image"}
+                    fill
+                   
+                    className="object-cover"
+                  />
+                </div>
+
                 <div className="p-4 sm:p-5 flex flex-col flex-grow">
                   <h4 className="text-lg sm:text-xl font-semibold text-blue-900 line-clamp-2">
-                    {item.title}
+                    {item?.title || "none"}
                   </h4>
                   <p className="text-gray-600 text-sm mt-2 line-clamp-3">
-                    {item.description}
+                    {item?.description}
                   </p>
-                  <p className="text-xs text-gray-400 mt-auto pt-3">{item.date}</p>
+                  <p className="text-xs text-gray-400 mt-auto pt-3">
+                    {item?.date}
+                  </p>
                 </div>
               </div>
             ))}

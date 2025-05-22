@@ -186,6 +186,8 @@ export default function FetchHistories() {
                     <td className="border p-2 text-center">
                       <Image
                         src={item.imageUrl || "/placeholder.jpg"}
+                        width={150}
+                        height={100}
                         alt={item.title}
                         className="w-16 h-16 object-cover rounded"
                       />

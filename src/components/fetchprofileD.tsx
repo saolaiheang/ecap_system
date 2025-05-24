@@ -12,9 +12,7 @@ interface Team {
   id: string;
   name: string;
 }
-interface Props {
-  sport: string;
-}
+
 interface Player {
   id: string;
   name: string;
@@ -29,7 +27,7 @@ interface Player {
 }
 
 
-export default function PlayerProfileBySport({ sport }: Props){
+export default function PlayerProfileBySport(){
   const [sports, setSports] = useState<Sport[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<string>("");
@@ -200,12 +198,7 @@ export default function PlayerProfileBySport({ sport }: Props){
     fetchPlayers();
   }, [selectedSport]);
 
-  useEffect(() => {
-    if (sport) {
-      console.log("Prop sport selected:", sport);
-      setSelectedSport(sport);
-    }
-  }, [sport]);
+ 
 
   const handleDeletePlayer = async (id: string) => {
     if (confirm("Are you sour you want to delete this player")) {

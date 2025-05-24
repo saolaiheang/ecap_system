@@ -3,12 +3,12 @@
 
 export default function Mission() {
   return (
-    <section className="bg-white py-20 px-6 md:px-12 lg:px-24">
+    <section className=" py-20 px-6 md:px-12 lg:px-24">
       <div className="max-w-4xl mx-auto text-center">
-        <h1 className="text-4xl font-bold text-blue-900 mb-10">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-pink-500  to-purple-700 bg-clip-text text-transparent drop-shadow-lg mb-10">
           Mission & Vision
         </h1>
-        <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
+        <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
           The mission of sport is to promote physical health, mental strength,
           and social development among individuals of all ages. Sport encourages
           fair play, respect, teamwork, and discipline—values that are essential

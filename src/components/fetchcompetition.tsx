@@ -10,7 +10,7 @@ interface Competition {
   location: string;
   start_date: string;
   image: string;
-  status: string; // Added for status column
+  sportType:SportType;
 }
 
 interface SportType {
@@ -18,11 +18,9 @@ interface SportType {
   name: string;
 }
 
-interface Props {
-  sport: string;
-}
 
-export default function CompetitionManager({ sport }: Props) {
+
+export default function CompetitionManager() {
   const [sportTypes, setSportTypes] = useState<SportType[]>([]);
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [competitionForm, setCompetitionForm] = useState({
@@ -57,7 +55,6 @@ export default function CompetitionManager({ sport }: Props) {
     fetchSportTypes();
   }, []);
 
-  // Fetch all competitions
   useEffect(() => {
     const fetchCompetitions = async () => {
       try {
@@ -134,21 +131,17 @@ export default function CompetitionManager({ sport }: Props) {
       setIsLoading(false);
     }
   };
-  useEffect(() => {
-    if (sport) {
-      setSelectedSportId(sport);
-    }
-  }, [sport]);
+
 
   const handleEditClick = (comp: Competition) => {
     setEditingCompetitionId(comp.id);
     setCompetitionForm({
       name: comp.name,
       location: comp.location,
-      start_date: comp.start_date.split("T")[0], // Format for date input
-      image: null, // Image reset, user must re-upload
+      start_date: comp.start_date.split("T")[0], 
+      image: null, 
     });
-    setSelectedSportId(selectedSportId || ""); // Assuming sport_type_id is returned
+    setSelectedSportId(selectedSportId || ""); 
   };
 
   
@@ -216,6 +209,8 @@ export default function CompetitionManager({ sport }: Props) {
   const handleViewStages = (competitionId: string) => {
     router.push(`/competitions/${competitionId}/stages`);
   };
+
+
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
@@ -337,7 +332,7 @@ export default function CompetitionManager({ sport }: Props) {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sport</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -359,7 +354,7 @@ export default function CompetitionManager({ sport }: Props) {
                       "No image"
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">{comp.status || "Active"}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{comp.sportType.name || "Active"}</td>
                   <td className="px-6 py-4 whitespace-nowrap flex gap-2">
                     <button
                       onClick={() => handleEditClick(comp)}
@@ -371,7 +366,7 @@ export default function CompetitionManager({ sport }: Props) {
                       onClick={() => handleViewStages(comp.id)}
                       className="text-purple-600 hover:text-purple-800"
                     >
-                      View Stages
+                      View
                     </button>
                    
                   </td>

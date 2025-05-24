@@ -12,9 +12,7 @@ interface Team {
   id: string;
   name: string;
 }
-interface Props {
-  sport: string;
-}
+
 interface Coaches {
   id: string;
   name: string;
@@ -28,7 +26,7 @@ interface Coaches {
 }
 
 
-export default function CoachesProfileBySport({ sport }: Props){
+export default function CoachesProfileBySport(){
   const [sports, setSports] = useState<Sport[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<string>("");
@@ -217,12 +215,7 @@ export default function CoachesProfileBySport({ sport }: Props){
   }
 
 
-  useEffect(() => {
-    if (sport) {
-      console.log("Prop sport selected:", sport);
-      setSelectedSport(sport);
-    }
-  }, [sport]);
+  
   
   const filteredCoaches = (coaches ?? [])
     .filter((coach) => coach.name)

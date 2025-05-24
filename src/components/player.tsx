@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+
 interface PlayerInput {
   name: string;
   position: string;
@@ -40,19 +41,21 @@ export default function Player() {
   if (error) return <p className="px-8 py-6 text-red-500">{error}</p>;
 
   return (
-    <section className="px-8 py-6">
-      <h2 className="text-4xl font-bold text-blue-600 mb-8 ">Player List</h2>
+    <section className="px-[150px] py-6">
+      <h2 className="text-3xl font-bold text-blue-900 mb-8 ">Player List</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
         {players.map((player, i) => (
           <div
             key={i}
             className="bg-white rounded-2xl shadow-md overflow-hidden border border-blue-100 hover:shadow-blue-900 transition duration-300"
           >
-            <div className="h-[300px] w-full overflow-hidden">
+            {/* Added relative here */}
+            <div className="relative h-[300px] w-full overflow-hidden">
               <Image
                 src={player.image || "https://via.placeholder.com/300x300"}
                 alt={player.name}
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                fill
+                className="object-cover hover:scale-105 transition-transform duration-300"
               />
             </div>
 

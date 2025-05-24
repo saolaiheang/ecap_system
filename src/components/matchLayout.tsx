@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { FaClock, FaMapMarkerAlt } from "react-icons/fa";
 import Image from "next/image";
+
 interface Team {
   name: string;
   image: string | null;
@@ -38,45 +39,43 @@ function MatchCard({
   const defaultImage = "https://via.placeholder.com/80x80?text=Team";
 
   return (
-    <div className="max-w-xs rounded-xl overflow-hidden shadow-lg bg-white">
-      <div className="bg-[#2C357C] text-white p-4 flex justify-between items-center rounded-t-xl">
-        <div className="text-center">
+    <div className="rounded-2xl overflow-hidden shadow-lg transition transform hover:scale-[1.02] hover:shadow-pink-300 duration-300 border border-pink-700 bg-white/90">
+      <div className="bg-gradient-to-r from-pink-500 to-purple-700 text-white p-5 flex justify-between items-center">
+        <div className="text-center space-y-2">
           <Image
             src={teamA.image || defaultImage}
             alt={teamA.name}
             width={100}
             height={100}
-            className="w-12 h-12 rounded-full mx-auto"
+            className="w-16 h-16 rounded-full mx-auto object-cover border border-white"
           />
-          <p className="text-sm mt-2">{teamA.name}</p>
+          <p className="text-sm font-medium">{teamA.name}</p>
         </div>
 
-        <p className="text-xl font-semibold">VS</p>
+        <div className="text-xl font-bold">VS</div>
 
-        <div className="text-center">
+        <div className="text-center space-y-2">
           <Image
             src={teamB.image || defaultImage}
             alt={teamB.name}
             width={100}
             height={100}
-            className="w-12 h-12 rounded-full mx-auto"
+            className="w-16 h-16 rounded-full mx-auto object-cover border border-white"
           />
-          <p className="text-sm mt-2">{teamB.name}</p>
+          <p className="text-sm font-medium">{teamB.name}</p>
         </div>
       </div>
 
-      <div className="bg-gray-300 p-4 space-y-2 rounded-b-xl">
-        <p className="text-center text-lg font-medium">{sport}</p>
+      <div className="bg-white p-4 space-y-2 text-center rounded-b-2xl">
+        <p className="text-lg font-semibold text-purple-700">{sport}</p>
 
-        <div className="flex items-center justify-center gap-2 text-sm text-gray-700">
-          <FaClock />
-          <span>
-            {date} - {time}
-          </span>
+        <div className="flex justify-center items-center gap-2 text-sm text-gray-600">
+          <FaClock className="text-pink-600" />
+          <span>{date} • {time}</span>
         </div>
 
-        <div className="flex items-center justify-center gap-2 text-sm text-gray-700">
-          <FaMapMarkerAlt />
+        <div className="flex justify-center items-center gap-2 text-sm text-gray-600">
+          <FaMapMarkerAlt className="text-pink-600" />
           <span>{location}</span>
         </div>
       </div>
@@ -97,9 +96,8 @@ export default function MatchLayout() {
         const data = await res.json();
         setMatches(data.data || []);
       } catch (error) {
-        console.error("Failed to fetch sport types:", error);
-
-        setError( "Something went wrong");
+        console.error("Failed to fetch matches:", error);
+        setError("Something went wrong");
       } finally {
         setLoading(false);
       }
@@ -108,18 +106,20 @@ export default function MatchLayout() {
     fetchMatches();
   }, []);
 
-  if (loading) return <p className="px-8 py-6 text-blue-600">Loading matches...</p>;
-  if (error) return <p className="px-8 py-6 text-red-500">{error}</p>;
-
   return (
-    <div className="p-8 px-[200px] bg-gray-50 min-h-screen">
-      <h2 className="text-3xl font-bold text-blue-900 mb-8 text-center">Upcoming Matches</h2>
+    <div className="px-6 sm:px-12 md:px-24 py-10 lg:px-[150px] bg-black/90 min-h-screen text-white">
+      <h2 className="text-3xl font-extrabold text-center mb-10 bg-gradient-to-r from-pink-500 to-purple-700 text-transparent bg-clip-text">
+        Upcoming Matches
+      </h2>
 
-      {!matches.length && (
-        <p className="text-center text-gray-600 text-lg">No matches available</p>
+      {loading && <p className="text-center text-pink-300">Loading matches...</p>}
+      {error && <p className="text-center text-red-500">{error}</p>}
+
+      {!loading && !matches.length && (
+        <p className="text-center text-pink-100 text-lg">No matches available</p>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         {matches.map((match) => (
           <MatchCard
             key={match.id}
@@ -127,7 +127,7 @@ export default function MatchLayout() {
             teamB={match.teamB}
             sport={match.sportType.name}
             date={new Date(match.match_date).toLocaleDateString("en-GB")}
-            time={match.match_time.slice(0, 5)} // or format time if needed
+            time={match.match_time.slice(0, 5)}
             location={match.location}
           />
         ))}

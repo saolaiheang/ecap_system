@@ -35,12 +35,15 @@ export default function HistorySection() {
   }, []);
 
   return (
-    <section className="bg-white px-6 md:px-20 py-16 lg:px-[5px] ">
-      <h2 className="text-4xl text-blue-900 font-extrabold text-center mb-16">
+    <section className=" px-6 md:px-20 py-16 lg:px-[5px]">
+      <h2
+        className="text-4xl font-extrabold text-center mb-16 
+                 bg-gradient-to-r from-pink-500  to-purple-700 bg-clip-text text-transparent drop-shadow-lg"
+      >
         🛤️ Our History
       </h2>
 
-      {loading && <p className="text-center text-gray-500">Loading...</p>}
+      {loading && <p className="text-center text-gray-400">Loading...</p>}
       {error && <p className="text-center text-red-500">Error: {error}</p>}
 
       {!loading && !error && (
@@ -49,29 +52,36 @@ export default function HistorySection() {
             {items.map((item) => (
               <div key={item.id} className="mb-16 relative group">
                 {/* Year circle */}
-                <div className="absolute -left-[33px] top-0 bg-blue-900 text-white w-[66px] h-[66px] rounded-full flex items-center justify-center font-bold text-lg shadow-lg z-10 border-4 border-white ">
+                <div
+                  className="absolute -left-[33px] top-0 bg-gradient-to-r from-pink-500  to-purple-700 text-white 
+                            w-[66px] h-[66px] rounded-full flex items-center justify-center 
+                            font-bold text-lg shadow-xl z-10 border-4 border-pink-500"
+                >
                   {item.year}
                 </div>
 
                 {/* Timeline line extension */}
-                <div className="absolute -left-1 top-[66px] h-[calc(100%-66px)] w-2 bg-blue-200"></div>
+                <div className="absolute -left-1 top-[66px] h-[calc(100%-66px)] w-1 bg-pink-500"></div>
 
                 {/* Content block */}
-                <div className="bg-gray-50 p-6 rounded-xl shadow-lg md:flex md:items-center gap-6 transition-transform duration-300 group-hover:scale-[1.02]">
+                <div
+                  className="bg-gray-200 p-6 rounded-xl shadow-xl md:flex md:items-center gap-6 
+                            transition-transform duration-300 group-hover:scale-[1.02]"
+                >
                   <Image
                     src={item.imageUrl}
                     alt={item.title}
                     width={150}
                     height={100}
-                    className="w-full md:w-[240px] h-[160px] object-cover rounded-xl shadow-md"
+                    className="w-full md:w-[240px] h-[160px] object-cover rounded-xl shadow-md border border-white/10"
                   />
 
-                  <div className="mt-4 md:mt-0">
-                    <h3 className="text-2xl font-bold text-blue-900 mb-2">
+                  <div className="mt-4 md:mt-0 text-white">
+                    <h3 className="text-2xl font-bold bg-gradient-to-r from-pink-500  to-purple-700 bg-clip-text text-transparent drop-shadow-lg mb-2">
                       {item.title}
                     </h3>
-                    <p className="text-gray-700 leading-relaxed text-[15px] tracking-wide">
-                    {item.description}
+                    <p className="text-gray-600 hover:font-bold leading-relaxed text-[15px] tracking-wide">
+                      {item.description}
                     </p>
                   </div>
                 </div>

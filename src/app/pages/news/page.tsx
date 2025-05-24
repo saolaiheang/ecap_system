@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Header from "@/components/header";
 import Image from "next/image";
+import Header from "@/components/header";
+import Footer from "@/components/footer";
+
 interface NewsItem {
   id: string;
   title: string;
@@ -11,8 +13,16 @@ interface NewsItem {
   date: string;
 }
 
+function getLastFourNews(news: NewsItem[]): NewsItem[] {
+  return news
+    .slice() // shallow copy to avoid mutating original array
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0);
+}
+
 export default function Newspage() {
   const [news, setNews] = useState<NewsItem[]>([]);
+  console.log("new", news);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,11 +30,8 @@ export default function Newspage() {
       try {
         const res = await fetch("/api/news");
         const data = await res.json();
-        if (Array.isArray(data.data)) {
-          setNews(data.data);
-        } else {
-          console.error("API response is not an array:", data.data);
-        }
+        setNews(getLastFourNews(data.data));
+        console.log("new", data.data[0].title);
       } catch (error) {
         console.error("Error fetching news:", error);
       } finally {
@@ -37,61 +44,76 @@ export default function Newspage() {
 
   return (
     <>
-      <Header />
-
+    <div className="">
+    <Header/>
       {loading ? (
-        <div className="px-4 py-6 text-lg sm:text-xl text-blue-700 font-medium">Loading...</div>
+        <div className="px-4 sm:px-10 md:px-[100px] py-8 text-lg sm:text-xl text-blue-800 font-medium">
+          Loading...
+        </div>
       ) : !news || news.length === 0 ? (
-        <div className="px-4 py-6 text-lg sm:text-xl text-red-500">No news found.</div>
+        <div className="px-4 sm:px-10 md:px-[100px] py-8 text-lg sm:text-xl text-red-500">
+          No news found.
+        </div>
       ) : (
-        <section className="px-4 sm:px-8 md:px-16 lg:px-[150px] py-10 font-sans animate-fade-in">
-          {/* Featured news */}
-          <div className="relative h-[280px] sm:h-[380px] md:h-[460px] rounded-2xl overflow-hidden shadow-lg mb-12">
+        <section className="px-4 lg:px-[150px] sm:px-10 md:px-[100px] py-10 font-sans animate-fade-in">
+          {/* <h2 className="lg:text-3xl text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-pink-500 to-purple-800 bg-clip-text text-transparent drop-shadow-lg  mb-6 sm:mb-8">
+            Announcements
+          </h2> */}
+
+          {/* Featured News */}
+          <div className="relative h-[300px] sm:h-[400px] md:h-[460px] rounded-2xl overflow-hidden shadow-lg group transition-transform duration-500 hover:scale-[1.01]">
             <Image
-              src={news[0].image}
-              alt={news[0].title}
-              width={150}
-              height={100}
-              className="object-cover w-full h-full"
+              src={news[0]?.image || "/placeholder.jpg"}
+              alt={news[0]?.title || "News Image"}
+              fill
+              className="object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-end p-6 sm:p-10">
-              <div className="text-white max-w-3xl">
-                <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold leading-snug drop-shadow-md">
-                  {news[0].title}
-                </h3>
-                <p className="text-sm sm:text-base text-gray-300 mt-2 drop-shadow-sm">
-                  {news[0].date}
-                </p>
-              </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-gray/80 via-black/30 to-transparent"></div>
+            <div className="absolute bottom-6 left-6 sm:bottom-8 sm:left-8 text-white max-w-[90%] sm:max-w-xl">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold drop-shadow-lg">
+                {news[0]?.title}
+              </h3>
+              <p className="text-xs sm:text-sm mt-2 text-gray-200 drop-shadow-sm">
+                {news[0]?.date}
+              </p>
             </div>
           </div>
 
-          {/* Other news */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {news.slice(1).map((item) => (
+          {/* Other News */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mt-10 sm:mt-12">
+            {news.map((item) => (
               <div
                 key={item.id}
-                className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition duration-300 hover:-translate-y-1"
+                className="bg-gray-503 rounded-xl overflow-hidden shadow-md hover:shadow-xl 
+                         transition-all duration-300 transform hover:-translate-y-1 flex flex-col"
               >
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  width={150}
-                  height={150}
-                  className="w-full h-[180px] sm:h-[200px] object-cover"
-                />
-                <div className="p-5 flex flex-col h-full">
-                  <h4 className="text-lg font-semibold text-blue-900 line-clamp-2">
-                    {item.title}
+                <div className="relative w-full h-52">
+                  <Image
+                    src={item?.image || "/placeholder.jpg"}
+                    alt={item?.title || "News Image"}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+
+                <div className="p-4 sm:p-5 flex flex-col flex-grow">
+                  <h4 className="text-lg sm:text-xl font-semibold text-white line-clamp-2">
+                    {item?.title || "none"}
                   </h4>
-                  <p className="text-sm text-gray-600 mt-2 line-clamp-3">{item.description}</p>
-                  <p className="text-xs text-gray-400 mt-auto pt-4">{item.date}</p>
+                  <p className="text-gray-700 hover:font-bold text-sm mt-2 line-clamp-3">
+                    {item?.description}
+                  </p>
+                  <p className="text-xs text-gray-400 hover: mt-auto pt-3">
+                    {item?.date}
+                  </p>
                 </div>
               </div>
             ))}
           </div>
         </section>
       )}
+      </div>
+      <Footer/>
     </>
   );
 }

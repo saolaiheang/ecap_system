@@ -119,7 +119,7 @@ export const getCoaches = async (_: NextRequest) => {
     try {
         await initializeDataSource();
         const coachRepository = AppDataSource.getRepository(Coach);
-        const coaches = await coachRepository.find();
+        const coaches = await coachRepository.find({relations:["team","sport"]});
         return NextResponse.json(
             {
                 coaches

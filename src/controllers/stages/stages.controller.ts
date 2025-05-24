@@ -39,7 +39,21 @@ export const createStage = async (req: NextRequest, { params }: { params: { id: 
         }
 
         const stageRepository = AppDataSource.getRepository(Stage);
+        const existingStage = await stageRepository
+      .createQueryBuilder("stage")
+      .where("stage.competition_id = :competitionId", { competitionId: id })
+      .andWhere("LOWER(stage.name) = LOWER(:name)", { name: parsed.name.trim() })
+      .andWhere("LOWER(stage.type)=LOWER(:type",{type:parsed.type.trim()})
+      .getOne();
+
+    if (existingStage) {
+      return NextResponse.json(
+        { message: `Stage name "${parsed.name.trim()}" already exists for this competition` },
+        { status: 400 }
+      );
+    }
         const stage = stageRepository.create({ name: parsed.name, type: mapToStageType(parsed.type), competition_id:id });
+        
         await stageRepository.save(stage);
         return NextResponse.json({ message: "Stage created successfully" }, { status: 201 });
 
@@ -58,7 +72,7 @@ export const getStages = async (_req: NextRequest, { params }: { params: { id: s
         const { id } = params;
         console.log(id)
         const stageRepository = AppDataSource.getRepository(Stage);
-        const stages = await stageRepository.findOneBy( { competition_id:id });
+        const stages = await stageRepository.findBy( { competition_id:id });
         return NextResponse.json(stages);
     }
     catch (err) {

@@ -68,20 +68,4 @@ export class MatchFriendly {
       this.id = uuidv4();
     }
 
-    @BeforeInsert()
-    @BeforeUpdate()
-    validateTeamsAndScores() {
-      if (this.teamA_id === this.teamB_id) {
-        throw new Error("Team A and Team B cannot be the same");
-      }
-  
-      if (this.status !== MatchStatus.COMPLETED && (this.teamA_score !== null || this.teamB_score !== null)) {
-        throw new Error("Scores can only be set for completed matches");
-      }
-  
-      if (this.status === MatchStatus.COMPLETED && (this.teamA_score === null || this.teamB_score === null)) {
-        throw new Error("Scores must be provided for completed matches");
-      }
-    }
-
 }

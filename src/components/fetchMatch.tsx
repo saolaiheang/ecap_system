@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "./button";
 import TypesOfSport from "./typeSport";
 import { useSearchParams } from "react-router-dom";
+import { number } from "zod";
 
 interface Competition {
   id: string;
@@ -13,6 +14,9 @@ interface Competition {
   teamA: { name: string };
   teamB: { name: string };
   sportType: { name: string };
+  status: string;
+  teamA_score: number;
+  teamB_score: number ;
 }
 
 interface Props {
@@ -27,7 +31,6 @@ interface SportType {
 interface Team {
   id: string;
   name: string;
-
 }
 
 export default function FetchMatch({ sport }: Props) {
@@ -38,7 +41,6 @@ export default function FetchMatch({ sport }: Props) {
 
   const [typeofsport, setSportTypes] = useState<SportType[]>([]);
 
-
   const [form, setForm] = useState({
     match_date: "",
     match_time: "",
@@ -46,23 +48,40 @@ export default function FetchMatch({ sport }: Props) {
     sport_type_id: "",
     teamA_id: "",
     teamB_id: "",
+    status: "scheduled",
+    teamA_score: null as number | null,
+  teamB_score: null as number | null,
+  
   });
+
+
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
+    const { name, value } = e.target;
+
+    if (name === "teamA_score" || name === "teamB_score") {
+      setForm({ ...form, [name]: value === "" ? null : Number(value) });
+    } else {
     setForm({ ...form, [e.target.name]: e.target.value });
+    }
   };
 
   const fetchCompetitions = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/match_friendly/");
+      const res = await fetch("/api/match_friendly");
       if (!res.ok) throw new Error("Failed to fetch matches.");
       const data = await res.json();
       setCompetitions(data.data || []);
+      console.log(data.data,"...........")
     } catch (err) {
-      setError(`Failed to load matches. ${err instanceof Error ? err.message : String(err)}`);
+      setError(
+        `Failed to load matches. ${
+          err instanceof Error ? err.message : String(err)
+        }`
+      );
     } finally {
       setLoading(false);
     }
@@ -96,17 +115,41 @@ export default function FetchMatch({ sport }: Props) {
       if (!res.ok) throw new Error("Failed to delete match");
       setCompetitions((prev) => prev.filter((c) => c.id !== id));
     } catch (err) {
-      alert(`Error deleting match.${err instanceof Error ? err.message : String(err)}`);
+      alert(
+        `Error deleting match.${
+          err instanceof Error ? err.message : String(err)
+        }`
+      );
     }
   };
 
+
+
   const handleAdd = async () => {
     try {
-      const res = await fetch("/api/matches", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+
+      const matchData: any = {
+        match_date: form.match_date,
+        match_time: form.match_time,
+        location: form.location,
+        sport_type_id: form.sport_type_id,
+        teamA_id: form.teamA_id,
+        teamB_id: form.teamB_id,
+        status: form.status,
+      };
+
+      if (form.status === "completed") {
+        matchData.teamA_score = form.teamA_score;
+        matchData.teamB_score = form.teamB_score;
+      }
+      const res = await fetch(
+        `/api/match_friendly/by-sport/${form.sport_type_id}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(matchData),
+        }
+      );
       if (!res.ok) throw new Error("Failed to add match");
       await fetchCompetitions();
       setForm({
@@ -116,9 +159,14 @@ export default function FetchMatch({ sport }: Props) {
         sport_type_id: "",
         teamA_id: "",
         teamB_id: "",
+        status: form.status,
+        teamA_score:null,
+        teamB_score:null
       });
     } catch (err) {
-      alert(`Error adding match.${err instanceof Error ? err.message : String(err)}`);
+      alert(
+        `Error adding match.${err instanceof Error ? err.message : String(err)}`
+      );
     }
   };
 
@@ -127,9 +175,6 @@ export default function FetchMatch({ sport }: Props) {
     fetchSportTypes();
     fetchTeams();
   }, [sport]);
-  
-
-
 
   if (loading) return <p className="px-8 py-6">Loading competitions...</p>;
   if (error) return <p className="px-8 py-6 text-red-500">{error}</p>;
@@ -167,20 +212,19 @@ export default function FetchMatch({ sport }: Props) {
             placeholder="Location"
           />
 
-<select
-  name="sport_type_id"
-  value={form.sport_type_id}
-  onChange={handleInputChange}
-  className="border p-2 rounded"
->
-  <option value="">Select Sport Type</option>
-  {typeofsport.map((sport) => (
-    <option key={sport.id} value={sport.id}>
-      {sport.name}
-    </option>
-  ))}
-</select>
-
+          <select
+            name="sport_type_id"
+            value={form.sport_type_id}
+            onChange={handleInputChange}
+            className="border p-2 rounded"
+          >
+            <option value="">Select Sport Type</option>
+            {typeofsport.map((sport) => (
+              <option key={sport.id} value={sport.id}>
+                {sport.name}
+              </option>
+            ))}
+          </select>
 
           {/* Team A Dropdown */}
           <select
@@ -211,7 +255,6 @@ export default function FetchMatch({ sport }: Props) {
               </option>
             ))}
           </select>
-
         </div>
         <div className="mt-4">
           <Button
@@ -234,6 +277,9 @@ export default function FetchMatch({ sport }: Props) {
               <th className="px-4 py-2 border-b">Time</th>
               <th className="px-4 py-2 border-b">Location</th>
               <th className="px-4 py-2 border-b">Sport</th>
+              <th className="px-4 py-2 border-b">status</th>
+              <th className="px-4 py-2 border-b">score</th>
+
               <th className="px-4 py-2 border-b">Actions</th>
             </tr>
           </thead>
@@ -246,6 +292,12 @@ export default function FetchMatch({ sport }: Props) {
                 <td className="px-4 py-2 border-b">{comp.match_time}</td>
                 <td className="px-4 py-2 border-b">{comp.location}</td>
                 <td className="px-4 py-2 border-b">{comp.sportType?.name}</td>
+                <td>{comp.status}</td>
+                <td>
+                  {comp.status === "completed"
+                    ? `${comp.teamA_score} - ${comp.teamB_score}`
+                    : "N/A"}
+                </td>
                 <td className="px-4 py-2 border-b">
                   <Button className="bg-yellow-500 text-xs text-white mr-2 hover:bg-yellow-600">
                     Edit

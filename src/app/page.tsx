@@ -3,6 +3,7 @@
 import DetailFootball from "@/components/detailFootball";
 import Homepage from "./pages/home/page";
 import { SportType } from "@/entities";
+import AdminPage from "@/components/fetchTypeSport";
 // import Aboutpage from "./pages/about/page";
 // import Typeofsport from "@/components/fetchTypeSport";
 // import CompetitionD from "@/components/fetchcompetition";
@@ -14,7 +15,7 @@ import { SportType } from "@/entities";
 export default function Home() {
   return (
     <div>
-      <DetailFootball/>
+      <Homepage/>
 
     </div>
   );

@@ -1,12 +1,13 @@
+
+
+
+
 "use client";
 
 import { useEffect, useState } from "react";
 import { Button } from "./button";
-import TypesOfSport from "./typeSport";
-import { useSearchParams } from "react-router-dom";
-import { number } from "zod";
 
-interface Competition {
+interface Match_friendly {
   id: string;
   match_date: string;
   match_time: string;
@@ -16,7 +17,7 @@ interface Competition {
   sportType: { name: string };
   status: string;
   teamA_score: number;
-  teamB_score: number ;
+  teamB_score: number;
 }
 
 interface Props {
@@ -34,12 +35,13 @@ interface Team {
 }
 
 export default function FetchMatch({ sport }: Props) {
-  const [competitions, setCompetitions] = useState<Competition[]>([]);
+  const [competitions, setCompetitions] = useState<Match_friendly[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
   const [typeofsport, setSportTypes] = useState<SportType[]>([]);
+  const [editMatch, setEditMatch] = useState<Match_friendly | null>(null);
+
 
   const [form, setForm] = useState({
     match_date: "",
@@ -49,11 +51,14 @@ export default function FetchMatch({ sport }: Props) {
     teamA_id: "",
     teamB_id: "",
     status: "scheduled",
-    teamA_score: null as number | null,
-  teamB_score: null as number | null,
   
   });
 
+  const [editForm, setEditForm] = useState({
+    status: "scheduled",
+    teamA_score: null as number | null,
+    teamB_score: null as number | null,
+  });
 
 
   const handleInputChange = (
@@ -64,9 +69,22 @@ export default function FetchMatch({ sport }: Props) {
     if (name === "teamA_score" || name === "teamB_score") {
       setForm({ ...form, [name]: value === "" ? null : Number(value) });
     } else {
-    setForm({ ...form, [e.target.name]: e.target.value });
+      setForm({ ...form, [name]: value });
     }
   };
+
+  const handleEditInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    if (name === "teamA_score" || name === "teamB_score") {
+      setEditForm({ ...editForm, [name]: value === "" ? null : Number(value) });
+    } else {
+      setEditForm({ ...editForm, [name]: value });
+    }
+  };
+
+  
 
   const fetchCompetitions = async () => {
     setLoading(true);
@@ -74,8 +92,7 @@ export default function FetchMatch({ sport }: Props) {
       const res = await fetch("/api/match_friendly");
       if (!res.ok) throw new Error("Failed to fetch matches.");
       const data = await res.json();
-      setCompetitions(data.data || []);
-      console.log(data.data,"...........")
+      setCompetitions(data || []);
     } catch (err) {
       setError(
         `Failed to load matches. ${
@@ -111,7 +128,11 @@ export default function FetchMatch({ sport }: Props) {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this match?")) return;
     try {
-      const res = await fetch(`/api/matches/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/match_friendly/${id}`, 
+        { method: "DELETE" });
+        if(res.ok){
+          alert("match deleted successfully")
+        }
       if (!res.ok) throw new Error("Failed to delete match");
       setCompetitions((prev) => prev.filter((c) => c.id !== id));
     } catch (err) {
@@ -123,25 +144,32 @@ export default function FetchMatch({ sport }: Props) {
     }
   };
 
-
-
   const handleAdd = async () => {
     try {
-
-      const matchData: any = {
+      if (
+        !form.match_date ||
+        !form.match_time ||
+        !form.location ||
+        !form.sport_type_id ||
+        !form.teamA_id ||
+        !form.teamB_id
+      ) {
+        alert("Please fill in all required fields.");
+        return;
+      }
+  
+      const matchData = {
         match_date: form.match_date,
-        match_time: form.match_time,
+        match_time: form.match_time + ":00", // Fix time format
         location: form.location,
         sport_type_id: form.sport_type_id,
         teamA_id: form.teamA_id,
         teamB_id: form.teamB_id,
         status: form.status,
       };
-
-      if (form.status === "completed") {
-        matchData.teamA_score = form.teamA_score;
-        matchData.teamB_score = form.teamB_score;
-      }
+  
+      console.log("Sending POST request:", JSON.stringify(matchData));
+  
       const res = await fetch(
         `/api/match_friendly/by-sport/${form.sport_type_id}`,
         {
@@ -150,8 +178,17 @@ export default function FetchMatch({ sport }: Props) {
           body: JSON.stringify(matchData),
         }
       );
-      if (!res.ok) throw new Error("Failed to add match");
+      if(res.ok){
+        alert("Match added successfully!");
+      }
+  
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to add match");
+      }
+  
       await fetchCompetitions();
+  
       setForm({
         match_date: "",
         match_time: "",
@@ -159,15 +196,61 @@ export default function FetchMatch({ sport }: Props) {
         sport_type_id: "",
         teamA_id: "",
         teamB_id: "",
-        status: form.status,
-        teamA_score:null,
-        teamB_score:null
+        status: "scheduled",
       });
+     
     } catch (err) {
+      console.error("Error in handleAdd:", err); 
       alert(
-        `Error adding match.${err instanceof Error ? err.message : String(err)}`
+        `Error adding match: ${err instanceof Error ? err.message : String(err)}`
       );
     }
+  };
+
+
+  const handleEdit = async () => {
+    if (!editMatch) return;
+
+    try {
+      if (editForm.status === "completed") {
+        if (editForm.teamA_score === null || editForm.teamB_score === null) {
+          alert("Both Team A and Team B scores must be provided for completed matches.");
+          return;
+        }
+      }
+
+      const res = await fetch(`/api/match_friendly/${editMatch.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          status: editForm.status,
+          teamA_score: editForm.status === "completed" ? editForm.teamA_score : null,
+          teamB_score: editForm.status === "completed" ? editForm.teamB_score : null,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to update match");
+      }
+
+      await fetchCompetitions();
+      setEditMatch(null);
+      setEditForm({ status: "scheduled", teamA_score: null, teamB_score: null });
+    } catch (err) {
+      alert(
+        `Error updating match: ${err instanceof Error ? err.message : String(err)}`
+      );
+    }
+  };
+
+  const openEditModal = (match: Match_friendly) => {
+    setEditMatch(match);
+    setEditForm({
+      status: match.status,
+      teamA_score: match.teamA_score,
+      teamB_score: match.teamB_score,
+    });
   };
 
   useEffect(() => {
@@ -193,7 +276,6 @@ export default function FetchMatch({ sport }: Props) {
             value={form.match_date}
             onChange={handleInputChange}
             className="border p-2 rounded"
-            placeholder="Match Date"
           />
           <input
             type="time"
@@ -201,7 +283,6 @@ export default function FetchMatch({ sport }: Props) {
             value={form.match_time}
             onChange={handleInputChange}
             className="border p-2 rounded"
-            placeholder="Match Time"
           />
           <input
             type="text"
@@ -211,7 +292,6 @@ export default function FetchMatch({ sport }: Props) {
             className="border p-2 rounded"
             placeholder="Location"
           />
-
           <select
             name="sport_type_id"
             value={form.sport_type_id}
@@ -225,8 +305,6 @@ export default function FetchMatch({ sport }: Props) {
               </option>
             ))}
           </select>
-
-          {/* Team A Dropdown */}
           <select
             name="teamA_id"
             value={form.teamA_id}
@@ -240,8 +318,6 @@ export default function FetchMatch({ sport }: Props) {
               </option>
             ))}
           </select>
-
-          {/* Team B Dropdown */}
           <select
             name="teamB_id"
             value={form.teamB_id}
@@ -255,6 +331,18 @@ export default function FetchMatch({ sport }: Props) {
               </option>
             ))}
           </select>
+
+          <select
+            name="status"
+            value={form.status}
+            onChange={handleInputChange}
+            className="border p-2 rounded"
+          >
+            <option value="scheduled">Scheduled</option>
+            <option value="completed">Completed</option>
+          </select>
+
+          
         </div>
         <div className="mt-4">
           <Button
@@ -265,6 +353,65 @@ export default function FetchMatch({ sport }: Props) {
           </Button>
         </div>
       </div>
+
+
+      {editMatch && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h3 className="text-lg font-semibold mb-4">Edit Match</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <select
+                name="status"
+                value={editForm.status}
+                onChange={handleEditInputChange}
+                className="border p-2 rounded"
+              >
+                <option value="scheduled">Scheduled</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+              {editForm.status === "completed" && (
+                <>
+                  <input
+                    type="number"
+                    name="teamA_score"
+                    value={editForm.teamA_score ?? ""}
+                    onChange={handleEditInputChange}
+                    className="border p-2 rounded"
+                    placeholder="Team A Score"
+                    required
+                  />
+                  <input
+                    type="number"
+                    name="teamB_score"
+                    value={editForm.teamB_score ?? ""}
+                    onChange={handleEditInputChange}
+                    className="border p-2 rounded"
+                    placeholder="Team B Score"
+                    required
+                  />
+                </>
+              )}
+            </div>
+            <div className="mt-4 flex justify-end gap-2">
+              <Button
+                onClick={() => setEditMatch(null)}
+                className="bg-gray-500 text-white hover:bg-gray-600"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleEdit}
+                className="bg-blue-600 text-white hover:bg-blue-700"
+              >
+                Save Changes
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {/* Match Table */}
       <div className="overflow-x-auto rounded-lg shadow">
@@ -277,9 +424,8 @@ export default function FetchMatch({ sport }: Props) {
               <th className="px-4 py-2 border-b">Time</th>
               <th className="px-4 py-2 border-b">Location</th>
               <th className="px-4 py-2 border-b">Sport</th>
-              <th className="px-4 py-2 border-b">status</th>
-              <th className="px-4 py-2 border-b">score</th>
-
+              <th className="px-4 py-2 border-b">Status</th>
+              <th className="px-4 py-2 border-b">Score</th>
               <th className="px-4 py-2 border-b">Actions</th>
             </tr>
           </thead>
@@ -292,14 +438,14 @@ export default function FetchMatch({ sport }: Props) {
                 <td className="px-4 py-2 border-b">{comp.match_time}</td>
                 <td className="px-4 py-2 border-b">{comp.location}</td>
                 <td className="px-4 py-2 border-b">{comp.sportType?.name}</td>
-                <td>{comp.status}</td>
-                <td>
+                <td className="px-4 py-2 border-b">{comp.status}</td>
+                <td className="px-4 py-2 border-b">
                   {comp.status === "completed"
                     ? `${comp.teamA_score} - ${comp.teamB_score}`
                     : "N/A"}
                 </td>
-                <td className="px-4 py-2 border-b">
-                  <Button className="bg-yellow-500 text-xs text-white mr-2 hover:bg-yellow-600">
+                <td className="px-4 py-2 border-b flex justify-between">
+                  <Button onClick={() => openEditModal(comp)} className="bg-yellow-500 text-xs text-white mr-2 hover:bg-yellow-600">
                     Edit
                   </Button>
                   <Button

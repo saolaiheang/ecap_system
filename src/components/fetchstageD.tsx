@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams,useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { Button } from "./button";
 
 
 interface Stage {
@@ -231,7 +232,7 @@ export default function CompetitionStages() {
 
     return (
         <div className="px-6 max-w-3xl mx-auto">
-            <button onClick={()=>router.back()}className="text-white rounded bg-gray-600">Back</button>
+            <button onClick={() => router.back()} className="text-white rounded bg-gray-600">Back</button>
             <h2 className="text-2xl font-bold mb-2">Stages for Competition</h2>
             <div className="bg-gray-100 p-4 rounded mb-2 ">
                 <h3 className="text-lg font-semibold ">Create New Stage</h3>
@@ -372,6 +373,8 @@ export default function CompetitionStages() {
                                 <th className="border px-4 py-2">Date_time</th>
                                 <th className="border px-4 py-2">Score A</th>
                                 <th className="border px-4 py-2">Score B</th>
+                                <th className="border px-4 py-2">Score B</th>
+                                <th className="border px-4 py-2">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -384,6 +387,17 @@ export default function CompetitionStages() {
                                     <td className="border px-4 py-2">{match.match_date}({match.match_time})</td>
                                     <td className="border px-4 py-2">{match.teamA_score ? (match.teamA_score) : "N/A"}</td>
                                     <td className="border px-4 py-2">{match.teamB_score ? (match.teamB_score) : "N/A"}</td>
+                                    <td className="px-4 py-2 border-b flex justify-between">
+                                        <Button onClick={() => ""} className="bg-yellow-500 text-xs text-white mr-2 hover:bg-yellow-600">
+                                            Edit
+                                        </Button>
+                                        <Button
+                                            onClick={() => ""}
+                                            className="bg-red-500 text-xs text-white hover:bg-red-600"
+                                        >
+                                            Delete
+                                        </Button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>

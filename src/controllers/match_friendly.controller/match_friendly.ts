@@ -134,10 +134,10 @@ export const updateMatchFriendlyById = async (req: NextRequest, { params }: { pa
 
 }
 
-export const getAllMatch = async () => {
+export const getAllMatchFriendly = async (_req:NextRequest) => {
     try {
         await initializeDataSource();
-        const matchFriendly = await AppDataSource.getRepository(MatchFriendly).find();
+        const matchFriendly = await AppDataSource.getRepository(MatchFriendly).find({relations:["teamA","teamB","sportType"]});
         return NextResponse.json(matchFriendly, { status: 200 });
     } catch (error) {
         console.error("Error getting all Match Friendly:", error);

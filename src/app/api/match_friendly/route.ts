@@ -1,5 +1,5 @@
-import { getAllMatch } from "@/controllers/matches/matches.controller";
 import { NextRequest } from "next/server";
+import { getAllMatchFriendly } from "@/controllers/match_friendly.controller/match_friendly";
 export const GET=async(req:NextRequest)=>{
-    return await getAllMatch(req);
+    return await getAllMatchFriendly(req);
 }

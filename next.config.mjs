@@ -1,6 +1,6 @@
 // next.config.mjs
 
-import path from 'path';
+import path from "path";
 
 /** @type {import('next').NextConfig} */
 export const nextConfig = {
@@ -18,7 +18,10 @@ export const nextConfig = {
   },
 
   images: {
-    domains: ['res.cloudinary.com'], // ✅ Allow Cloudinary
+    domains: [
+      "res.cloudinary.com",
+      "upload.wikimedia.org", // ✅ add this line
+    ],
   },
 };
 

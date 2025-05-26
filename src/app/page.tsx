@@ -2,7 +2,7 @@
 // import Login from "./pages/login/page"
 import DetailFootball from "@/components/detailFootball";
 import Homepage from "./pages/home/page";
-import { SportType } from "@/entities";
+import { Competition, SportType } from "@/entities";
 import AdminPage from "@/components/fetchTypeSport";
 // import Aboutpage from "./pages/about/page";
 // import Typeofsport from "@/components/fetchTypeSport";
@@ -10,12 +10,14 @@ import AdminPage from "@/components/fetchTypeSport";
 // import CompetitionLayout from "@/common/competitionLayout";
 // import SinglepageFootball from "@/components/siglepageFootball";
 // import AdminPage from "@/components/fetchTypeSport";
+import LayoutCompetition from "@/components/layoutcompetition";
+import NewsDetailPage from "@/components/idnews";
 
 
 export default function Home() {
   return (
     <div>
-      <Homepage/>
+      <NewsDetailPage/>
 
     </div>
   );

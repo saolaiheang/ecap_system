@@ -29,24 +29,24 @@ export default function SportComponent() {
     const [editingSportId, setEditingSportId] = useState<string | null>(null);
     const [isUpdating, setIsUpdating] = useState(false);
 
-    
-        const fetchSports = async () => {
-            try {
-                const response = await fetch("/api/typeofsport");
-                const data = await response.json();
-                setSports(Array.isArray(data?.typeOfSport) ? data.typeOfSport : []);
-            } catch (error) {
-                console.error("Failed to fetch sports:", error);
-                setSports([]);
-            } finally {
-                setLoading(false);
-            }
-        };
 
-        useEffect(() => {
-            fetchSports();
-        }, []);
-   
+    const fetchSports = async () => {
+        try {
+            const response = await fetch("/api/typeofsport");
+            const data = await response.json();
+            setSports(Array.isArray(data?.typeOfSport) ? data.typeOfSport : []);
+        } catch (error) {
+            console.error("Failed to fetch sports:", error);
+            setSports([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchSports();
+    }, []);
+
 
     const handleChange = (
         e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -66,9 +66,9 @@ export default function SportComponent() {
         if (formData.image && typeof formData.image !== "string") {
             formDataPayload.append("image", formData.image);
         }
-    
+
         setIsUpdating(true); // reuse updating state
-    
+
         try {
             const res = await fetch("/api/typeofsport", {
                 method: "POST",
@@ -80,7 +80,7 @@ export default function SportComponent() {
 
             // ✅ Refresh list
             await fetchSports();
-    
+
             alert("Sport created successfully!");
         } catch (error) {
             console.error("Failed to create sport:", error);
@@ -89,7 +89,7 @@ export default function SportComponent() {
             setIsUpdating(false);
         }
     };
-    
+
 
     const handleUpdate = async (id: string) => {
         const formDataPayload = new FormData();
@@ -106,11 +106,11 @@ export default function SportComponent() {
                 method: "PUT",
                 body: formDataPayload,
             });
-             await res.json(); 
+            await res.json();
             setFormData({ name: "", description: "", image: "" });
             setEditingSportId(null);
             await fetchSports();
-            
+
 
             alert("Sport updated successfully!");
         } catch (error) {
@@ -125,7 +125,7 @@ export default function SportComponent() {
         setFormData({
             name: sport.name,
             description: sport.description || "",
-            image: sport.image, 
+            image: sport.image,
         });
         setEditingSportId(sport.id);
     };
@@ -139,11 +139,11 @@ export default function SportComponent() {
         <div className="p-4 sm:p-6 lg:p-8">
             <h1 className="text-xl sm:text-2xl font-bold mb-4">Types of Sport</h1>
             <button
-  onClick={() => setIsCreating(true)}
-  className="bg-blue-600 text-white px-4 py-2 rounded mb-4 hover:bg-blue-700"
->
-  Add New Sport
-</button>
+                onClick={() => setIsCreating(true)}
+                className="bg-blue-600 text-white px-4 py-2 rounded mb-4 hover:bg-blue-700"
+            >
+                Add New Sport
+            </button>
             {loading ? (
                 <p>Loading...</p>
             ) : sports && sports.length > 0 ? (
@@ -190,66 +190,66 @@ export default function SportComponent() {
                 <p>No sports data found.</p>
             )}
 
-{isCreating && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white p-6 rounded-lg w-full max-w-md">
-      <h2 className="text-lg font-bold mb-4">Create New Sport</h2>
-      <div className="space-y-4">
-        <div>
-          <label htmlFor="name">Name</label>
-          <input
-            id="name"
-            name="name"
-            type="text"
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full border p-2 mt-1"
-          />
-        </div>
-        <div>
-          <label htmlFor="description">Description</label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            className="w-full border p-2 mt-1"
-          />
-        </div>
-        <div>
-          <label htmlFor="image">Image</label>
-          <input
-            id="image"
-            name="image"
-            type="file"
-            accept="image/*"
-            onChange={handleChange}
-            className="w-full border p-2 mt-1"
-          />
-        </div>
-      </div>
-      <div className="mt-6 flex justify-end space-x-2">
-        <button
-          onClick={() => {
-            setIsCreating(false);
-            setFormData({ name: "", description: "", image: "" });
-          }}
-          disabled={isUpdating}
-          className="bg-gray-300 px-4 py-2 rounded"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={handleCreate}
-          disabled={isUpdating}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          {isUpdating ? "Creating..." : "Create"}
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+            {isCreating && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-lg w-full max-w-md">
+                        <h2 className="text-lg font-bold mb-4">Create New Sport</h2>
+                        <div className="space-y-4">
+                            <div>
+                                <label htmlFor="name">Name</label>
+                                <input
+                                    id="name"
+                                    name="name"
+                                    type="text"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    className="w-full border p-2 mt-1"
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="description">Description</label>
+                                <textarea
+                                    id="description"
+                                    name="description"
+                                    value={formData.description}
+                                    onChange={handleChange}
+                                    className="w-full border p-2 mt-1"
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="image">Image</label>
+                                <input
+                                    id="image"
+                                    name="image"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleChange}
+                                    className="w-full border p-2 mt-1"
+                                />
+                            </div>
+                        </div>
+                        <div className="mt-6 flex justify-end space-x-2">
+                            <button
+                                onClick={() => {
+                                    setIsCreating(false);
+                                    setFormData({ name: "", description: "", image: "" });
+                                }}
+                                disabled={isUpdating}
+                                className="bg-gray-300 px-4 py-2 rounded"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleCreate}
+                                disabled={isUpdating}
+                                className="bg-blue-600 text-white px-4 py-2 rounded"
+                            >
+                                {isUpdating ? "Creating..." : "Create"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {editingSportId && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

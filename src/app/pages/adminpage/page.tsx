@@ -13,8 +13,8 @@ import {
   FaChartLine,
   FaTrophy,
 } from "react-icons/fa";
-import Image from "next/image";
-import { FaListAlt } from "react-icons/fa"; 
+// import Image from "next/image";
+// import { FaListAlt } from "react-icons/fa";
 
 import FetchNews from "@/components/fetchnews";
 import FetchActivityD from "@/components/fetchActivityD";
@@ -26,8 +26,25 @@ import FetchSchedule from "@/components/fetchSchedule";
 import CompetitionManager from "@/components/fetchcompetition";
 import CompetitionStagesPage from "@/app/competitions/[competitionId]/stages/page"
 import DeshboardSportType from "@/components/fetchSportType";
+import FetchTeam from "@/components/fetchTeamD";
 
 
+function isTokenExpired(token: string): boolean {
+  try {
+    const payloadBase64 = token.split('.')[1];
+    if (!payloadBase64) return true;
+
+    const decodedPayload = JSON.parse(atob(payloadBase64));
+    if (!decodedPayload.exp) return true;
+
+    // exp is in seconds, Date.now() in ms
+    const expiryTimeMs = decodedPayload.exp * 1000;
+    return Date.now() > expiryTimeMs;
+  } catch {
+    // If any error decoding, treat as expired/invalid
+    return true;
+  }
+}
 
 
 export default function DashboardLayout() {
@@ -38,12 +55,17 @@ export default function DashboardLayout() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) {
+
+    if (!token || isTokenExpired(token)) {
       router.push("/pages/login");
+      setIsAuthenticated(false);
     } else {
       setIsAuthenticated(true);
     }
   }, [router]);
+
+ 
+
 
   if (isAuthenticated === null) {
     return <div>Loading...</div>;
@@ -55,7 +77,7 @@ export default function DashboardLayout() {
       <div className="flex flex-1">
         <aside className="w-64 bg-[#2C357C] text-white flex flex-col py-4 px-2 shadow-lg space-y-2">
 
-        <button
+          <button
 
             className="flex items-center px-3 py-3 text-sm hover:bg-[#4B5A9E] rounded transition"
             onClick={() => setSelectedContent("sporttypes")}
@@ -85,9 +107,8 @@ export default function DashboardLayout() {
               <FaUser className="mr-3" />
               Profile
               <FaChevronDown
-                className={`ml-auto transition-transform ${
-                  profileMenuOpen ? "rotate-180" : ""
-                }`}
+                className={`ml-auto transition-transform ${profileMenuOpen ? "rotate-180" : ""
+                  }`}
               />
             </button>
             {profileMenuOpen && (
@@ -96,13 +117,19 @@ export default function DashboardLayout() {
                   className="cursor-pointer hover:underline"
                   onClick={() => setSelectedContent("profile-player")}
                 >
-                  Player
+                  Players
                 </p>
                 <p
                   className="cursor-pointer hover:underline"
                   onClick={() => setSelectedContent("profile-coach")}
                 >
-                  Coach erty
+                  Coaches
+                </p>
+                <p
+                  className="cursor-pointer hover:underline"
+                  onClick={() => setSelectedContent("profile-team")}
+                >
+                  Teams
                 </p>
               </div>
             )}
@@ -135,7 +162,6 @@ export default function DashboardLayout() {
             News
           </button>
 
-
           <button
             className="flex items-center px-3 py-3 text-sm hover:bg-[#4B5A9E] rounded transition"
             onClick={() => setSelectedContent("competition")}
@@ -159,27 +185,29 @@ export default function DashboardLayout() {
           {selectedContent === "news" ? (
             <FetchNews sport="default" />
           ) : selectedContent === "profile-player" ? (
-            <ProfileDashboard  />
+            <ProfileDashboard />
           ) : selectedContent === "profile-coach" ? (
-            <FetchProfileCoach />
-          ) : selectedContent === "schedule" ? (
-            <FetchSchedule sport="default" />
-          ) : selectedContent === "competition" ? (
-            <CompetitionManager />
-          ) : selectedContent === "activity" ? (
-            <FetchActivityD  />
-          ) : selectedContent === "history" ? (
-            <FetchHistory /> 
-          ) : selectedContent === "match" ? (
-            <FetchMatch sport="default" />
-          ) :selectedContent=== "stages"?(
-            <CompetitionStagesPage/>
-          ): selectedContent=== "sporttypes"?(
-            <DeshboardSportType/>
-          ): 
-          (
-            <h2 className="text-xl font-semibold text-[#1D276C]">Dashboard</h2>
-          )}
+            <FetchProfileCoach />) 
+            : selectedContent === "profile-team" ? (
+              <FetchTeam />
+            ) : selectedContent === "schedule" ? (
+              <FetchSchedule sport="default" />
+            ) : selectedContent === "competition" ? (
+              <CompetitionManager />
+            ) : selectedContent === "activity" ? (
+              <FetchActivityD />
+            ) : selectedContent === "history" ? (
+              <FetchHistory />
+            ) : selectedContent === "match" ? (
+              <FetchMatch sport="default" />
+            ) : selectedContent === "stages" ? (
+              <CompetitionStagesPage />
+            ) : selectedContent === "sporttypes" ? (
+              <DeshboardSportType />
+            ) :
+            (
+              <h2 className="text-xl font-semibold text-[#1D276C]">Dashboard</h2>
+            )}
         </main>
       </div>
     </div>

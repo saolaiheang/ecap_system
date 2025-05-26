@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState, ChangeEvent } from "react";
@@ -26,8 +25,7 @@ interface Player {
   };
 }
 
-
-export default function PlayerProfileBySport(){
+export default function PlayerProfileBySport() {
   const [sports, setSports] = useState<Sport[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<string>("");
@@ -41,16 +39,16 @@ export default function PlayerProfileBySport(){
     name: "",
     position: "",
     contact_info: "",
-    image: ""
-  })
+    image: "",
+  });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setFormData({ ...formData, [e.target.name]: e.target.files[0] })
+      setFormData({ ...formData, [e.target.name]: e.target.files[0] });
     } else {
-      setFormData({ ...formData, [e.target.name]: e.target.value })
+      setFormData({ ...formData, [e.target.name]: e.target.value });
     }
-  }
+  };
 
   const handleAddPlayer = async () => {
     if (!selectedSport) return alert("Please select a sport type");
@@ -64,8 +62,8 @@ export default function PlayerProfileBySport(){
     try {
       const res = await fetch(`/api/player/by-team/${selectedTeam}`, {
         method: "POST",
-        body: formDataPayload
-      })
+        body: formDataPayload,
+      });
       const newPlayer = await res.json();
       setPlayers((prev) => [...prev, newPlayer]);
       alert("Player added successfully");
@@ -73,7 +71,7 @@ export default function PlayerProfileBySport(){
     } catch (err) {
       console.error("Failed to add player", err);
     }
-  }
+  };
 
   const handleUpdateClick = (player: Player) => {
     setIsUpdating(true);
@@ -83,12 +81,13 @@ export default function PlayerProfileBySport(){
       name: player.name,
       position: player.position,
       contact_info: player.contact_info,
-      image: ""
+      image: "",
     });
   };
 
   const handleUpdatePlayer = async () => {
-    if (!selectedPlayer || !selectedSport) return alert("Please select a sport and player");
+    if (!selectedPlayer || !selectedSport)
+      return alert("Please select a sport and player");
 
     const formDataPayload = new FormData();
     formDataPayload.append("name", formData.name);
@@ -98,11 +97,10 @@ export default function PlayerProfileBySport(){
       formDataPayload.append("image", formData.image);
     }
 
-
     try {
       const res = await fetch(`/api/player/${selectedPlayer.id}`, {
         method: "PUT",
-        body: formDataPayload
+        body: formDataPayload,
       });
       const updatedPlayer = await res.json();
       setPlayers((prev) =>
@@ -134,9 +132,6 @@ export default function PlayerProfileBySport(){
     setSelectedTeam("");
   };
 
-
-
-
   useEffect(() => {
     const fetchSports = async () => {
       try {
@@ -145,7 +140,7 @@ export default function PlayerProfileBySport(){
 
         if (data && Array.isArray(data.typeOfSport)) {
           setSports(data.typeOfSport);
-          console.log("sport",data.typeOfSport)
+          console.log("sport", data.typeOfSport);
         } else {
           console.error("Invalid response structure:", data);
           setSports([]);
@@ -159,7 +154,6 @@ export default function PlayerProfileBySport(){
     fetchSports();
   }, []);
 
-
   useEffect(() => {
     if (selectedSport) {
       console.log("Fetching team for sport id:", selectedSport);
@@ -169,7 +163,7 @@ export default function PlayerProfileBySport(){
           const res = await fetch(`/api/team/by-sport/${selectedSport}`);
           const data = await res.json();
           setTeams(data.data);
-          console.log(data.data)
+          console.log(data.data);
         } catch (err) {
           console.error("Failed to fetch teams", err);
         }
@@ -198,189 +192,207 @@ export default function PlayerProfileBySport(){
     fetchPlayers();
   }, [selectedSport]);
 
- 
-
   const handleDeletePlayer = async (id: string) => {
     if (confirm("Are you sour you want to delete this player")) {
       try {
         await fetch(`/api/player/${id}`, {
           method: "DELETE",
         });
-        setPlayers((prevPlayers) => prevPlayers.filter((player) => player.id !== id));
+        setPlayers((prevPlayers) =>
+          prevPlayers.filter((player) => player.id !== id)
+        );
         alert("Player deleted successfully");
       } catch (err) {
         console.error("Failed to delete player", err);
       }
-
     }
-
-
-  }
+  };
   const filteredPlayers = players
     .filter((player) => player.name && player.position)
-    .filter((player) =>
-      player.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      player.position.toLowerCase().includes(searchQuery.toLowerCase())
+    .filter(
+      (player) =>
+        player.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        player.position.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold text-[#1D276C] mb-4 capitalize">
-        Player Profiles by Sport Type
+    <div className="px-8 py-6 bg-gray-50 min-h-screen">
+      <h2 className="text-3xl font-bold text-blue-700 mb-6 capitalize">
+        🧑‍💼 Player Profiles by Sport Type
       </h2>
-      <div className="mb-4 flex gap-4">
-        <select
-          className="border p-2 rounded w-1/3"
-          value={selectedSport}
-          onChange={(e) => setSelectedSport(e.target.value)}
-        >
-          <option value="">Select a Sport</option>
-          {sports.length > 0 ? (
-            sports.map((sport) => (
-              <option key={sport.id} value={sport.id}>
-                {sport.name}
-              </option>
-            ))
-          ) : (
-            <option disabled>No sports found</option>
-          )}
-        </select>
-        <select
-          className="border p-2 rounded w-1/3"
-          value={selectedTeam}
-          onChange={(e) => setSelectedTeam(e.target.value)}
-        >
-          <option value="">Select a Team</option>
-          {teams.map((team) => (
-            <option key={team.id} value={team.id}>
-              {team.name}
-            </option>
-          ))}
-        </select>
 
-        <input
-          type="text"
-          placeholder="Search by Name or Position"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="border p-2 rounded w-2/3"
-        />
-      </div>
-
-
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <input
-          name="name"
-          type="text"
-          placeholder="Player Name"
-          value={formData.name}
-          onChange={handleChange}
-          className="border p-2 rounded"
-        />
-        <input
-          name="position"
-          type="text"
-          placeholder="Position"
-          value={formData.position}
-          onChange={handleChange}
-          className="border p-2 rounded"
-        />
-        <input
-          name="contact_info"
-          type="text"
-          placeholder="Contact Info"
-          value={formData.contact_info}
-          onChange={handleChange}
-          className="border p-2 rounded"
-        />
-        <input
-          name="image"
-          type="file"
-          onChange={handleChange}
-          className="border p-2 rounded"
-        />
-        <div className="flex gap-2">
-          <button
-            onClick={handleFormSubmit}
-            className="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700 transition"
+      {/* Filters */}
+      <div className="bg-white p-6 rounded-2xl shadow-lg mb-8 border">
+        <div className="mb-6 flex flex-col md:flex-row gap-4">
+          <select
+            className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-300 w-full md:w-1/3"
+            value={selectedSport}
+            onChange={(e) => setSelectedSport(e.target.value)}
           >
-            {isUpdating ? "Update Player" : "Add Player"}
-          </button>
+            <option value="">🏅 Select a Sport</option>
+            {sports.length > 0 ? (
+              sports.map((sport) => (
+                <option key={sport.id} value={sport.id}>
+                  {sport.name}
+                </option>
+              ))
+            ) : (
+              <option disabled>No sports found</option>
+            )}
+          </select>
+
+          <select
+            className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-300 w-full md:w-1/3"
+            value={selectedTeam}
+            onChange={(e) => setSelectedTeam(e.target.value)}
+          >
+            <option value="">👕 Select a Team</option>
+            {teams.map((team) => (
+              <option key={team.id} value={team.id}>
+                {team.name}
+              </option>
+            ))}
+          </select>
+
+          <input
+            type="text"
+            placeholder="🔍 Search by Name or Position"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-300 w-full"
+          />
+        </div>
+
+        {/* Form Inputs */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <input
+            name="name"
+            type="text"
+            placeholder="🧍 Player Name"
+            value={formData.name}
+            onChange={handleChange}
+            className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
+          />
+          <input
+            name="position"
+            type="text"
+            placeholder="⚽ Position"
+            value={formData.position}
+            onChange={handleChange}
+            className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
+          />
+          <input
+            name="contact_info"
+            type="text"
+            placeholder="📞 Contact Info"
+            value={formData.contact_info}
+            onChange={handleChange}
+            className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
+          />
+          <input
+            name="image"
+            type="file"
+            onChange={handleChange}
+            className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
+          />
+        </div>
+
+        {/* Buttons */}
+        <div className="flex justify-between mt-4">
           {isUpdating && (
             <button
               onClick={handleCancelUpdate}
-              className="bg-gray-600 text-white rounded px-4 py-2 hover:bg-gray-700 transition"
+              className="bg-gray-600 text-white px-6 py-2 rounded-xl hover:bg-gray-700 transition"
             >
               Cancel
             </button>
           )}
+          <button
+            onClick={handleFormSubmit}
+            className="bg-green-600 text-white px-6 py-2 rounded-[5px] hover:bg-green-700 transition ml-auto"
+          >
+            {isUpdating ? "Update Player" : "Add Player"}
+          </button>
         </div>
       </div>
 
-      {/* Loading Spinner */}
-      {loading && <p>Loading players...</p>}
+      {/* Loader */}
+      {loading && (
+        <p className="text-center text-gray-600">Loading players...</p>
+      )}
 
-      {/* Player Table */}
-      <table className="w-full border-collapse border border-gray-300 mt-4">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="border px-4 py-2">#</th>
-            <th className="border px-4 py-2">Image</th>
-            <th className="border px-4 py-2">Name</th>
-            <th className="border px-4 py-2">Position</th>
-            <th className="border px-4 py-2">Contact Info</th>
-            <th className="border px-4 py-2">Team Name</th>
-            <th className="border px-4 py-2">Division</th>
-            <th className="border px-4 py-2">Team Contact</th>
-            <th className="border px-4 py-2">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredPlayers.length > 0 ? (
-            filteredPlayers.map((player, index) => (
-              <tr key={player.id} >
-                <td className="border px-4 py-2">{index + 1}</td>
-                <td className="border px-4 py-2">
-                  <Image
-                    src={player.image}
-                    alt={player.name}
-                    width={40}
-                    height={40}
-                    className="w-16 h-16 object-cover rounded-full"
-                  />
-                </td>
-                <td className="border px-4 py-2">{player.name}</td>
-                <td className="border px-4 py-2">{player.position}</td>
-                <td className="border px-4 py-2">{player.contact_info}</td>
-                <td className="border px-4 py-2">{player.team.name}</td>
-                <td className="border px-4 py-2">{player.team.division}</td>
-                <td className="border px-4 py-2">{player.team.contact_info}</td>
-                <td>
-                  <button
-                    onClick={() => handleDeletePlayer(player.id)}
-                    className="bg-red-500 text-white px-2 py-1 ml-4 text-center rounded hover:bg-red-600 "
-                    disabled={loading}
-                  >
-                    Delete
-                  </button>
-
-                  <button onClick={() => handleUpdateClick(player)} className="bg-yellow-500 text-white ml-4 px-2 py-1 rounded hover:bg-yellow-600">
-                    Update
-                  </button>
+      {/* Table */}
+      <div className="overflow-auto bg-white rounded-2xl shadow-lg border border-gray-200">
+        <table className="min-w-full text-base text-left border-collapse border border-gray-300">
+          <thead className="bg-blue-900 text-white text-lg text-center">
+            <tr>
+              <th className="border px-4 py-3">#</th>
+              <th className="border px-4 py-3">Image</th>
+              <th className="border px-4 py-3">Name</th>
+              <th className="border px-4 py-3">Position</th>
+              <th className="border px-4 py-3">Contact Info</th>
+              <th className="border px-4 py-3">Team</th>
+              <th className="border px-4 py-3">Division</th>
+              <th className="border px-4 py-3">Team Contact</th>
+              <th className="border px-4 py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredPlayers.length > 0 ? (
+              filteredPlayers.map((player, index) => (
+                <tr
+                  key={player.id}
+                  className="text-center hover:bg-blue-50 transition duration-300"
+                >
+                  <td className="border px-4 py-3">{index + 1}</td>
+                  <td className="border px-4 py-3">
+                    <div className="flex justify-center">
+                      <Image
+                        src={player.image}
+                        alt={player.name}
+                        width={60}
+                        height={60}
+                        className="w-16 h-16 object-cover rounded-full"
+                      />
+                    </div>
+                  </td>
+                  <td className="border px-4 py-3">{player.name}</td>
+                  <td className="border px-4 py-3">{player.position}</td>
+                  <td className="border px-4 py-3">{player.contact_info}</td>
+                  <td className="border px-4 py-3">{player.team.name}</td>
+                  <td className="border px-4 py-3">{player.team.division}</td>
+                  <td className="border px-4 py-3">
+                    {player.team.contact_info}
+                  </td>
+                  <td className="border px-4 py-3">
+                    <div className="flex justify-center gap-2">
+                      <button
+                        onClick={() => handleDeletePlayer(player.id)}
+                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow text-sm"
+                        disabled={loading}
+                      >
+                        Delete
+                      </button>
+                      <button
+                        onClick={() => handleUpdateClick(player)}
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow text-sm"
+                      >
+                        Update
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={9} className="text-center py-6 text-gray-500">
+                  No players found.
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={8} className="text-center p-4 text-gray-500">
-                No players found.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
-

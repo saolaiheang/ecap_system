@@ -209,146 +209,157 @@ export default function FetchSchedule({sport}:Props) {
 
   
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <div className="mb-8 border border-gray-300 rounded p-4 bg-gray-50">
-        <h3 className="font-semibold mb-4">
-          {formData.id ? "Update Schedule" : "Add New Schedule"}
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <select
-            name="sport_type_id"
-            value={formData.sport_type_id}
-            onChange={handleChange}
-            className="border p-3 rounded text-base"
-          >
-            <option value="">Select Sport</option>
-            {sports.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
+    <section className="px-8 py-6 bg-gray-50 min-h-screen">
+  <h2 className="text-3xl font-bold text-blue-700 mb-6">📅 Schedule Dashboard</h2>
 
-          <select
-            name="coach_id"
-            value={formData.coach_id}
-            onChange={handleChange}
-            className="border p-3 rounded text-base"
-          >
-            <option value="">Select Coach</option>
-            {coaches.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+  {/* Schedule Form */}
+  <div className="bg-white p-6 rounded-2xl shadow-lg mb-8 border">
+    <h3 className="text-xl font-semibold mb-5 text-gray-800">
+      {formData.id ? "✏️ Update Schedule" : "➕ Add New Schedule"}
+    </h3>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <select
+        name="sport_type_id"
+        value={formData.sport_type_id}
+        onChange={handleChange}
+        className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
+      >
+        <option value="">🏅 Select Sport</option>
+        {sports.map((s) => (
+          <option key={s.id} value={s.id}>
+            {s.name}
+          </option>
+        ))}
+      </select>
 
-          <select
-            name="team_id"
-            value={formData.team_id}
-            onChange={handleChange}
-            className="border p-3 rounded text-base"
-          >
-            <option value="">Select Team</option>
-            {teams.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name} ({t.division})
-              </option>
-            ))}
-          </select>
+      <select
+        name="coach_id"
+        value={formData.coach_id}
+        onChange={handleChange}
+        className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
+      >
+        <option value="">🧑‍🏫 Select Coach</option>
+        {coaches.map((c) => (
+          <option key={c.id} value={c.id}>
+            {c.name}
+          </option>
+        ))}
+      </select>
 
-          <input
-            type="text"
-            name="date"
-            placeholder="Date training"
+      <select
+        name="team_id"
+        value={formData.team_id}
+        onChange={handleChange}
+        className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
+      >
+        <option value="">👥 Select Team</option>
+        {teams.map((t) => (
+          <option key={t.id} value={t.id}>
+            {t.name} ({t.division})
+          </option>
+        ))}
+      </select>
 
-            value={formData.date}
-            onChange={handleChange}
-            className="border p-3 rounded text-base"
-          />
-          <input
-            type="time"
-            name="time"
-            placeholder="Time training"
-
-            value={formData.time}
-            onChange={handleChange}
-            className="border p-3 rounded text-base"
-          />
-          <input
-            type="text"
-            name="location"
-            placeholder="Location"
-            value={formData.location}
-            onChange={handleChange}
-            className="border p-3 rounded text-base"
-          />
-        </div>
-        <button
-          onClick={handleSubmit}
-          className="bg-[#1D276C] hover:bg-[#152057] text-white font-semibold px-6 py-2 rounded"
-        >
-          {formData.id ? "Update Schedule" : "Add Schedule"}
-        </button>
-      </div>
-
-      {/* Table */}
-      {loading ? (
-        <p className="text-gray-600">Loading schedules...</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full border border-gray-300 text-sm">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="border px-4 py-2">#</th>
-                <th className="border px-4 py-2">Date</th>
-                <th className="border px-4 py-2">Time</th>
-                <th className="border px-4 py-2">Location</th>
-                <th className="border px-4 py-2">Coach</th>
-                <th className="border px-4 py-2">Sport</th>
-                <th className="border px-4 py-2">Team</th>
-                <th className="border px-4 py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {schedules.map((s, i) => (
-                <tr key={s.id}>
-                  <td className="border px-4 py-2 text-center">{i + 1}</td>
-                  <td className="border px-4 py-2 text-center">{s.date}</td>
-                  <td className="border px-4 py-2 text-center">{s.time}</td>
-                  <td className="border px-4 py-2">{s.location}</td>
-                  <td className="border px-4 py-2 text-center">{s.coach.name}</td>
-                  <td className="border px-4 py-2 text-center">{s.sportType.name}</td>
-                  <td className="border px-4 py-2 text-center">
-                    {s.team.name} ({s.team.division})
-                  </td>
-                  <td className="border px-4 py-2 text-center space-x-2">
-                    <button
-                      onClick={() => handleEdit(s)}
-                      className="text-blue-600 hover:underline"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(s.id)}
-                      className="text-red-600 hover:underline"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {schedules.length === 0 && (
-                <tr>
-                  <td colSpan={8} className="text-center p-4 text-gray-500">
-                    No schedules found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <input
+        type="text"
+        name="date"
+        placeholder="📆 Date training"
+        value={formData.date}
+        onChange={handleChange}
+        className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
+      />
+      <input
+        type="time"
+        name="time"
+        placeholder="⏰ Time training"
+        value={formData.time}
+        onChange={handleChange}
+        className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
+      />
+      <input
+        type="text"
+        name="location"
+        placeholder="📍 Location"
+        value={formData.location}
+        onChange={handleChange}
+        className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
+      />
     </div>
+    <div className="mt-6 text-right">
+      <button
+        onClick={handleSubmit}
+        className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-[5px] transition"
+      >
+        {formData.id ? "Update Schedule" : "Add Schedule"}
+      </button>
+    </div>
+  </div>
+
+  {/* Schedule Table */}
+  <div className="overflow-auto bg-white rounded-2xl shadow-lg border border-gray-200">
+    {loading ? (
+      <p className="text-gray-600 p-4">Loading schedules...</p>
+    ) : (
+      <table className="min-w-full text-base text-left">
+        <thead className="bg-blue-900 text-white text-lg text-center">
+          <tr>
+            <th className="px-4 py-3">#</th>
+            <th className="px-4 py-3">Date</th>
+            <th className="px-4 py-3">Time</th>
+            <th className="px-4 py-3">Location</th>
+            <th className="px-4 py-3">Coach</th>
+            <th className="px-4 py-3">Sport</th>
+            <th className="px-4 py-3">Team</th>
+            <th className="px-4 py-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {schedules.length > 0 ? (
+            schedules.map((s, i) => (
+              <tr
+                key={s.id}
+                className="hover:bg-blue-50 transition duration-300 text-center"
+              >
+                <td className="px-4 py-3 border-t">{i + 1}</td>
+                <td className="px-4 py-3 border-t">{s.date}</td>
+                <td className="px-4 py-3 border-t">{s.time}</td>
+                <td className="px-4 py-3 border-t">{s.location}</td>
+                <td className="px-4 py-3 border-t">{s.coach.name}</td>
+                <td className="px-4 py-3 border-t">{s.sportType.name}</td>
+                <td className="px-4 py-3 border-t">
+                  {s.team.name} ({s.team.division})
+                </td>
+                <td className="px-4 py-3 border-t space-x-2">
+                  <button
+                    onClick={() => handleEdit(s)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg shadow"
+                  >
+                    Update
+                  </button>
+                  <button
+                    onClick={() => handleDelete(s.id)}
+                    className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded-lg shadow"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td
+                colSpan={8}
+                className="text-center p-4 text-gray-500 border-t"
+              >
+                No schedules found
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    )}
+  </div>
+</section>
+
   );
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface SportType {
   id: string;
@@ -56,24 +57,24 @@ export default function TypesOfSport() {
         )}
 
         {displayedSports.map((sport) => (
-          <div
-            key={sport.id}
-            className="relative h-56 sm:h-60 rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition duration-300 group"
-          >
-            <Image
-              src={sport?.image || "/placeholder.jpg"}
-              alt={sport.name || "Sport Image"}
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-gray-700 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition duration-300"></div>
-            <div className="absolute bottom-0 p-4 text-white">
-              <h2 className="text-lg sm:text-xl font-bold">{sport.name}</h2>
-              <p className="text-sm sm:text-base mt-1 group-hover:font-semibold transition line-clamp-2">
-                {sport.description}
-              </p>
+          <Link href={`/typeofsport/${sport.id}`} key={sport.id}>
+
+            <div className="relative h-56 sm:h-60 rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition duration-300 group cursor-pointer">
+              <Image
+                src={sport?.image || "/placeholder.jpg"}
+                alt={sport.name || "Sport Image"}
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-gray-700 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition duration-300"></div>
+              <div className="absolute bottom-0 p-4 text-white">
+                <h2 className="text-lg sm:text-xl font-bold">{sport.name}</h2>
+                <p className="text-sm sm:text-base mt-1 group-hover:font-semibold transition line-clamp-2">
+                  {sport.description}
+                </p>
+              </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>

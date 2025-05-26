@@ -12,12 +12,14 @@ import AdminPage from "@/components/fetchTypeSport";
 // import AdminPage from "@/components/fetchTypeSport";
 import LayoutCompetition from "@/components/layoutcompetition";
 import NewsDetailPage from "@/components/idnews";
+import Header from "@/components/header";
 
 
 export default function Home() {
   return (
     <div>
-      <NewsDetailPage/>
+      {/* <Header/> */}
+      <Homepage/>
 
     </div>
   );

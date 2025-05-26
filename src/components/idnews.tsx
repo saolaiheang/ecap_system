@@ -54,33 +54,27 @@ export default function NewsDetailPage() {
 
   if (loading) {
     return (
-      <div className="p-10 text-center text-pink-500 font-semibold">
-        Loading news...
-      </div>
+      <div className="p-10 text-center text-pink-500 font-semibold">Loading news...</div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-10 text-center text-red-500 font-semibold">
-        {error}
-      </div>
+      <div className="p-10 text-center text-red-500 font-semibold">{error}</div>
     );
   }
 
   if (!news) {
     return (
-      <div className="p-10 text-center text-red-500 font-semibold">
-        News not found.
-      </div>
+      <div className="p-10 text-center text-red-500 font-semibold">News not found.</div>
     );
   }
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <main className="px-6 sm:px-10 md:px-[100px] py-10 max-w-5xl mx-auto text-white font-sans">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-6 bg-gradient-to-r from-pink-500 to-purple-700 text-transparent bg-clip-text">
+        <h1 className="text-3xl sm:text-4xl font-bold mb-6 text-gray-700">
           {news.title}
         </h1>
         <p className="text-sm text-gray-300 mb-6">{news.date}</p>
@@ -94,7 +88,7 @@ export default function NewsDetailPage() {
           />
         </div>
 
-        <p className="text-base sm:text-lg text-gray-100 leading-relaxed whitespace-pre-line">
+        <p className="text-base sm:text-lg text-gray-600 leading-relaxed whitespace-pre-line">
           {news.description}
         </p>
       </main>

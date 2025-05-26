@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
@@ -21,16 +20,7 @@ export default function HeaderAdminPage() {
 
   return (
     <header className="flex justify-between items-center bg-[#1D276C] shadow-md px-3 py-2">
-      <div className="ml-4 rounded-t-[8px]">
-        <Image
-          src="/image/pseLogo.png"
-          alt="PSE Logo"
-          width={150}
-          height={90}
-          className="w-[120px] object-contain p-1"
-          priority={true}
-        />
-      </div>
+      
 
       <button
         onClick={handleLogout}

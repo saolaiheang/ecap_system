@@ -206,3 +206,28 @@ export const updateTeam= async (req: NextRequest, {params}: { params: { id: stri
         );
     }
 };
+
+export const deleteTeam=async (req:NextRequest,{params}:{params:{id:string}})=>{
+    try {
+        await initializeDataSource();
+        const teamRepository = AppDataSource.getRepository(Team);
+        const team = await teamRepository.findOne({ where: { id: params.id } });
+        if (!team) {
+            return NextResponse.json(
+                { error: "Team not found" },
+                { status: 404 }
+                );
+                }
+                await teamRepository.delete(params.id);
+                return NextResponse.json(
+                    { message: "Team deleted successfully" },
+                    { status: 200 }
+                    );
+                    } catch (error) {
+                        console.error("Error deleting team:", error);
+                        return NextResponse.json(
+                            { error: "Error deleting team" },
+                            { status: 500 }
+                            );
+                            }
+}

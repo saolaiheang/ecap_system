@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getNewsByIdTypeOfSport,deleteNews,updateNews,getNewsById } from "@/controllers/news/news.controller";
+import {deleteNews,updateNews,getNewsById } from "@/controllers/news/news.controller";
 
 export const DELETE = async(req:NextRequest,context:{params:{id:string}})=>{
     try {

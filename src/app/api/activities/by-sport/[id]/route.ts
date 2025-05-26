@@ -5,4 +5,4 @@ return await createActivities(req,context)
 }
 export const GET=async(req:NextRequest,context:{params:{id:string}})=>{
     return await getAllActbySport(req,context)
-    }
+}

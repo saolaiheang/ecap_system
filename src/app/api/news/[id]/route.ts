@@ -1,15 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getNewsByIdTypeOfSport,deleteNews,updateNews } from "@/controllers/news/news.controller";
-export const GET = async (req: NextRequest, context: { params: { id: string } }) => {
-    try {
-        const news = await getNewsByIdTypeOfSport(req, context);
-        return news
+import { getNewsByIdTypeOfSport,deleteNews,updateNews,getNewsById } from "@/controllers/news/news.controller";
 
-    } catch (error) {
-        return NextResponse.json({ error: "Error getting news",message:error })
-    }
-
-}
 export const DELETE = async(req:NextRequest,context:{params:{id:string}})=>{
     try {
         const news = await deleteNews(req, context);
@@ -29,4 +20,7 @@ export const PUT= async (req:NextRequest, context:{params:{id:string}})=>{
         return NextResponse.json({ error: "Error getting news",message:error })
     }
 
+}
+export const GET = async (req: NextRequest, context: { params: { id:string}})=>{
+    return await getNewsById(req,context);
 }

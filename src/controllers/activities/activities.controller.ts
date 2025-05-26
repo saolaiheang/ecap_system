@@ -1,0 +1,105 @@
+import { NextRequest, NextResponse } from "next/server";
+import { Activities, SportType } from "@/entities";
+import { initializeDataSource } from "@/utils/inititializeDataSource";
+import { AppDataSource } from "@/config";
+import fs, { writeFile } from "fs/promises";
+import cloudinary from "@/lib/cloudinary";
+import os from "os";
+
+export const config = {
+    api: {
+        bodyParser: false,
+    },
+};
+export const createActivities = async (req: NextRequest,{params}:{params:{id:string}}) => {
+    try {
+        const { id:sport_id } = params;
+        await initializeDataSource();
+        const formData = await req.formData();
+        const title = formData.get("title") as string;
+        const description = formData.get("description") as string;
+        const videoFile = formData.get("video") as File;
+
+        if (!title || !title || !description || !sport_id) {
+            return new Response(JSON.stringify({ error: "Please fill all the fields" }), {
+                status: 400,
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+        }
+
+
+        const sportTypeRepository = AppDataSource.getRepository(SportType);
+        const sportType = await sportTypeRepository.findOne({ where: { id: sport_id } });
+        if (!sportType) {
+            return NextResponse.json(
+                { error: "Sport type not found" },
+                { status: 404 }
+            );
+        }
+        if (!videoFile) {
+            return new Response(JSON.stringify({ error: "Video is required" }), {
+                status: 400,
+            })
+        }
+        if (!videoFile.type.startsWith("video/")) {
+            return NextResponse.json(
+                { error: "Only video files are allowed" },
+                { status: 400 }
+            );
+        }
+
+        const tempFilePath = `${os.tmpdir()}/${videoFile.name}-${Date.now()}`;
+        const fileBuffer = Buffer.from(await videoFile.arrayBuffer());
+        await writeFile(tempFilePath, fileBuffer);
+        const videoFileUrl = await cloudinary.uploader.upload(tempFilePath, {
+            folder: "activities",
+            public_id: `${title}-${Date.now()}`,
+        });
+        await fs.unlink(tempFilePath);
+
+        const activitiesRepository = AppDataSource.getRepository(Activities);
+        const activity = activitiesRepository.create({
+            title,
+            description,
+            video: videoFileUrl.secure_url,
+            sport_id: sport_id,
+        });
+        await activitiesRepository.save(activity);
+
+
+
+    } catch (error) {
+        console.error(error);
+        return new Response(JSON.stringify({ error: "Failed to create activity" }), {
+            status: 500,
+        })
+
+
+    }
+}
+
+export const getAllActbySport= async (_req:NextRequest,{params}:{params:{id:string}})=>{
+    try {
+        await initializeDataSource();
+        const { id: sport_id } = params;
+                const activitiesRepository = AppDataSource.getRepository(Activities);
+        
+                const activities = await activitiesRepository.find({
+                    where: { sport_id: sport_id },
+                    relations: ["sportType"],
+                });
+                if(!activities){
+                    return NextResponse.json({ message:"No activities found", 
+                        status: 404,
+                        })
+                }
+                return NextResponse.json(activities);
+
+            }catch(err){
+                return  NextResponse.json({ error: "Failed to get activities" , 
+                    status: 500,
+                    })
+            }
+}

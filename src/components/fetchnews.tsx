@@ -217,6 +217,7 @@ export default function FetchNews({ sport }: { sport: string }) {
           <table className="min-w-full text-base text-left border-collapse border border-gray-300">
             <thead className="bg-blue-900 text-white text-lg text-center">
               <tr>
+                <th className=" px-6 py-4">No</th>
                 <th className=" px-6 py-4">Image</th>
                 <th className=" px-6 py-4">Title</th>
                 <th className=" px-6 py-4">Description</th>
@@ -231,6 +232,7 @@ export default function FetchNews({ sport }: { sport: string }) {
                     key={news.id}
                     className="text-center hover:bg-blue-50 transition duration-300"
                   >
+                    <td className=" px-6 py-4">{index + 1}</td>
                     <td className=" px-6 py-4">
                       <div className="flex justify-center items-center">
                         <Image
@@ -249,16 +251,16 @@ export default function FetchNews({ sport }: { sport: string }) {
                     <td className=" px-6 py-4">
                       <div className="flex justify-center gap-4">
                         <button
-                          onClick={() => handleDelete(news.id)}
-                          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow text-sm"
-                        >
-                          Delete
-                        </button>
-                        <button
                           onClick={() => handleEdit(news)}
                           className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow text-sm"
                         >
                           Update
+                        </button>
+                        <button
+                          onClick={() => handleDelete(news.id)}
+                          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow text-sm"
+                        >
+                          Delete
                         </button>
                       </div>
                     </td>

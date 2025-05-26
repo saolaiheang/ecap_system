@@ -272,8 +272,7 @@ export default function FetchMatch({ sport }: Props) {
 
       {/* Match Form */}
       <div className="bg-white p-6 rounded-2xl shadow-lg mb-8 border">
-        
-      <h3 className="text-xl font-semibold mb-5 text-gray-800">
+        <h3 className="text-xl font-semibold mb-5 text-gray-800">
           ➕ Add New Match
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -412,55 +411,56 @@ export default function FetchMatch({ sport }: Props) {
       )}
 
       {/* Match Table */}
-  <div className="overflow-auto bg-white rounded-2xl shadow-lg border border-gray-200">
-    <table className="min-w-full text-base text-left">
-      <thead className="bg-blue-900 text-white text-lg text-center">
-        <tr>
-          <th className="px-6 py-4">Team A</th>
-          <th className="px-6 py-4">Team B</th>
-          <th className="px-6 py-4">Date</th>
-          <th className="px-6 py-4">Time</th>
-          <th className="px-6 py-4">Location</th>
-          <th className="px-6 py-4">Sport</th>
-          <th className="px-6 py-4">Status</th>
-          <th className="px-6 py-4">Score</th>
-          <th className="px-6 py-4">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {competitions.map((comp) => (
-          <tr
-            key={comp.id}
-            className="hover:bg-blue-50 transition duration-300 text-center"
-          >
-            <td className="px-6 py-4 border-t">{comp.teamA?.name}</td>
-            <td className="px-6 py-4 border-t">{comp.teamB?.name}</td>
-            <td className="px-6 py-4 border-t">{comp.match_date}</td>
-            <td className="px-6 py-4 border-t">{comp.match_time}</td>
-            <td className="px-6 py-4 border-t">{comp.location}</td>
-            <td className="px-6 py-4 border-t">{comp.sportType?.name}</td>
-            <td className="px-6 py-4 border-t capitalize">{comp.status}</td>
-            <td className="px-6 py-4 border-t">
-              {comp.status === "completed"
-                ? `${comp.teamA_score} - ${comp.teamB_score}`
-                : "N/A"}
-            </td>
-            <td className="px-6 py-4 border-t">
-              <div className="flex justify-center gap-3">
-                <Button className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg shadow">
-                  Update
-                </Button>
-                <Button className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded-lg shadow">
-                  Delete
-                </Button>
-              </div>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-
+      <div className="overflow-auto bg-white rounded-2xl shadow-lg border border-gray-200">
+        <table className="min-w-full text-base text-left">
+          <thead className="bg-blue-900 text-white text-lg text-center">
+            <tr>
+              <th className="px-6 py-4">No</th>
+              <th className="px-6 py-4">Team A</th>
+              <th className="px-6 py-4">Team B</th>
+              <th className="px-6 py-4">Date</th>
+              <th className="px-6 py-4">Time</th>
+              <th className="px-6 py-4">Location</th>
+              <th className="px-6 py-4">Sport</th>
+              <th className="px-6 py-4">Status</th>
+              <th className="px-6 py-4">Score</th>
+              <th className="px-6 py-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {competitions.map((comp, index) => (
+              <tr
+                key={comp.id}
+                className="hover:bg-blue-50 transition duration-300 text-center"
+              >
+                <td className=" px-6 py-4">{index + 1}</td>
+                <td className="px-6 py-4 border-t">{comp.teamA?.name}</td>
+                <td className="px-6 py-4 border-t">{comp.teamB?.name}</td>
+                <td className="px-6 py-4 border-t">{comp.match_date}</td>
+                <td className="px-6 py-4 border-t">{comp.match_time}</td>
+                <td className="px-6 py-4 border-t">{comp.location}</td>
+                <td className="px-6 py-4 border-t">{comp.sportType?.name}</td>
+                <td className="px-6 py-4 border-t capitalize">{comp.status}</td>
+                <td className="px-6 py-4 border-t">
+                  {comp.status === "completed"
+                    ? `${comp.teamA_score} - ${comp.teamB_score}`
+                    : "N/A"}
+                </td>
+                <td className="px-6 py-4 border-t">
+                  <div className="flex justify-center gap-3">
+                    <Button className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg shadow">
+                      Update
+                    </Button>
+                    <Button className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded-lg shadow">
+                      Delete
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 }

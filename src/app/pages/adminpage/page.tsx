@@ -161,7 +161,7 @@ export default function DashboardLayout() {
           ) : selectedContent === "competition" ? (
             <CompetitionManager />
           ) : selectedContent === "activity" ? (
-            <FetchActivityD sport="default" />
+            <FetchActivityD  />
           ) : selectedContent === "history" ? (
             <FetchHistory /> 
           ) : selectedContent === "match" ? (

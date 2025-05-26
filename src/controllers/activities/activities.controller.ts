@@ -5,7 +5,7 @@ import { AppDataSource } from "@/config";
 import fs, { writeFile } from "fs/promises";
 import cloudinary from "@/lib/cloudinary";
 import os from "os";
-import { title } from "process";
+import slugify from "slugify";
 
 export const config = {
     api: {
@@ -50,13 +50,14 @@ export const createActivities = async (req: NextRequest, { params }: { params: {
                 { status: 400 }
             );
         }
-
+        const safeTitle = slugify(title, { lower: true, strict: true });
         const tempFilePath = `${os.tmpdir()}/${videoFile.name}-${Date.now()}`;
         const fileBuffer = Buffer.from(await videoFile.arrayBuffer());
         await writeFile(tempFilePath, fileBuffer);
         const videoFileUrl = await cloudinary.uploader.upload(tempFilePath, {
             folder: "activities",
-            public_id: `${title}-${Date.now()}`,
+            public_id: `${safeTitle}-${Date.now()}`,
+            resource_type: "video",
         });
         await fs.unlink(tempFilePath);
 
@@ -69,7 +70,10 @@ export const createActivities = async (req: NextRequest, { params }: { params: {
         });
         await activitiesRepository.save(activity);
 
-
+        return NextResponse.json(
+            { message: "Activity created successfully", activity },
+            { status: 201 }
+        );
 
     } catch (error) {
         console.error(error);
@@ -81,31 +85,35 @@ export const createActivities = async (req: NextRequest, { params }: { params: {
     }
 }
 
-export const getAllActbySport = async (req: NextRequest, { params }: { params: { id: string } }) => {
+export const getAllActbySport = async (_req: NextRequest,context: { params: { id: string } }) => {
     try {
-        await initializeDataSource();
-        const { id: sport_id } = params;
-        const activitiesRepository = AppDataSource.getRepository(Activities);
-
-        const activities = await activitiesRepository.find({
-            where: { sport_id: sport_id },
-            relations: ["sportType"],
-        });
-        if (!activities) {
-            return NextResponse.json({
-                message: "No activities found",
-                status: 404,
-            })
-        }
-        return NextResponse.json(activities);
-
+      await initializeDataSource();
+      const sport_id =context.params.id;
+      const activitiesRepository = AppDataSource.getRepository(Activities);
+  
+      const activities = await activitiesRepository.find({
+        where: { sport_id:sport_id },
+        relations: ["sportType"],
+      });
+  
+      if (!activities || activities.length === 0) {
+        return NextResponse.json(
+          { message: "No activities found" },
+          { status: 404 }
+        );
+      }
+  
+      return NextResponse.json(activities); 
+  
     } catch (err) {
-        return NextResponse.json({
-            error: "Failed to get activities",
-            status: 500,
-        })
+        console.error(err);
+      return NextResponse.json(
+        { error: "Failed to get activities" },
+        { status: 500 }
+      );
     }
-}
+  };
+  
 export const getActivityById = async (_req: NextRequest, { params }: { params: { id: string } }) => {
     try {
         await initializeDataSource();

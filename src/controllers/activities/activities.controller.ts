@@ -5,15 +5,16 @@ import { AppDataSource } from "@/config";
 import fs, { writeFile } from "fs/promises";
 import cloudinary from "@/lib/cloudinary";
 import os from "os";
+import { title } from "process";
 
 export const config = {
     api: {
         bodyParser: false,
     },
 };
-export const createActivities = async (req: NextRequest,{params}:{params:{id:string}}) => {
+export const createActivities = async (req: NextRequest, { params }: { params: { id: string } }) => {
     try {
-        const { id:sport_id } = params;
+        const { id: sport_id } = params;
         await initializeDataSource();
         const formData = await req.formData();
         const title = formData.get("title") as string;
@@ -80,26 +81,130 @@ export const createActivities = async (req: NextRequest,{params}:{params:{id:str
     }
 }
 
-export const getAllActbySport= async (_req:NextRequest,{params}:{params:{id:string}})=>{
+export const getAllActbySport = async (req: NextRequest, { params }: { params: { id: string } }) => {
     try {
         await initializeDataSource();
         const { id: sport_id } = params;
-                const activitiesRepository = AppDataSource.getRepository(Activities);
-        
-                const activities = await activitiesRepository.find({
-                    where: { sport_id: sport_id },
-                    relations: ["sportType"],
-                });
-                if(!activities){
-                    return NextResponse.json({ message:"No activities found", 
-                        status: 404,
-                        })
-                }
-                return NextResponse.json(activities);
+        const activitiesRepository = AppDataSource.getRepository(Activities);
 
-            }catch(err){
-                return  NextResponse.json({ error: "Failed to get activities" , 
-                    status: 500,
-                    })
+        const activities = await activitiesRepository.find({
+            where: { sport_id: sport_id },
+            relations: ["sportType"],
+        });
+        if (!activities) {
+            return NextResponse.json({
+                message: "No activities found",
+                status: 404,
+            })
+        }
+        return NextResponse.json(activities);
+
+    } catch (err) {
+        return NextResponse.json({
+            error: "Failed to get activities",
+            status: 500,
+        })
+    }
+}
+export const getActivityById = async (_req: NextRequest, { params }: { params: { id: string } }) => {
+    try {
+        await initializeDataSource();
+        const { id: activity_id } = params;
+        const activitiesRepository = AppDataSource.getRepository(Activities);
+        const activity = await activitiesRepository.findOne({
+            where: { id: activity_id },
+            relations: ["sportType"],
+        });
+        if (!activity) {
+            return NextResponse.json({
+                message: "Activity not found",
+                status: 404,
+            })
+        }
+        return NextResponse.json(activity);
+    } catch (error) {
+        return NextResponse.json({
+            error: "Failed to get activity",
+            status: 500,
+        })
+    }
+}
+
+export const deleteActivities = async (_req: NextRequest, { params }: { params: { id: string } }) => {
+    try {
+        await initializeDataSource();
+        const { id: activity_id } = params;
+        const activitiesRepository = AppDataSource.getRepository(Activities);
+        const activity = await activitiesRepository.findOne({
+            where: { id: activity_id },
+            relations: ["sportType"],
+        });
+        if (!activity) {
+            return NextResponse.json({
+                message: "Activity not found",
+                status: 404,
+            })
+        }
+        await activitiesRepository.delete(activity_id);
+        return NextResponse.json({
+            message: "Activity deleted",
+            status: 200,
+        })
+    } catch (error) {
+        return NextResponse.json({
+            error: "Failed to delete activity",
+            status: 500,
+        })
+    }
+}
+
+export const editeActivities = async (req: NextRequest, { params }: { params: { id: string } }) => {
+    try {
+        await initializeDataSource();
+        const { id: activity_id } = params;
+        const formData = await req.formData();
+        const title = formData.get("title") as string;
+        const description = formData.get("description") as string;
+        const sport_id = formData.get("sport_id") as string;
+
+        const activitiesRepository = AppDataSource.getRepository(Activities);
+        const activity = await activitiesRepository.findOne({
+            where: { id: activity_id },
+            relations: ["sportType"],
+        });
+
+        if (!activity) {
+            return NextResponse.json({
+                message: "Activity not found",
+                status: 404,
+            });
+        }
+
+        if (title) activity.title = title;
+        if (description) activity.description = description;
+        if (sport_id) {
+            const sportTypeRepository = AppDataSource.getRepository(SportType);
+            const sportType = await sportTypeRepository.findOne({ where: { id: sport_id } });
+            if (!sportType) {
+                return NextResponse.json(
+                    { error: "Sport type not found" },
+                    { status: 404 }
+                );
             }
+            activity.sport_id = sport_id;
+        }
+
+        await activitiesRepository.save(activity);
+        return NextResponse.json({
+            message: "Activity updated",
+            activity,
+            status: 200,
+        });
+    } catch (error) {
+        return NextResponse.json({
+            error: "Failed to update activity",
+            status: 500
+        })
+    }
+
 }

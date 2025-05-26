@@ -4,132 +4,137 @@ import { ChangeEvent, useEffect, useState } from "react";
 import Image from "next/image";
 
 interface Sport {
-  id: string;
-  name: string;
-  description?: string;
-  image: string;
+    id: string;
+    name: string;
+    description?: string;
+    image: string;
 }
 
 interface FormDataState {
-  name: string;
-  description: string;
-  image: File | string;
+    name: string;
+    description: string;
+    image: File | string;
 }
 
 export default function SportComponent() {
-  const [sports, setSports] = useState<Sport[] | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [formData, setFormData] = useState<FormDataState>({
-    name: "",
-    description: "",
-    image: "",
-  });
-  const [isCreating, setIsCreating] = useState(false);
-
-  const [editingSportId, setEditingSportId] = useState<string | null>(null);
-  const [isUpdating, setIsUpdating] = useState(false);
-
-  const fetchSports = async () => {
-    try {
-      const response = await fetch("/api/typeofsport");
-      const data = await response.json();
-      setSports(Array.isArray(data?.typeOfSport) ? data.typeOfSport : []);
-    } catch (error) {
-      console.error("Failed to fetch sports:", error);
-      setSports([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchSports();
-  }, []);
-
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value, files } = e.target as HTMLInputElement;
-    if (files && files.length > 0) {
-      setFormData({ ...formData, [name]: files[0] });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
-  };
-
-  const handleCreate = async () => {
-    const formDataPayload = new FormData();
-    formDataPayload.append("name", formData.name);
-    formDataPayload.append("description", formData.description);
-    if (formData.image && typeof formData.image !== "string") {
-      formDataPayload.append("image", formData.image);
-    }
-
-    setIsUpdating(true); // reuse updating state
-
-    try {
-      const res = await fetch("/api/typeofsport", {
-        method: "POST",
-        body: formDataPayload,
-      });
-      await res.json();
-      setFormData({ name: "", description: "", image: "" });
-      setIsCreating(false);
-
-      // ✅ Refresh list
-      await fetchSports();
-
-      alert("Sport created successfully!");
-    } catch (error) {
-      console.error("Failed to create sport:", error);
-      alert("Failed to create sport. Please try again.");
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
-  const handleUpdate = async (id: string) => {
-    const formDataPayload = new FormData();
-    formDataPayload.append("name", formData.name);
-    formDataPayload.append("description", formData.description);
-    if (formData.image && typeof formData.image !== "string") {
-      formDataPayload.append("image", formData.image);
-    }
-
-    setIsUpdating(true);
-
-    try {
-      const res = await fetch(`/api/typeofsport/${id}`, {
-        method: "PUT",
-        body: formDataPayload,
-      });
-      await res.json();
-      setFormData({ name: "", description: "", image: "" });
-      setEditingSportId(null);
-      await fetchSports();
-
-      alert("Sport updated successfully!");
-    } catch (error) {
-      console.error("Failed to update sport:", error);
-      alert("Failed to update sport. Please try again.");
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
-  const openEditModal = (sport: Sport) => {
-    setFormData({
-      name: sport.name,
-      description: sport.description || "",
-      image: sport.image,
+    const [sports, setSports] = useState<Sport[] | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [formData, setFormData] = useState<FormDataState>({
+        name: "",
+        description: "",
+        image: "",
     });
-    setEditingSportId(sport.id);
-  };
+    const [isCreating, setIsCreating] = useState(false);
 
-  const closeEditModal = () => {
-    setFormData({ name: "", description: "", image: "" });
-    setEditingSportId(null);
-  };
+    const [editingSportId, setEditingSportId] = useState<string | null>(null);
+    const [isUpdating, setIsUpdating] = useState(false);
+
+
+    const fetchSports = async () => {
+        try {
+            const response = await fetch("/api/typeofsport");
+            const data = await response.json();
+            setSports(Array.isArray(data?.typeOfSport) ? data.typeOfSport : []);
+        } catch (error) {
+            console.error("Failed to fetch sports:", error);
+            setSports([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchSports();
+    }, []);
+
+
+    const handleChange = (
+        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+        const { name, value, files } = e.target as HTMLInputElement;
+        if (files && files.length > 0) {
+            setFormData({ ...formData, [name]: files[0] });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
+    };
+
+    const handleCreate = async () => {
+        const formDataPayload = new FormData();
+        formDataPayload.append("name", formData.name);
+        formDataPayload.append("description", formData.description);
+        if (formData.image && typeof formData.image !== "string") {
+            formDataPayload.append("image", formData.image);
+        }
+
+        setIsUpdating(true); // reuse updating state
+
+        try {
+            const res = await fetch("/api/typeofsport", {
+                method: "POST",
+                body: formDataPayload,
+            });
+            await res.json();
+            setFormData({ name: "", description: "", image: "" });
+            setIsCreating(false);
+
+            // ✅ Refresh list
+            await fetchSports();
+
+            alert("Sport created successfully!");
+        } catch (error) {
+            console.error("Failed to create sport:", error);
+            alert("Failed to create sport. Please try again.");
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
+
+    const handleUpdate = async (id: string) => {
+        const formDataPayload = new FormData();
+        formDataPayload.append("name", formData.name);
+        formDataPayload.append("description", formData.description);
+        if (formData.image && typeof formData.image !== "string") {
+            formDataPayload.append("image", formData.image);
+        }
+
+        setIsUpdating(true);
+
+        try {
+            const res = await fetch(`/api/typeofsport/${id}`, {
+                method: "PUT",
+                body: formDataPayload,
+            });
+            await res.json();
+            setFormData({ name: "", description: "", image: "" });
+            setEditingSportId(null);
+            await fetchSports();
+
+
+            alert("Sport updated successfully!");
+        } catch (error) {
+            console.error("Failed to update sport:", error);
+            alert("Failed to update sport. Please try again.");
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
+    const openEditModal = (sport: Sport) => {
+        setFormData({
+            name: sport.name,
+            description: sport.description || "",
+            image: sport.image,
+        });
+        setEditingSportId(sport.id);
+    };
+
+    const closeEditModal = () => {
+        setFormData({ name: "", description: "", image: "" });
+        setEditingSportId(null);
+    };
+
 
   return (
     <div className="px-8 py-6 bg-gray-50 min-h-screen">
@@ -351,3 +356,4 @@ export default function SportComponent() {
     </div>
   );
 }
+

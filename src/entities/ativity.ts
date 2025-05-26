@@ -11,15 +11,15 @@ export class Activities {
     title: string;
     @Column({ length: 300 })
     description: string;
-    @Column({ length: 255, nullable: true })
+    @Column({ length: 255})
     video: string;
     @CreateDateColumn()
     create_at: Date;
     @Column({ nullable: true })
     sport_id: string;
-    @ManyToOne("SportType", "players")
+    @ManyToOne(() => SportType)
     @JoinColumn({ name: "sport_id" })
-    sport: SportType;
+    sportType: SportType;
     @BeforeInsert()
     generateId() {
         this.id = uuidv4();

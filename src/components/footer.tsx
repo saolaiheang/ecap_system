@@ -2,7 +2,7 @@
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-600 text-white py-6 px-4 sticky bottom-0 z-50 shadow-lg">
+    <footer className="bg-gray-600 text-white py-6 px-4  bottom-0 z-50 shadow-lg">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         <p className="text-sm text-center md:text-left">
            <span className="font-semibold"></span> Extracurricular Activity Program

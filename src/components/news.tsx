@@ -42,6 +42,7 @@ export default function News() {
 
   return (
     <>
+    <div className="">
       {loading ? (
         <div className="px-4 sm:px-10 md:px-[100px] py-8 text-lg sm:text-xl text-blue-800 font-medium">
           Loading...
@@ -64,7 +65,7 @@ export default function News() {
               fill
               className="object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-gray/80 via-black/30 to-transparent"></div>
             <div className="absolute bottom-6 left-6 sm:bottom-8 sm:left-8 text-white max-w-[90%] sm:max-w-xl">
               <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold drop-shadow-lg">
                 {news[0]?.title}
@@ -80,7 +81,7 @@ export default function News() {
             {news.map((item) => (
               <div
                 key={item.id}
-                className="bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-xl 
+                className="bg-gray-503 rounded-xl overflow-hidden shadow-md hover:shadow-xl 
                          transition-all duration-300 transform hover:-translate-y-1 flex flex-col"
               >
                 <div className="relative w-full h-52">
@@ -96,7 +97,7 @@ export default function News() {
                   <h4 className="text-lg sm:text-xl font-semibold text-white line-clamp-2">
                     {item?.title || "none"}
                   </h4>
-                  <p className="text-gray-300 hover:font-bold text-sm mt-2 line-clamp-3">
+                  <p className="text-gray-700 hover:font-bold text-sm mt-2 line-clamp-3">
                     {item?.description}
                   </p>
                   <p className="text-xs text-gray-400 hover: mt-auto pt-3">
@@ -108,6 +109,7 @@ export default function News() {
           </div>
         </section>
       )}
+      </div>
     </>
   );
 }

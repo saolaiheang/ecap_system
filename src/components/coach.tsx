@@ -25,6 +25,7 @@ export default function Coach() {
   const [error, setError] = useState("");
 
   const sliderRef = useRef<HTMLDivElement>(null);
+  const scrollByAmount = 300;
 
   useEffect(() => {
     const fetchCoaches = async () => {
@@ -62,9 +63,6 @@ export default function Coach() {
     fetchCoaches();
   }, []);
 
-  // Scroll left and right handlers
-  const scrollByAmount = 300;
-
   const handleScrollLeft = () => {
     if (sliderRef.current) {
       sliderRef.current.scrollBy({ left: -scrollByAmount, behavior: "smooth" });
@@ -86,8 +84,8 @@ export default function Coach() {
   if (error) return <p className="px-6 py-6 text-red-500">{error}</p>;
 
   return (
-    <section className="lg:px-[150px] px-6 sm:px-10 md:px-16 py-12 font-sans">
-      <h2 className="lg:text-3xl sm:text-4xl font-bold bg-gradient-to-r from-pink-500 to-purple-700 bg-clip-text text-transparent drop-shadow-lg mb-10">
+    <section className="px-4 sm:px-10 md:px-16 lg:px-[150px] py-10 font-sans">
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-pink-500 to-purple-700 bg-clip-text text-transparent drop-shadow-lg mb-8 sm:text-left">
         Meet Our Coaches
       </h2>
 
@@ -102,23 +100,23 @@ export default function Coach() {
         <button
           onClick={handleScrollLeft}
           aria-label="Scroll Left"
-          className="absolute left-0 top-1/2 -translate-y-1/2 bg-gradient-to-r from-pink-500 to-purple-700 text-white rounded-full p-3 shadow-lg z-10 hover:bg-white-500 transition"
+          className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full p-3 shadow-lg z-10 hover:bg-black transition"
         >
           ◀
         </button>
 
-        {/* Scrollable container */}
+        {/* Scrollable Coaches */}
         <div
           ref={sliderRef}
-          className="flex gap-6 overflow-x-auto no-scrollbar scroll-smooth"
+          className="flex gap-4 sm:gap-6 overflow-x-auto no-scrollbar scroll-smooth"
           style={{ scrollSnapType: "x mandatory" }}
         >
           {coaches.map((coach) => (
             <div
               key={coach.id}
-              className="flex-shrink-0 w-72 bg-black/80 rounded-3xl shadow-md border border-gray-100 group hover:shadow-xl transition duration-300 scroll-snap-align-start text-white"
+              className="flex-shrink-0 w-[85%] sm:w-64 md:w-72 bg-white rounded-3xl shadow-md border border-gray-100 group hover:shadow-xl transition duration-300 scroll-snap-align-start"
             >
-              <div className="relative h-[260px] w-full overflow-hidden rounded-t-3xl">
+              <div className="relative h-[220px] sm:h-[260px] w-full overflow-hidden rounded-t-3xl">
                 <Image
                   src={coach.image || "https://via.placeholder.com/300x300"}
                   alt={coach.name}
@@ -128,15 +126,15 @@ export default function Coach() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </div>
 
-              <div className="p-5 space-y-2">
-                <p className="text-lg font-semibold">{coach.name}</p>
-                <p className="text-sm text-white hover:font-bold font-medium">
+              <div className="p-4 sm:p-5 space-y-1 sm:space-y-2">
+                <p className="text-base sm:text-lg font-semibold text-black">{coach.name}</p>
+                <p className="text-sm text-gray-600 hover:font-bold font-medium">
                   🏅 Sport: {coach.sport?.name}
                 </p>
-                <p className="text-sm text-white hover:font-bold">
+                <p className="text-sm text-gray-600 hover:font-bold">
                   🎯 Division: {coach.team?.division}
                 </p>
-                <p className="text-sm text-white hover:font-bold">
+                <p className="text-sm text-gray-600 hover:font-bold">
                   📞 {coach.contact_info || "No contact info"}
                 </p>
               </div>
@@ -148,13 +146,13 @@ export default function Coach() {
         <button
           onClick={handleScrollRight}
           aria-label="Scroll Right"
-          className="absolute right-0 top-1/2 -translate-y-1/2 bg-gradient-to-r from-pink-500 to-purple-700 text-white rounded-full p-3 shadow-lg z-10 hover:bg-blue-700 transition"
+          className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full p-3 shadow-lg z-10 hover:bg-black transition"
         >
           ▶
         </button>
       </div>
 
-      <style >{`
+      <style>{`
         .no-scrollbar::-webkit-scrollbar {
           display: none;
         }

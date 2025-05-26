@@ -8,7 +8,6 @@ import MatchLayout from "@/components/matchLayout";
 export default function Match(){
     return(
         <div className="">
-            <Header/>
             <MatchLayout/>
             <Footer/>
         </div>

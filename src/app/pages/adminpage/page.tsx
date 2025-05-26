@@ -22,6 +22,7 @@ import FetchHistory from "@/components/fetchHistoryD";
 import FetchSchedule from "@/components/fetchSchedule";
 import CompetitionManager from "@/components/fetchcompetition";
 import CompetitionStagesPage from "@/app/competitions/[competitionId]/stages/page"
+import DeshboardSportType from "@/components/fetchSportType";
 
 
 
@@ -50,6 +51,16 @@ export default function DashboardLayout() {
       <HeaderAdminPage />
       <div className="flex flex-1">
         <aside className="w-64 bg-[#2C357C] text-white flex flex-col py-4 px-2 shadow-lg space-y-2">
+
+        <button
+            className="flex items-center px-3 py-3 text-sm hover:bg-[#4B5A9E] rounded transition"
+            onClick={() => setSelectedContent("sporttypes")}
+            aria-label="View sporttypes"
+          >
+            <FaHistory className="mr-3" />
+            Sport Types
+          </button>
+
           <button
             className="flex items-center px-3 py-3 text-sm hover:bg-[#4B5A9E] rounded transition"
             onClick={() => setSelectedContent("history")}
@@ -157,7 +168,10 @@ export default function DashboardLayout() {
             <FetchMatch sport="default" />
           ) :selectedContent=== "stages"?(
             <CompetitionStagesPage/>
-          ): (
+          ): selectedContent=== "sporttypes"?(
+            <DeshboardSportType/>
+          ): 
+          (
             <h2 className="text-xl font-semibold text-[#1D276C]">Dashboard</h2>
           )}
         </main>

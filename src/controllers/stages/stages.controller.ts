@@ -43,7 +43,7 @@ export const createStage = async (req: NextRequest, { params }: { params: { id: 
       .createQueryBuilder("stage")
       .where("stage.competition_id = :competitionId", { competitionId: id })
       .andWhere("LOWER(stage.name) = LOWER(:name)", { name: parsed.name.trim() })
-    //   .andWhere("LOWER(stage.type)=LOWER(:type",{type:parsed.type.trim()})
+
       .getOne();
 
     if (existingStage) {

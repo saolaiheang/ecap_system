@@ -279,3 +279,27 @@ export const getAllNewsBysport=async(_req:NextRequest,{params}:{params:{id:strin
 
     }
 }
+
+
+export const getNewsById= async (_req:NextRequest,{params}:{params:{id:string}})=>{
+    try{
+        const {id}=params;
+        await initializeDataSource();
+        const newsRepository=AppDataSource.getRepository(News);
+        const news=await newsRepository.findOne({where:{id},relations:["sportType"]})
+        if(!news){
+            return NextResponse.json(
+                {error:"News not found"},
+                {status:404}
+                )
+                }
+                return NextResponse.json({
+                    message:"News by id successfully",data:news
+                    },{status:200})
+                    }catch(err){
+                        return NextResponse.json(
+                            {error:"Can't get news by this id",err:err},
+                            {status:500}
+                            )
+                            }
+}

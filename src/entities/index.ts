@@ -9,5 +9,7 @@ export {Player} from './player'
 export {ScheduleTraining} from './schedule_training'
 export {Stage} from './stage';
 export {History} from './history';
-export {MatchFriendly}from './match_friendly'
+export {MatchFriendly}from './match_friendly';
+export {Activities} from "./ativity"
+
 

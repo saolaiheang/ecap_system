@@ -8,11 +8,8 @@ import os from 'os';
 import fs,{writeFile} from "fs/promises"
 export const createTypeOfSport = async (req: NextRequest) => {
     try {
-        // await initializeDataSource();
-        (async () => {
-            await initializeDataSource();
-            console.log("App is running...");
-        })();
+        await initializeDataSource();
+        
         // const { name, description,image } = await req.json();
         const formData= await req.formData();
         const name =formData.get("name") as string;
@@ -125,7 +122,6 @@ export const updateTypeOfSport = async (
         const name =formData.get("name") as string;
         const description=formData.get("description") as string;
         const image = formData.get("image") as File;
-        // const { name, description } = await req.json();
 
 
         if (!name || !description) {

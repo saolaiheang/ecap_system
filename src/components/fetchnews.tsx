@@ -217,11 +217,11 @@ export default function FetchNews({ sport }: { sport: string }) {
           <table className="min-w-full text-base text-left border-collapse border border-gray-300">
             <thead className="bg-blue-900 text-white text-lg text-center">
               <tr>
-                <th className="border px-6 py-4">Image</th>
-                <th className="border px-6 py-4">Title</th>
-                <th className="border px-6 py-4">Description</th>
-                <th className="border px-6 py-4">Sport</th>
-                <th className="border px-6 py-4">Actions</th>
+                <th className=" px-6 py-4">Image</th>
+                <th className=" px-6 py-4">Title</th>
+                <th className=" px-6 py-4">Description</th>
+                <th className=" px-6 py-4">Sport</th>
+                <th className=" px-6 py-4">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -231,7 +231,7 @@ export default function FetchNews({ sport }: { sport: string }) {
                     key={news.id}
                     className="text-center hover:bg-blue-50 transition duration-300"
                   >
-                    <td className="border px-6 py-4">
+                    <td className=" px-6 py-4">
                       <div className="flex justify-center items-center">
                         <Image
                           src={news?.image || "/placeholder.jpg"}
@@ -243,11 +243,11 @@ export default function FetchNews({ sport }: { sport: string }) {
                       </div>
                     </td>
 
-                    <td className="border px-6 py-4">{news.title}</td>
-                    <td className="border px-6 py-4">{news.description}</td>
-                    <td className="border px-6 py-4">{news.sportType?.name}</td>
-                    <td className="border px-6 py-4">
-                      <div className="flex justify-center gap-3">
+                    <td className=" px-6 py-4">{news.title}</td>
+                    <td className=" px-6 py-4">{news.description}</td>
+                    <td className=" px-6 py-4">{news.sportType?.name}</td>
+                    <td className=" px-6 py-4">
+                      <div className="flex justify-center gap-4">
                         <button
                           onClick={() => handleDelete(news.id)}
                           className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow text-sm"

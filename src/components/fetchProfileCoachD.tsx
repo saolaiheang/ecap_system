@@ -321,14 +321,14 @@ export default function CoachesProfileBySport() {
         <table className="min-w-full text-base text-left border-collapse border border-gray-300">
           <thead className="bg-blue-900 text-white text-lg text-center">
             <tr>
-              <th className="border px-6 py-4">#</th>
-              <th className="border px-6 py-4">Image</th>
-              <th className="border px-6 py-4">Name</th>
-              <th className="border px-6 py-4">Contact Info</th>
-              <th className="border px-6 py-4">Team Name</th>
-              <th className="border px-6 py-4">Division</th>
-              <th className="border px-6 py-4">Team Contact</th>
-              <th className="border px-6 py-4">Actions</th>
+              <th className=" px-6 py-4">#</th>
+              <th className=" px-6 py-4">Image</th>
+              <th className=" px-6 py-4">Name</th>
+              <th className=" px-6 py-4">Contact Info</th>
+              <th className=" px-6 py-4">Team Name</th>
+              <th className=" px-6 py-4">Division</th>
+              <th className=" px-6 py-4">Team Contact</th>
+              <th className=" px-6 py-4">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -338,8 +338,8 @@ export default function CoachesProfileBySport() {
                   key={coach.id}
                   className="text-center hover:bg-blue-50 transition duration-300"
                 >
-                  <td className="border px-6 py-4">{index + 1}</td>
-                  <td className="border px-6 py-4">
+                  <td className=" px-6 py-4">{index + 1}</td>
+                  <td className=" px-6 py-4">
                     <div className="flex justify-center">
                       <Image
                         src={coach.image}
@@ -350,15 +350,21 @@ export default function CoachesProfileBySport() {
                       />
                     </div>
                   </td>
-                  <td className="border px-6 py-4">{coach.name}</td>
-                  <td className="border px-6 py-4">{coach.contact_info}</td>
-                  <td className="border px-6 py-4">{coach.team.name}</td>
-                  <td className="border px-6 py-4">{coach.team.division}</td>
-                  <td className="border px-6 py-4">
+                  <td className=" px-6 py-4">{coach.name}</td>
+                  <td className=" px-6 py-4">{coach.contact_info}</td>
+                  <td className=" px-6 py-4">{coach.team.name}</td>
+                  <td className=" px-6 py-4">{coach.team.division}</td>
+                  <td className=" px-6 py-4">
                     {coach.team.contact_info}
                   </td>
-                  <td className="border px-6 py-4">
-                    <div className="flex justify-center gap-2">
+                  <td className=" px-6 py-4">
+                    <div className="flex justify-center gap-4">
+                    <button
+                        onClick={() => handleUpdateClick(coach)}
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
+                      >
+                        Update
+                      </button>
                       <button
                         onClick={() => handleDeletecoach(coach.id)}
                         className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm"
@@ -366,12 +372,7 @@ export default function CoachesProfileBySport() {
                       >
                         Delete
                       </button>
-                      <button
-                        onClick={() => handleUpdateClick(coach)}
-                        className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm"
-                      >
-                        Update
-                      </button>
+                     
                     </div>
                   </td>
                 </tr>

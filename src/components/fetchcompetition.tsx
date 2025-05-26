@@ -213,171 +213,179 @@ export default function CompetitionManager() {
 
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Competition Manager</h2>
-      {error && <p className="text-red-500 mb-4" role="alert">{error}</p>}
+    <section className="px-8 py-6 bg-gray-50 min-h-screen">
+  <h2 className="text-3xl font-bold text-blue-700 mb-6">🏆 Competition Manager</h2>
 
-      <div className="mb-8 bg-gray-100 p-4 rounded-lg">
-        <h3 className="text-lg font-semibold mb-4">
-          {editingCompetitionId ? "Update Competition" : "Create New Competition"}
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="sportType" className="block text-sm font-medium mb-1">Sport Type</label>
-            <select
-              id="sportType"
-              value={selectedSportId}
-              onChange={(e) => setSelectedSportId(e.target.value)}
-              className="border p-2 rounded w-full"
-              disabled={isLoading}
-            >
-              <option value="">Select Sport Type</option>
-              {sportTypes.map((sport, index) => (
-                <option key={sport.id || `sport-${index}`} value={sport.id}>
-                  {sport.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium mb-1">Competition Name</label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              placeholder="Competition Name"
-              value={competitionForm.name}
-              onChange={handleCompetitionChange}
-              className="border p-2 rounded w-full"
-              disabled={isLoading}
-            />
-          </div>
-          <div>
-            <label htmlFor="location" className="block text-sm font-medium mb-1">Location</label>
-            <input
-              id="location"
-              name="location"
-              type="text"
-              placeholder="Location"
-              value={competitionForm.location}
-              onChange={handleCompetitionChange}
-              className="border p-2 rounded w-full"
-              disabled={isLoading}
-            />
-          </div>
-          <div>
-            <label htmlFor="start_date" className="block text-sm font-medium mb-1">Start Date</label>
-            <input
-              id="start_date"
-              name="start_date"
-              type="date"
-              value={competitionForm.start_date}
-              onChange={handleCompetitionChange}
-              className="border p-2 rounded w-full"
-              disabled={isLoading}
-            />
-          </div>
-          <div>
-            <label htmlFor="image" className="block text-sm font-medium mb-1">Image</label>
-            <input
-              id="image"
-              name="image"
-              type="file"
-              onChange={handleFileChange}
-              className="border p-2 rounded w-full"
-              ref={fileInputRef}
-              disabled={isLoading}
-            />
-          </div>
-        </div>
-        <div className="flex gap-4 mt-4">
-          {editingCompetitionId ? (
-            <>
-              <button
-                onClick={() => handleUpdateClick(editingCompetitionId)}
-                className="bg-green-600 text-white px-4 py-2 rounded w-full md:w-auto disabled:bg-green-300"
-                disabled={isLoading}
-              >
-                {isLoading ? "Updating..." : "Update Competition"}
-              </button>
-              <button
-                onClick={handleCancelEdit}
-                className="bg-gray-600 text-white px-4 py-2 rounded w-full md:w-auto disabled:bg-gray-300"
-                disabled={isLoading}
-              >
-                Cancel
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={handleCreateCompetition}
-              className="bg-blue-600 text-white px-4 py-2 rounded w-full md:w-auto disabled:bg-blue-300"
-              disabled={isLoading}
-            >
-              {isLoading ? "Creating..." : "Create Competition"}
-            </button>
-          )}
-        </div>
-      </div>
+  {error && (
+    <p className="text-red-500 mb-4 text-base font-medium" role="alert">
+      {error}
+    </p>
+  )}
 
-      <h3 className="text-lg font-semibold mb-4">All Competitions</h3>
-      {isFetching ? (
-        <p className="text-gray-500">Loading competitions...</p>
-      ) : competitions.length > 0 ? (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sport</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {competitions.map((comp, index) => (
-                <tr key={comp.id || `comp-${index}`}>
-                  <td className="px-6 py-4 whitespace-nowrap">{comp.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{comp.location}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {new Date(comp.start_date).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {comp.image ? (
-                      <Image src={comp.image}
-                      width={150}
-                      height={100}
-                       alt={comp.name} className="h-12 w-12 object-cover rounded" />
-                    ) : (
-                      "No image"
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">{comp.sportType.name || "Active"}</td>
-                  <td className="px-6 py-4 whitespace-nowrap flex gap-2">
-                    <button
-                      onClick={() => handleEditClick(comp)}
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleViewStages(comp.id)}
-                      className="text-purple-600 hover:text-purple-800"
-                    >
-                      View
-                    </button>
-                   
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+  <div className="bg-white p-6 rounded-2xl shadow-lg mb-8 border flex flex-col">
+    <h3 className="text-xl font-semibold mb-5 text-gray-800">
+      {editingCompetitionId ? "✏️ Update Competition" : "➕ Create New Competition"}
+    </h3>
+
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <select
+        id="sportType"
+        value={selectedSportId}
+        onChange={(e) => setSelectedSportId(e.target.value)}
+        className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-300 w-full"
+        disabled={isLoading}
+      >
+        <option value="">🏅 Select Sport Type</option>
+        {sportTypes.map((sport, index) => (
+          <option key={sport.id || `sport-${index}`} value={sport.id}>
+            {sport.name}
+          </option>
+        ))}
+      </select>
+
+      <input
+        id="name"
+        name="name"
+        type="text"
+        placeholder="📛 Competition Name"
+        value={competitionForm.name}
+        onChange={handleCompetitionChange}
+        className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-300 w-full"
+        disabled={isLoading}
+      />
+
+      <input
+        id="location"
+        name="location"
+        type="text"
+        placeholder="📍 Location"
+        value={competitionForm.location}
+        onChange={handleCompetitionChange}
+        className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-300 w-full"
+        disabled={isLoading}
+      />
+
+      <input
+        id="start_date"
+        name="start_date"
+        type="date"
+        value={competitionForm.start_date}
+        onChange={handleCompetitionChange}
+        className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-300 w-full"
+        disabled={isLoading}
+      />
+
+      <input
+        id="image"
+        name="image"
+        type="file"
+        onChange={handleFileChange}
+        className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-300 w-full"
+        ref={fileInputRef}
+        disabled={isLoading}
+      />
+    </div>
+
+    <div className="flex gap-4 justify-end mt-6">
+      {editingCompetitionId ? (
+        <>
+          <button
+            onClick={() => handleUpdateClick(editingCompetitionId)}
+            className="bg-green-600 text-white px-6 py-2 rounded-[5px] hover:bg-green-700 transition disabled:bg-green-300"
+            disabled={isLoading}
+          >
+            {isLoading ? "Updating..." : "Update Competition"}
+          </button>
+          <button
+            onClick={handleCancelEdit}
+            className="bg-gray-600 text-white px-6 py-2 rounded-[5px] hover:bg-gray-700 transition disabled:bg-gray-300"
+            disabled={isLoading}
+          >
+            Cancel
+          </button>
+        </>
       ) : (
-        <p className="text-gray-500">No competitions found.</p>
+        <button
+          onClick={handleCreateCompetition}
+          className="bg-green-600 text-white px-6 py-2 rounded-[5px] hover:bg-green-700 transition disabled:bg-blue-300"
+          disabled={isLoading}
+        >
+          {isLoading ? "Creating..." : "Create Competition"}
+        </button>
       )}
     </div>
+  </div>
+
+  <h3 className="text-xl font-semibold text-gray-800 mb-4">📋 All Competitions</h3>
+
+  {isFetching ? (
+    <p className="text-center text-gray-600">Loading competitions...</p>
+  ) : competitions.length > 0 ? (
+    <div className="overflow-auto bg-white rounded-2xl shadow-lg border border-gray-200">
+      <table className="min-w-full text-base text-left border-collapse border border-gray-300">
+        <thead className="bg-blue-900 text-white text-lg text-center">
+          <tr>
+            <th className=" px-6 py-4">Name</th>
+            <th className=" px-6 py-4">Location</th>
+            <th className=" px-6 py-4">Start Date</th>
+            <th className=" px-6 py-4">Image</th>
+            <th className=" px-6 py-4">Sport</th>
+            <th className=" px-6 py-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {competitions.map((comp, index) => (
+            <tr
+              key={comp.id || `comp-${index}`}
+              className="text-center hover:bg-blue-50 transition duration-300"
+            >
+              <td className=" px-6 py-4">{comp.name}</td>
+              <td className=" px-6 py-4">{comp.location}</td>
+              <td className=" px-6 py-4">
+                {new Date(comp.start_date).toLocaleDateString()}
+              </td>
+              <td className=" px-6 py-4">
+                {comp.image ? (
+                  <Image
+                    src={comp.image}
+                    width={120}
+                    height={100}
+                    alt={comp.name}
+                    className="object-cover rounded-lg mx-auto"
+                  />
+                ) : (
+                  "No image"
+                )}
+              </td>
+              <td className=" px-6 py-4">
+                {comp.sportType?.name || "N/A"}
+              </td>
+              <td className=" px-6 py-4">
+                <div className="flex justify-center gap-3">
+                  <button
+                    onClick={() => handleEditClick(comp)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow text-sm"
+                  >
+                    Update
+                  </button>
+                  <button
+                    onClick={() => handleViewStages(comp.id)}
+                    className="bg-yellow-500 hover:bg-yellow-400 text-white px-4 py-2 rounded-lg shadow text-sm"
+                  >
+                    View
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  ) : (
+    <p className="text-gray-500 text-center">No competitions found.</p>
+  )}
+</section>
+
+
   );
 }

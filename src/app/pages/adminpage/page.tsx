@@ -12,7 +12,7 @@ import {
   FaTrophy,
 } from "react-icons/fa";
 import Image from "next/image";
-
+import { FaListAlt } from "react-icons/fa"; 
 import FetchNews from "@/components/fetchnews";
 import FetchActivityD from "@/components/fetchActivityD";
 import ProfileDashboard from "@/components/fetchprofileD";
@@ -61,7 +61,7 @@ export default function DashboardLayout() {
           className="flex items-center px-4 py-3 text-[16px] font-semibold rounded-lg hover:bg-[#4B5A9E] transition duration-200"
           onClick={() => setSelectedContent("sporttypes")}
         >
-          <FaHistory className="mr-4 text-xl" />
+          <FaListAlt className="mr-4 text-lg" />
           Sport Types
         </button>
 
@@ -146,7 +146,6 @@ export default function DashboardLayout() {
           Activity
         </button>
       </aside>
-
 
       {/* Main Content */}
       <main className="flex-1 p-8 bg-white shadow-inner rounded-tl-3xl overflow-y-auto">

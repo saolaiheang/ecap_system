@@ -326,15 +326,15 @@ export default function PlayerProfileBySport() {
         <table className="min-w-full text-base text-left border-collapse border border-gray-300">
           <thead className="bg-blue-900 text-white text-lg text-center">
             <tr>
-              <th className="border px-4 py-3">#</th>
-              <th className="border px-4 py-3">Image</th>
-              <th className="border px-4 py-3">Name</th>
-              <th className="border px-4 py-3">Position</th>
-              <th className="border px-4 py-3">Contact Info</th>
-              <th className="border px-4 py-3">Team</th>
-              <th className="border px-4 py-3">Division</th>
-              <th className="border px-4 py-3">Team Contact</th>
-              <th className="border px-4 py-3">Actions</th>
+              <th className=" px-4 py-3">#</th>
+              <th className=" px-4 py-3">Image</th>
+              <th className=" px-4 py-3">Name</th>
+              <th className=" px-4 py-3">Position</th>
+              <th className=" px-4 py-3">Contact Info</th>
+              <th className=" px-4 py-3">Team</th>
+              <th className=" px-4 py-3">Division</th>
+              <th className=" px-4 py-3">Team Contact</th>
+              <th className=" px-4 py-3">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -344,8 +344,8 @@ export default function PlayerProfileBySport() {
                   key={player.id}
                   className="text-center hover:bg-blue-50 transition duration-300"
                 >
-                  <td className="border px-4 py-3">{index + 1}</td>
-                  <td className="border px-4 py-3">
+                  <td className=" px-4 py-3">{index + 1}</td>
+                  <td className=" px-4 py-3">
                     <div className="flex justify-center">
                       <Image
                         src={player.image}
@@ -356,16 +356,22 @@ export default function PlayerProfileBySport() {
                       />
                     </div>
                   </td>
-                  <td className="border px-4 py-3">{player.name}</td>
-                  <td className="border px-4 py-3">{player.position}</td>
-                  <td className="border px-4 py-3">{player.contact_info}</td>
-                  <td className="border px-4 py-3">{player.team.name}</td>
-                  <td className="border px-4 py-3">{player.team.division}</td>
-                  <td className="border px-4 py-3">
+                  <td className=" px-4 py-3">{player.name}</td>
+                  <td className=" px-4 py-3">{player.position}</td>
+                  <td className=" px-4 py-3">{player.contact_info}</td>
+                  <td className=" px-4 py-3">{player.team.name}</td>
+                  <td className=" px-4 py-3">{player.team.division}</td>
+                  <td className=" px-4 py-3">
                     {player.team.contact_info}
                   </td>
-                  <td className="border px-4 py-3">
-                    <div className="flex justify-center gap-2">
+                  <td className=" px-4 py-3">
+                    <div className="flex justify-center gap-4">
+                    <button
+                        onClick={() => handleUpdateClick(player)}
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow text-sm"
+                      >
+                        Update
+                      </button>
                       <button
                         onClick={() => handleDeletePlayer(player.id)}
                         className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow text-sm"
@@ -373,12 +379,7 @@ export default function PlayerProfileBySport() {
                       >
                         Delete
                       </button>
-                      <button
-                        onClick={() => handleUpdateClick(player)}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow text-sm"
-                      >
-                        Update
-                      </button>
+                     
                     </div>
                   </td>
                 </tr>

@@ -46,9 +46,7 @@ export default function FetchNews({ sport }: { sport: string }) {
   const fetchNews = async (sportId: string) => {
     setLoading(true);
     try {
-      const res = await fetch(
-        `/api/news/by-sport/${sportId}`
-      );
+      const res = await fetch(`/api/news/by-sport/${sportId}`);
       const data = await res.json();
       setNewsList(data.data);
       console.log("new", data.data);
@@ -154,116 +152,111 @@ export default function FetchNews({ sport }: { sport: string }) {
     }
   }, [selectedSport]);
 
-
-
-
   return (
-    <div className="p-4 md:p-8 max-w-7xl mx-auto">
-      <h2 className="text-2xl md:text-3xl font-bold text-[#1D276C] mb-6 md:text-left">
-        News Management
+    <section className="px-8 py-6 bg-gray-50 min-h-screen">
+      <h2 className="text-3xl font-bold text-blue-700 mb-6">
+        📰 News Management
       </h2>
 
-      <div className="mb-6">
-        <select
-          className="border border-gray-300 p-2 rounded-md"
-          value={selectedSport}
-          onChange={(e) => setSelectedSport(e.target.value)}
-        >
-          <option value="">Select a Sport</option>
-          {sports.map((sport) => (
-            <option key={sport.id} value={sport.id}>
-              {sport.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      <div className="bg-white p-6 rounded-2xl shadow-lg mb-8 border flex flex-col">
+        <h3 className="text-xl font-semibold mb-5 text-gray-800">
+          ➕ Add News
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <input
+            name="title"
+            type="text"
+            placeholder="📝 News Title"
+            value={formData.title}
+            onChange={handleChange}
+            className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-300 w-full"
+          />
+          <input
+            name="description"
+            type="text"
+            placeholder="📝 News Description"
+            value={formData.description}
+            onChange={handleChange}
+            className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-300 w-full"
+          />
+          <input
+            name="image"
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-300 w-full"
+          />
+          <select
+            className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-300 w-full md:w-auto"
+            value={selectedSport}
+            onChange={(e) => setSelectedSport(e.target.value)}
+          >
+            <option value="">🏅 Select a Sport</option>
+            {sports.map((sport) => (
+              <option key={sport.id} value={sport.id}>
+                {sport.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-        <input
-          name="title"
-          type="text"
-          placeholder="News Title"
-          value={formData.title}
-          onChange={handleChange}
-          className="border border-gray-300 p-2 rounded-md w-full"
-        />
-
-        <input
-          name="description"
-          type="text"
-          placeholder="News Description"
-          value={formData.description}
-          onChange={handleChange}
-          className="border border-gray-300 p-2 rounded-md w-full"
-        />
-
-        <input
-          name="image"
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="border border-gray-300 p-2 rounded-md w-full"
-        />
-
-        <button
-          onClick={handleAddOrUpdateNews}
-          className=" bg-[#1D276C] hover:bg-[#152057] text-white font-semibold px-4 py-3 rounded-md transition w-full md:col-span-3"
-        >
-          {editNewsId ? "Update News" : "Add News"}
-        </button>
+        <div className="mt-auto text-right">
+          <button
+            onClick={handleAddOrUpdateNews}
+            className="bg-green-600 text-white px-6 py-2 rounded-[5px] hover:bg-green-700 transition"
+          >
+            {editNewsId ? "Update News" : "Add News"}
+          </button>
+        </div>
       </div>
 
       {loading ? (
         <p className="text-center text-gray-600">Loading news...</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full border-collapse border border-gray-300 text-sm md:text-base">
-            <thead className="bg-gray-100">
+        <div className="overflow-auto bg-white rounded-2xl shadow-lg border border-gray-200">
+          <table className="min-w-full text-base text-left border-collapse border border-gray-300">
+            <thead className="bg-blue-900 text-white text-lg text-center">
               <tr>
-                <th className="border px-4 py-2 text-center">#</th>
-                <th className="border px-4 py-2 text-center">Image</th>
-                <th className="border px-4 py-2 text-center">Title</th>
-                <th className="border px-4 py-2 text-center">Description</th>
-                <th className="border px-4 py-2 text-center">Sport</th>
-                <th className="border px-4 py-2 text-center">Actions</th>
+                <th className="border px-6 py-4">Image</th>
+                <th className="border px-6 py-4">Title</th>
+                <th className="border px-6 py-4">Description</th>
+                <th className="border px-6 py-4">Sport</th>
+                <th className="border px-6 py-4">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {Array.isArray(newsList) &&newsList.length > 0 ? (
-                newsList.map((news,index) => (
-                  <tr key={news.id}>
-                    <td className="border px-4 py-2 text-center">
-                      {index + 1}
-                    </td>
-                    <td className="border px-4 py-2">
+              {Array.isArray(newsList) && newsList.length > 0 ? (
+                newsList.map((news, index) => (
+                  <tr
+                    key={news.id}
+                    className="text-center hover:bg-blue-50 transition duration-300"
+                  >
+                    <td className="border px-6 py-4">
                       <div className="flex justify-center items-center">
                         <Image
                           src={news?.image || "/placeholder.jpg"}
                           alt={news?.title || "News Image"}
-                          width={64}
-                          height={64}
-                          className="object-cover"
+                          width={120}
+                          height={120}
+                          className="object-cover rounded-lg"
                         />
                       </div>
                     </td>
-                    <td className="border px-4 py-2 text-center">
-                      {news.title}
-                    </td>
-                    <td className="border px-4 py-2">{news.description}</td>
-                    <td className="border px-4 py-2 text-center">
-                      {news.sportType?.name}
-                    </td>
-                    <td className="border px-4 py-2">
-                      <div className="flex justify-center items-center space-x-2">
+
+                    <td className="border px-6 py-4">{news.title}</td>
+                    <td className="border px-6 py-4">{news.description}</td>
+                    <td className="border px-6 py-4">{news.sportType?.name}</td>
+                    <td className="border px-6 py-4">
+                      <div className="flex justify-center gap-3">
                         <button
                           onClick={() => handleDelete(news.id)}
-                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+                          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow text-sm"
                         >
                           Delete
                         </button>
                         <button
                           onClick={() => handleEdit(news)}
-                          className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded"
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow text-sm"
                         >
                           Update
                         </button>
@@ -282,6 +275,6 @@ export default function FetchNews({ sport }: { sport: string }) {
           </table>
         </div>
       )}
-    </div>
+    </section>
   );
 }

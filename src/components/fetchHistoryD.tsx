@@ -122,106 +122,117 @@ export default function FetchHistories() {
   };
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4 text-[#1D276C]">History Management</h2>
+    <section className="px-8 py-6 bg-gray-50 min-h-screen">
+  <h2 className="text-3xl font-bold text-blue-700 mb-6">📜 History Management</h2>
 
-      {/* Form Inputs */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <input
-          name="year"
-          placeholder="Year"
-          value={formData.year}
-          onChange={handleChange}
-          className="border p-2 rounded-md"
-        />
-        <input
-          name="title"
-          placeholder="Title"
-          value={formData.title}
-          onChange={handleChange}
-          className="border p-2 rounded-md"
-        />
-        <input
-          name="description"
-          placeholder="Description"
-          value={formData.description}
-          onChange={handleChange}
-          className="border p-2 rounded-md"
-        />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="border p-2 rounded-md"
-        />
-        <button
-          onClick={handleSubmit}
-          className="bg-[#1D276C] text-white font-bold py-2 rounded-md md:col-span-4 hover:bg-[#152057]"
-        >
-          {editId ? "Update History" : "Add History"}
-        </button>
-      </div>
-
-      {/* Table */}
-      {loading ? (
-        <p>Loading histories...</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full border border-gray-300 text-sm">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="border p-2">#</th>
-                <th className="border p-2">Image</th>
-                <th className="border p-2">Year</th>
-                <th className="border p-2">Title</th>
-                <th className="border p-2">Description</th>
-                <th className="border p-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {histories.length > 0 ? (
-                histories.map((item, idx) => (
-                  <tr key={item.id}>
-                    <td className="border p-2 text-center">{idx + 1}</td>
-                    <td className="border p-2 text-center">
-                      <Image
-                        src={item.imageUrl || "/placeholder.jpg"}
-                        width={150}
-                        height={100}
-                        alt={item.title}
-                        className="w-16 h-16 object-cover rounded"
-                      />
-                    </td>
-                    <td className="border p-2 text-center">{item.year}</td>
-                    <td className="border p-2">{item.title}</td>
-                    <td className="border p-2">{item.description}</td>
-                    <td className="border p-2 text-center space-x-2">
-                      <button
-                        onClick={() => handleEdit(item)}
-                        className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item.id)}
-                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={6} className="text-center text-gray-500 p-4">
-                    No history records found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
+  {/* Form Section */}
+  <div className="bg-white p-6 rounded-2xl shadow-lg mb-8 border">
+    <h3 className="text-xl font-semibold mb-5 text-gray-800">➕ Add or Update History</h3>
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+      <input
+        name="year"
+        placeholder="Year"
+        value={formData.year}
+        onChange={handleChange}
+        className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
+      />
+      <input
+        name="title"
+        placeholder="Title"
+        value={formData.title}
+        onChange={handleChange}
+        className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
+      />
+      <input
+        name="description"
+        placeholder="Description"
+        value={formData.description}
+        onChange={handleChange}
+        className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
+      />
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
+      />
     </div>
+    <div className="mt-6 text-right">
+      <button
+        onClick={handleSubmit}
+        className="bg-green-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-green-700 transition"
+      >
+        {editId ? "Update History" : "Add History"}
+      </button>
+    </div>
+  </div>
+
+  {/* Table Section */}
+  {loading ? (
+    <p className="text-gray-600 text-center">Loading histories...</p>
+  ) : (
+    
+    <div className="overflow-auto bg-white rounded-2xl shadow-lg border border-gray-200">
+    <table className="min-w-full text-base text-left">
+      <thead className="bg-blue-900 text-white text-lg text-center">
+        <tr>
+          <th className="px-6 py-4">Image</th>
+          <th className="px-6 py-4">Year</th>
+          <th className="px-6 py-4">Title</th>
+          <th className="px-6 py-4">Description</th>
+          <th className="px-6 py-4">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {histories.length > 0 ? (
+          histories.map((item, idx) => (
+            <tr
+              key={item.id}
+              className="hover:bg-blue-50 transition duration-300 text-center text-lg"
+            >
+              <td className="border-t px-6 py-4">
+                <Image
+                  src={item.imageUrl || "/placeholder.jpg"}
+                  width={96}
+                  height={96}
+                  alt={item.title}
+                  className="w-24 h-24 object-cover rounded-xl border"
+                />
+              </td>
+              <td className="border-t px-6 py-4">{item.year}</td>
+              <td className="border-t px-6 py-4 text-left">{item.title}</td>
+              <td className="border-t px-6 py-4 text-left">{item.description}</td>
+              <td className="border-t px-6 py-4">
+                <div className="flex justify-center gap-4">
+                  <button
+                    onClick={() => handleEdit(item)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow text-sm"
+                  >
+                    Update
+                  </button>
+                  <button
+                    onClick={() => handleDelete(item.id)}
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow text-sm"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))
+        ) : (
+          <tr>
+            <td colSpan={6} className="text-center text-gray-500 py-6 text-lg">
+              No history records found.
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </div>
+  
+  )}
+</section>
+
   );
 }

@@ -75,7 +75,6 @@ export default function SchedulePage() {
   return (
     <>
       <div className="min-h-screen text-pink-400">
-        <Header />
         <div className="p-4 sm:p-6 max-w-7xl mx-auto">
           <h1 className="text-2xl sm:text-4xl font-extrabold text-center mb-8 mt-[100px] bg-gradient-to-r from-pink-500 to-purple-700 text-transparent bg-clip-text">
             Weekly Sports Schedule

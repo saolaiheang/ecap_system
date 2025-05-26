@@ -10,7 +10,8 @@ import Footer from "@/components/footer";
 export default function Homepage() {
   return (
     <div className="">
-      <Header />
+      {/* <Header /> */}
+
       <TestVideo />
 
       <div>
@@ -19,7 +20,7 @@ export default function Homepage() {
         <News />
 
         <Coach />
-        <Footer/>
+        <Footer />
         {/* <Player /> */}
       </div>
     </div>

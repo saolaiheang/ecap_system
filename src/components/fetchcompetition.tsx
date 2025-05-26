@@ -328,23 +328,23 @@ export default function CompetitionManager() {
           <table className="min-w-full bg-white border border-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
-                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
-                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sport</th>
-                <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sport</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {competitions.map((comp, index) => (
                 <tr key={comp.id || `comp-${index}`}>
-                  <td className="px-2 py-4 whitespace-nowrap">{comp.name}</td>
-                  <td className="px-2 py-4 whitespace-nowrap">{comp.location}</td>
-                  <td className="px-2 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 whitespace-nowrap">{comp.name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{comp.location}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
                     {new Date(comp.start_date).toLocaleDateString()}
                   </td>
-                  <td className="px-2 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 whitespace-nowrap">
                     {comp.image ? (
                       <Image src={comp.image}
                       width={150}
@@ -354,17 +354,17 @@ export default function CompetitionManager() {
                       "No image"
                     )}
                   </td>
-                  <td className="px-2 py-4 whitespace-nowrap">{comp.sportType.name || "Active"}</td>
-                  <td className="px-2 py-4 whitespace-nowrap flex gap-2">
+                  <td className="px-6 py-4 whitespace-nowrap">{comp.sportType.name || "Active"}</td>
+                  <td className="px-6 py-4 whitespace-nowrap flex gap-2">
                     <button
                       onClick={() => handleEditClick(comp)}
-                      className="bg-green-600 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition duration-200 text-xs sm:text-sm"
-                      >
-                      Update
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      Edit
                     </button>
                     <button
                       onClick={() => handleViewStages(comp.id)}
-                      className=" hover:text-white bg-purple-600 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition duration-200 text-xs sm:text-sm"
+                      className="text-purple-600 hover:text-purple-800"
                     >
                       View
                     </button>

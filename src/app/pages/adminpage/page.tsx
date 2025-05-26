@@ -13,6 +13,9 @@ import {
   FaChartLine,
   FaTrophy,
 } from "react-icons/fa";
+import Image from "next/image";
+import { FaListAlt } from "react-icons/fa"; 
+
 import FetchNews from "@/components/fetchnews";
 import FetchActivityD from "@/components/fetchActivityD";
 import ProfileDashboard from "@/components/fetchprofileD";
@@ -53,6 +56,7 @@ export default function DashboardLayout() {
         <aside className="w-64 bg-[#2C357C] text-white flex flex-col py-4 px-2 shadow-lg space-y-2">
 
         <button
+
             className="flex items-center px-3 py-3 text-sm hover:bg-[#4B5A9E] rounded transition"
             onClick={() => setSelectedContent("sporttypes")}
             aria-label="View sporttypes"
@@ -60,6 +64,7 @@ export default function DashboardLayout() {
             <FaHistory className="mr-3" />
             Sport Types
           </button>
+
 
           <button
             className="flex items-center px-3 py-3 text-sm hover:bg-[#4B5A9E] rounded transition"
@@ -129,6 +134,7 @@ export default function DashboardLayout() {
             <FaNewspaper className="mr-3" />
             News
           </button>
+
 
           <button
             className="flex items-center px-3 py-3 text-sm hover:bg-[#4B5A9E] rounded transition"

@@ -323,6 +323,7 @@ export default function CompetitionManager() {
           <table className="min-w-full bg-white border border-gray-200">
             <thead className="bg-gray-50">
               <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
@@ -334,6 +335,8 @@ export default function CompetitionManager() {
             <tbody className="divide-y divide-gray-200">
               {competitions.map((comp, index) => (
                 <tr key={comp.id || `comp-${index}`}>
+                    <td className="px-4 py-3 border-t">{index + 1}</td>
+
                   <td className="px-6 py-4 whitespace-nowrap">{comp.name}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{comp.location}</td>
                   <td className="px-6 py-4 whitespace-nowrap">

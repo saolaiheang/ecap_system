@@ -5,6 +5,7 @@ let isInitialized = false;
 const initializeDataSource = async (): Promise<void> => {
     if (!isInitialized) {
         try {
+            // console.log(process.env);
             await AppDataSource.initialize();
             isInitialized = true;
             console.log("DataSource initialized successfully");

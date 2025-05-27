@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import HeaderAdminPage from "@/components/headerAdmin";
 import {
   FaUser,
   FaChevronDown,
@@ -13,7 +12,6 @@ import {
   FaTrophy,
 } from "react-icons/fa";
 import Image from "next/image";
-import { FaListAlt } from "react-icons/fa";
 
 import FetchNews from "@/components/fetchnews";
 import FetchActivityD from "@/components/fetchActivityD";
@@ -42,7 +40,6 @@ function isTokenExpired(token: string): boolean {
     return true;
   }
 }
-
 import { FaFutbol } from "react-icons/fa";
 
 
@@ -54,12 +51,17 @@ export default function DashboardLayout() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) {
+
+    if (!token || isTokenExpired(token)) {
       router.push("/pages/login");
+      setIsAuthenticated(false);
     } else {
       setIsAuthenticated(true);
     }
   }, [router]);
+
+ 
+
 
   if (isAuthenticated === null) {
     return <div>Loading...</div>;
@@ -125,6 +127,12 @@ export default function DashboardLayout() {
                 >
                   Coach
                 </p>
+                <p
+                  className="cursor-pointer hover:underline hover:text-white"
+                  onClick={() => setSelectedContent("profile-team")}
+                >
+                  Teams
+                </p>
               </div>
             )}
           </div>
@@ -174,7 +182,9 @@ export default function DashboardLayout() {
           {selectedContent === "news" ? (
             <FetchNews sport="default" />
           ) : selectedContent === "profile-player" ? (
-            <ProfileDashboard />
+            <ProfileDashboard />)
+            :selectedContent==="profile-team"?(
+              <FetchTeam/>
           ) : selectedContent === "profile-coach" ? (
             <FetchProfileCoach />
           ) : selectedContent === "schedule" ? (

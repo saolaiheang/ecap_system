@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Header from "@/components/header";
 import { Calendar, MapPin, Medal } from "lucide-react";
 import Footer from "@/components/footer";
+import FetchCompetitionLayout from "@/components/fetchcompetitionlayout";
 
 type Coach = {
   id: string;
@@ -74,6 +75,7 @@ export default function SchedulePage() {
 
   return (
     <>
+    <Header/>
       <div className="min-h-screen text-pink-400">
         <div className="p-4 sm:p-6 max-w-7xl mx-auto">
           <h1 className="text-2xl sm:text-4xl font-extrabold text-center mb-8 mt-[100px] bg-gradient-to-r from-pink-500 to-purple-700 text-transparent bg-clip-text">
@@ -154,6 +156,7 @@ export default function SchedulePage() {
           )}
         </div>
       </div>
+
       <Footer />
     </>
   );

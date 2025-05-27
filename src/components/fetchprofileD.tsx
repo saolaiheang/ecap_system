@@ -2,6 +2,7 @@
 
 import { useEffect, useState, ChangeEvent } from "react";
 import Image from "next/image";
+
 interface Sport {
   id: string;
   name: string;
@@ -39,26 +40,37 @@ export default function PlayerProfileBySport() {
     name: "",
     position: "",
     contact_info: "",
-    image: "",
+    image: "" as string | File,
   });
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  // Handle input changes including file uploads
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
+    if (e.target.files && e.target.files.length > 0) {
       setFormData({ ...formData, [e.target.name]: e.target.files[0] });
     } else {
       setFormData({ ...formData, [e.target.name]: e.target.value });
     }
   };
 
+  // Add new player
   const handleAddPlayer = async () => {
     if (!selectedSport) return alert("Please select a sport type");
+    if (!selectedTeam) return alert("Please select a team");
+
     const formDataPayload = new FormData();
     formDataPayload.append("name", formData.name);
     formDataPayload.append("position", formData.position);
     formDataPayload.append("contact_info", formData.contact_info);
     formDataPayload.append("team_id", selectedTeam);
     formDataPayload.append("sport_id", selectedSport);
-    formDataPayload.append("image", formData.image);
+    if (formData.image instanceof File) {
+      formDataPayload.append("image", formData.image);
+    }
+
     try {
       const res = await fetch(`/api/player/by-team/${selectedTeam}`, {
         method: "POST",
@@ -73,10 +85,11 @@ export default function PlayerProfileBySport() {
     }
   };
 
+  // Prepare to update player
   const handleUpdateClick = (player: Player) => {
     setIsUpdating(true);
     setSelectedPlayer(player);
-    setSelectedTeam(player.team.name);
+    setSelectedTeam(player.team.name); // Note: This should ideally be team id, but you have name here — adjust as needed
     setFormData({
       name: player.name,
       position: player.position,
@@ -85,6 +98,7 @@ export default function PlayerProfileBySport() {
     });
   };
 
+  // Update existing player
   const handleUpdatePlayer = async () => {
     if (!selectedPlayer || !selectedSport)
       return alert("Please select a sport and player");
@@ -93,7 +107,7 @@ export default function PlayerProfileBySport() {
     formDataPayload.append("name", formData.name);
     formDataPayload.append("position", formData.position);
     formDataPayload.append("contact_info", formData.contact_info);
-    if (formData.image) {
+    if (formData.image instanceof File) {
       formDataPayload.append("image", formData.image);
     }
 
@@ -117,6 +131,7 @@ export default function PlayerProfileBySport() {
     }
   };
 
+  // Submit handler for add/update
   const handleFormSubmit = () => {
     if (isUpdating) {
       handleUpdatePlayer();
@@ -125,6 +140,7 @@ export default function PlayerProfileBySport() {
     }
   };
 
+  // Cancel update mode
   const handleCancelUpdate = () => {
     setIsUpdating(false);
     setSelectedPlayer(null);
@@ -132,6 +148,7 @@ export default function PlayerProfileBySport() {
     setSelectedTeam("");
   };
 
+  // Fetch sports on mount
   useEffect(() => {
     const fetchSports = async () => {
       try {
@@ -140,9 +157,7 @@ export default function PlayerProfileBySport() {
 
         if (data && Array.isArray(data.typeOfSport)) {
           setSports(data.typeOfSport);
-          console.log("sport", data.typeOfSport);
         } else {
-          console.error("Invalid response structure:", data);
           setSports([]);
         }
       } catch (err) {
@@ -154,46 +169,55 @@ export default function PlayerProfileBySport() {
     fetchSports();
   }, []);
 
+  // Fetch teams when sport changes
   useEffect(() => {
     if (selectedSport) {
-      console.log("Fetching team for sport id:", selectedSport);
-
       const fetchTeams = async () => {
         try {
           const res = await fetch(`/api/team/by-sport/${selectedSport}`);
           const data = await res.json();
           setTeams(data.data);
-          console.log(data.data);
         } catch (err) {
           console.error("Failed to fetch teams", err);
+          setTeams([]);
         }
       };
 
       fetchTeams();
+    } else {
+      setTeams([]);
+      setSelectedTeam("");
     }
+    setCurrentPage(1); // Reset page when sport changes
   }, [selectedSport]);
 
+  // Fetch players when sport changes
   useEffect(() => {
+    if (!selectedSport) {
+      setPlayers([]);
+      return;
+    }
     const fetchPlayers = async () => {
-      if (!selectedSport) return;
       setLoading(true);
-      console.log("Fetching players for sport id:", selectedSport);
       try {
         const res = await fetch(`/api/player/by-sport/${selectedSport}`);
         const data = await res.json();
         setPlayers(data.data);
       } catch (err) {
         console.error("Failed to fetch players", err);
+        setPlayers([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchPlayers();
+    setCurrentPage(1); // Reset page when sport changes
   }, [selectedSport]);
 
+  // Delete player
   const handleDeletePlayer = async (id: string) => {
-    if (confirm("Are you sour you want to delete this player")) {
+    if (confirm("Are you sure you want to delete this player?")) {
       try {
         await fetch(`/api/player/${id}`, {
           method: "DELETE",
@@ -207,6 +231,8 @@ export default function PlayerProfileBySport() {
       }
     }
   };
+
+  // Filter players by search query
   const filteredPlayers = players
     .filter((player) => player.name && player.position)
     .filter(
@@ -214,6 +240,18 @@ export default function PlayerProfileBySport() {
         player.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         player.position.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+  // Pagination calculation
+  const totalPages = Math.ceil(filteredPlayers.length / itemsPerPage);
+  const paginatedPlayers = filteredPlayers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const goToPage = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  };
 
   return (
     <div className="px-8 py-6 bg-gray-50 min-h-screen">
@@ -258,7 +296,10 @@ export default function PlayerProfileBySport() {
             type="text"
             placeholder="🔍 Search by Name or Position"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1); // reset page on search
+            }}
             className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-300 w-full"
           />
         </div>
@@ -338,55 +379,52 @@ export default function PlayerProfileBySport() {
             </tr>
           </thead>
           <tbody>
-            {filteredPlayers.length > 0 ? (
-              filteredPlayers.map((player, index) => (
+            {paginatedPlayers.length > 0 ? (
+              paginatedPlayers.map((player, index) => (
                 <tr
                   key={player.id}
                   className="text-center hover:bg-blue-50 transition duration-300"
                 >
-                  <td className=" px-4 py-3">{index + 1}</td>
                   <td className=" px-4 py-3">
-                    <div className="flex justify-center">
-                      <Image
-                        src={player.image}
-                        alt={player.name}
-                        width={60}
-                        height={60}
-                        className="w-16 h-16 object-cover rounded-full"
-                      />
-                    </div>
+                    {(currentPage - 1) * itemsPerPage + index + 1}
+                  </td>
+                  <td className=" px-4 py-3">
+                    <Image
+                      src={player.image}
+                      alt={player.name}
+                      width={50}
+                      height={50}
+                      className="rounded-full mx-auto"
+                    />
                   </td>
                   <td className=" px-4 py-3">{player.name}</td>
                   <td className=" px-4 py-3">{player.position}</td>
                   <td className=" px-4 py-3">{player.contact_info}</td>
                   <td className=" px-4 py-3">{player.team.name}</td>
                   <td className=" px-4 py-3">{player.team.division}</td>
-                  <td className=" px-4 py-3">
-                    {player.team.contact_info}
-                  </td>
-                  <td className=" px-4 py-3">
-                    <div className="flex justify-center gap-4">
+                  <td className=" px-4 py-3">{player.team.contact_info}</td>
+                  <td className=" px-4 py-3 space-x-2">
                     <button
-                        onClick={() => handleUpdateClick(player)}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow text-sm"
-                      >
-                        Update
-                      </button>
-                      <button
-                        onClick={() => handleDeletePlayer(player.id)}
-                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow text-sm"
-                        disabled={loading}
-                      >
-                        Delete
-                      </button>
-                     
-                    </div>
+                      onClick={() => handleUpdateClick(player)}
+                      className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                    >
+                      Update
+                    </button>
+                    <button
+                      onClick={() => handleDeletePlayer(player.id)}
+                      className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={9} className="text-center py-6 text-gray-500">
+                <td
+                  colSpan={9}
+                  className="text-center py-6 text-gray-600 font-semibold"
+                >
                   No players found.
                 </td>
               </tr>
@@ -394,6 +432,42 @@ export default function PlayerProfileBySport() {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-6 space-x-2">
+          <button
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`px-3 py-1 rounded border border-gray-400 hover:bg-gray-200 disabled:opacity-50`}
+          >
+            Previous
+          </button>
+          {[...Array(totalPages)].map((_, i) => {
+            const page = i + 1;
+            return (
+              <button
+                key={page}
+                onClick={() => goToPage(page)}
+                className={`px-3 py-1 rounded border border-gray-400 hover:bg-gray-200 ${
+                  currentPage === page
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : ""
+                }`}
+              >
+                {page}
+              </button>
+            );
+          })}
+          <button
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={`px-3 py-1 rounded border border-gray-400 hover:bg-gray-200 disabled:opacity-50`}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }

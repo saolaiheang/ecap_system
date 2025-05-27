@@ -72,7 +72,7 @@ export default function NewsDetailPage() {
 
   return (
     <>
-      {/* <Header /> */}
+      <Header />
       <main className="px-6 sm:px-10 md:px-[100px] py-10 max-w-5xl mx-auto text-white font-sans">
         <h1 className="text-3xl sm:text-4xl font-bold mb-6 text-gray-700">
           {news.title}
@@ -92,7 +92,6 @@ export default function NewsDetailPage() {
           {news.description}
         </p>
       </main>
-      <Footer />
     </>
   );
 }

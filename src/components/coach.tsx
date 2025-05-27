@@ -85,7 +85,7 @@ export default function Coach() {
 
   return (
     <section className="px-4 sm:px-10 md:px-16 lg:px-[150px] py-10 font-sans">
-      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-pink-500 to-purple-700 bg-clip-text text-transparent drop-shadow-lg mb-8 sm:text-left">
+      <h2 className="lg:text-3xl text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-pink-500 to-purple-700 bg-clip-text text-transparent drop-shadow-lg mb-8 sm:text-left">
         Meet Our Coaches
       </h2>
 

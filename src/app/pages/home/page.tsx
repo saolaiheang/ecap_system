@@ -1,6 +1,6 @@
 "use client";
 
-// import Header from "../../../components/header";
+import Header from "../../../components/header";
 import TypesOfSport from "../../../components/typeSport";
 import News from "../../../components/news";
 import TestVideo from "@/components/video";

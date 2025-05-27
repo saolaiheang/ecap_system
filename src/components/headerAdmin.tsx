@@ -22,12 +22,7 @@ export default function HeaderAdminPage() {
     <header className="flex justify-between items-center bg-[#1D276C] shadow-md px-3 py-2">
       
 
-      <button
-        onClick={handleLogout}
-        className="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 transition"
-      >
-        Logout
-      </button>
+     
     </header>
   );
 }

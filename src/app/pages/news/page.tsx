@@ -45,6 +45,7 @@ export default function Newspage() {
 
   return (
     <>
+    <Header/>
       {loading ? (
         <div className="px-4 sm:px-10 md:px-[100px] py-8 text-lg sm:text-xl text-blue-800 font-medium">
           Loading...

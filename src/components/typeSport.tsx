@@ -43,7 +43,7 @@ export default function TypesOfSport() {
         </h1>
         <button
           onClick={() => setShowAll(!showAll)}
-          className="w-full sm:w-auto bg-gradient-to-r from-pink-500 to-purple-700 text-white px-4 py-2 rounded-md font-semibold shadow-md hover:shadow-lg hover:from-purple-700 hover:to-pink-500 transition duration-300"
+          className="w-full sm:w-auto bg-gradient-to-r from-pink-500 to-purple-700 text-white px-4 py-2 rounded-md font-semibold shadow-md hover:shadow-lg hover:from-purple-700 hover:to-pink-500 transition duration-300 "
         >
           {showAll ? "Show less" : "See all"}
         </button>

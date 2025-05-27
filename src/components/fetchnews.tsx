@@ -2,6 +2,7 @@
 
 import { useEffect, useState, ChangeEvent } from "react";
 import Image from "next/image";
+
 interface Sport {
   id: string;
   name: string;
@@ -29,6 +30,8 @@ export default function FetchNews({ sport }: { sport: string }) {
   const [formData, setFormData] = useState({ title: "", description: "" });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [editNewsId, setEditNewsId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 5;
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -48,8 +51,8 @@ export default function FetchNews({ sport }: { sport: string }) {
     try {
       const res = await fetch(`/api/news/by-sport/${sportId}`);
       const data = await res.json();
-      setNewsList(data.data);
-      console.log("new", data.data);
+      setNewsList(data.data || []);
+      setCurrentPage(1); // Reset to page 1 when new data is fetched
     } catch (err) {
       console.error("Failed to fetch news", err);
     } finally {
@@ -135,7 +138,7 @@ export default function FetchNews({ sport }: { sport: string }) {
       try {
         const res = await fetch("/api/typeofsport");
         const data = await res.json();
-        setSports(data.typeOfSport);
+        setSports(data.typeOfSport || []);
       } catch (err) {
         console.error("Failed to fetch sports", err);
       }
@@ -151,6 +154,12 @@ export default function FetchNews({ sport }: { sport: string }) {
       setNewsList([]);
     }
   }, [selectedSport]);
+
+  const totalPages = Math.ceil(newsList.length / itemsPerPage);
+  const paginatedNews = newsList.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <section className="px-8 py-6 bg-gray-50 min-h-screen">
@@ -227,12 +236,17 @@ export default function FetchNews({ sport }: { sport: string }) {
               </tr>
             </thead>
             <tbody>
-              {Array.isArray(newsList) && newsList.length > 0 ? (
-                newsList.map((news, index) => (
+              {paginatedNews.length > 0 ? (
+                paginatedNews.map((news, index) => (
                   <tr
                     key={news.id}
                     className="text-center hover:bg-blue-50 transition duration-300"
                   >
+
+                    <td className=" px-6 py-4">
+                      {(currentPage - 1) * itemsPerPage + index + 1}
+                    </td>
+
                     <td className="px-6 py-4">{index+1}</td>
 
                     <td className=" px-6 py-4">
@@ -246,7 +260,6 @@ export default function FetchNews({ sport }: { sport: string }) {
                         />
                       </div>
                     </td>
-
                     <td className=" px-6 py-4">{news.title}</td>
                     <td className=" px-6 py-4">{news.description}</td>
                     <td className=" px-6 py-4">{news.sportType?.name}</td>
@@ -277,6 +290,31 @@ export default function FetchNews({ sport }: { sport: string }) {
               )}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center p-6 gap-4">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="bg-gray-200 px-4 py-2 rounded-md disabled:opacity-50"
+          >
+             Prev
+          </button>
+          <span className="font-semibold">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+            className="bg-gray-200 px-4 py-2 rounded-md disabled:opacity-50"
+          >
+            Next 
+          </button>
         </div>
       )}
     </section>

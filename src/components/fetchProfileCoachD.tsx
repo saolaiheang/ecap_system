@@ -40,6 +40,10 @@ export default function CoachesProfileBySport() {
     image: "",
   });
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setFormData({ ...formData, [e.target.name]: e.target.files[0] });
@@ -210,6 +214,19 @@ export default function CoachesProfileBySport() {
     .filter((coach) =>
       coach.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredCoaches.length / itemsPerPage);
+  const paginatedCoaches = filteredCoaches.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Reset page when filters/search change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedSport, selectedTeam, searchQuery]);
+
   return (
     <div className="px-8 py-6 bg-gray-50 min-h-screen">
       <h2 className="text-3xl font-bold text-blue-700 mb-6 capitalize">
@@ -282,10 +299,6 @@ export default function CoachesProfileBySport() {
             onChange={handleChange}
             className="border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-blue-300 w-full"
           />
-          {/* Inputs container */}
-          <div className="grid grid-cols-4 gap-4 mb-6">
-            {/* ... all your input fields here ... */}
-          </div>
 
           {/* Cancel button aligned right (optional) */}
           {isUpdating && (
@@ -298,8 +311,6 @@ export default function CoachesProfileBySport() {
               </button>
             </div>
           )}
-
-          {/* Submit button below inputs and cancel */}
         </div>
         <div className="flex justify-end">
           <button
@@ -332,61 +343,100 @@ export default function CoachesProfileBySport() {
             </tr>
           </thead>
           <tbody>
-            {filteredCoaches.length > 0 ? (
-              filteredCoaches.map((coach, index) => (
+            {paginatedCoaches.length > 0 ? (
+              paginatedCoaches.map((coach, index) => (
                 <tr
+                  className="border border-gray-300 text-center hover:bg-gray-100"
                   key={coach.id}
-                  className="text-center hover:bg-blue-50 transition duration-300"
                 >
-                  <td className=" px-6 py-4">{index + 1}</td>
                   <td className=" px-6 py-4">
-                    <div className="flex justify-center">
+                    {(currentPage - 1) * itemsPerPage + index + 1}
+                  </td>
+                  <td className=" px-6 py-4">
+                    {coach.image ? (
                       <Image
                         src={coach.image}
-                        alt={coach.name}
-                        width={60}
-                        height={60}
-                        className="w-16 h-16 object-cover rounded-full"
+                        alt="Coach Image"
+                        width={48}
+                        height={48}
+                        className="rounded-full mx-auto"
                       />
-                    </div>
+                    ) : (
+                      "No image"
+                    )}
                   </td>
                   <td className=" px-6 py-4">{coach.name}</td>
                   <td className=" px-6 py-4">{coach.contact_info}</td>
                   <td className=" px-6 py-4">{coach.team.name}</td>
                   <td className=" px-6 py-4">{coach.team.division}</td>
+                  <td className=" px-6 py-4">{coach.team.contact_info}</td>
                   <td className=" px-6 py-4">
-                    {coach.team.contact_info}
-                  </td>
-                  <td className=" px-6 py-4">
-                    <div className="flex justify-center gap-4">
                     <button
-                        onClick={() => handleUpdateClick(coach)}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
-                      >
-                        Update
-                      </button>
-                      <button
-                        onClick={() => handleDeletecoach(coach.id)}
-                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm"
-                        disabled={loading}
-                      >
-                        Delete
-                      </button>
-                     
-                    </div>
+                      onClick={() => handleUpdateClick(coach)}
+                      className="bg-blue-500 text-white px-3 py-1 rounded-lg mr-2 hover:bg-blue-600"
+                    >
+                      Update
+                    </button>
+                    <button
+                      onClick={() => handleDeletecoach(coach.id)}
+                      className="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={8} className="text-center py-6 text-gray-500">
-                  No coaches found.
+                <td
+                  colSpan={8}
+                  className="text-center text-gray-600 p-6"
+                >
+                  No coaches found for this sport
                 </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex justify-center gap-2 mt-4">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-1 rounded border border-gray-400 hover:bg-gray-200 disabled:opacity-50"
+          >
+            Previous
+          </button>
+
+          {[...Array(totalPages)].map((_, i) => {
+            const page = i + 1;
+            return (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 py-1 rounded border border-gray-400 hover:bg-gray-200 ${
+                  currentPage === page
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : ""
+                }`}
+              >
+                {page}
+              </button>
+            );
+          })}
+
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1 rounded border border-gray-400 hover:bg-gray-200 disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }

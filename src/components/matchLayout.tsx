@@ -50,7 +50,9 @@ function MatchCard({
             height={64}
             className="w-14 h-14 sm:w-16 sm:h-16 rounded-full mx-auto object-cover border border-white"
           />
-          <p className="text-xs sm:text-sm font-medium truncate">{teamA.name}</p>
+          <p className="text-xs sm:text-sm font-medium truncate">
+            {teamA.name}
+          </p>
         </div>
 
         <div className="text-base sm:text-xl font-bold">VS</div>
@@ -63,17 +65,23 @@ function MatchCard({
             height={64}
             className="w-14 h-14 sm:w-16 sm:h-16 rounded-full mx-auto object-cover border border-white"
           />
-          <p className="text-xs sm:text-sm font-medium truncate">{teamB.name}</p>
+          <p className="text-xs sm:text-sm font-medium truncate">
+            {teamB.name}
+          </p>
         </div>
       </div>
 
       {/* Body */}
       <div className="bg-white p-3 sm:p-4 space-y-2 text-center rounded-b-xl">
-        <p className="text-sm sm:text-base font-semibold text-purple-700">{sport}</p>
+        <p className="text-sm sm:text-base font-semibold text-purple-700">
+          {sport}
+        </p>
 
         <div className="flex justify-center items-center gap-2 text-xs sm:text-sm text-gray-600">
           <FaClock className="text-pink-600" />
-          <span>{date} • {time}</span>
+          <span>
+            {date} • {time}
+          </span>
         </div>
 
         <div className="flex justify-center items-center gap-2 text-xs sm:text-sm text-gray-600">
@@ -109,30 +117,36 @@ export default function MatchLayout() {
   }, []);
 
   return (
-    <div className="px-4 sm:px-8 md:px-16 py-10 lg:px-[150px] min-h-screen text-white">
+    <div className="px-4 sm:px-8 md:px-16 py-10 text-white">
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center mb-10 bg-gradient-to-r from-pink-500 to-purple-700 text-transparent bg-clip-text">
         Upcoming Matches
       </h2>
 
-      {loading && <p className="text-center text-pink-300">Loading matches...</p>}
+      {loading && (
+        <p className="text-center text-pink-300">Loading matches...</p>
+      )}
       {error && <p className="text-center text-red-500">{error}</p>}
 
       {!loading && !matches.length && (
-        <p className="text-center text-pink-100 text-lg">No matches available</p>
+        <p className="text-center text-pink-100 text-lg">
+          No matches available
+        </p>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
-        {matches.map((match) => (
-          <MatchCard
-            key={match.id}
-            teamA={match.teamA}
-            teamB={match.teamB}
-            sport={match.sportType.name}
-            date={new Date(match.match_date).toLocaleDateString("en-GB")}
-            time={match.match_time.slice(0, 5)}
-            location={match.location}
-          />
-        ))}
+      <div className="flex justify-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 max-w-7xl">
+          {matches.map((match) => (
+            <MatchCard
+              key={match.id}
+              teamA={match.teamA}
+              teamB={match.teamB}
+              sport={match.sportType.name}
+              date={new Date(match.match_date).toLocaleDateString("en-GB")}
+              time={match.match_time.slice(0, 5)}
+              location={match.location}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

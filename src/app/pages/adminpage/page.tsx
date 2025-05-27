@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import HeaderAdminPage from "@/components/headerAdmin";
 
 import {
   FaUser,
@@ -14,7 +13,6 @@ import {
   FaChartLine,
   FaTrophy,
   FaFutbol,
-  FaListAlt,
 } from "react-icons/fa";
 import Image from "next/image";
 
@@ -45,7 +43,6 @@ function isTokenExpired(token: string): boolean {
     return true;
   }
 }
-import { FaFutbol } from "react-icons/fa";
 
 
 export default function DashboardLayout() {
@@ -76,63 +73,37 @@ export default function DashboardLayout() {
   const SidebarMenu = () => (
     <>
       <div className="flex justify-center mb-6">
-        <Image
-          src="/image/pseLogo.png"
-          alt="PSE Logo"
-          width={250}
-          height={180}
-          className="w-[180px] h-auto object-contain"
-          priority={true}
-        />
-      </div>
+      <Image
+              src="/image/pseLogo.png"
+              alt="PSE Logo"
+              width={250}
+              height={180}
+              className="w-[180px] h-auto object-contain"
+              priority={true}
+            />
+          </div>
 
-      <button
-        className="flex items-center px-4 py-3 text-[16px] font-semibold rounded-lg hover:bg-[#4B5A9E] transition duration-200"
-        onClick={() => {
-          setSelectedContent("sporttypes");
-          setMobileMenuOpen(false);
-        }}
-      >
-        <FaFutbol className="mr-4 text-xl" />
-        Sport Types
-      </button>
+          <button
+            className="flex items-center px-4 py-3 text-[16px] font-semibold rounded-lg hover:bg-[#4B5A9E] transition duration-200"
+            onClick={() => setSelectedContent("sporttypes")}
+          >
+            <FaFutbol className="mr-4 text-xl" />
+            Sport Types
+          </button>
 
-      <button
-        className="flex items-center px-4 py-3 text-[16px] font-semibold rounded-lg hover:bg-[#4B5A9E] transition duration-200"
-        onClick={() => {
-          setSelectedContent("history");
-          setMobileMenuOpen(false);
-        }}
-      >
-        <FaHistory className="mr-4 text-xl" />
-        History
-      </button>
+          <button
+            className="flex items-center px-4 py-3 text-[16px] font-semibold rounded-lg hover:bg-[#4B5A9E] transition duration-200"
+            onClick={() => setSelectedContent("history")}
+          >
+            <FaHistory className="mr-4 text-xl" />
+            History
+          </button>
 
-      <div>
-        <button
-          className="flex items-center justify-between w-full px-4 py-3 text-[16px] font-semibold rounded-lg hover:bg-[#4B5A9E] transition duration-200"
-          onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-        >
-          <span className="flex items-center">
-            <FaUser className="mr-4 text-xl" />
-            Profile
-          </span>
-          <FaChevronDown
-            className={`ml-auto text-xl transition-transform ${
-              profileMenuOpen ? "rotate-180" : ""
-            }`}
-          />
-        </button>
-        {profileMenuOpen && (
-          <div className="ml-10 mt-2 space-y-2 text-[15px] text-gray-300">
-            <p
-              className="cursor-pointer hover:underline hover:text-white"
-              onClick={() => {
-                setSelectedContent("profile-player");
-                setMobileMenuOpen(false);
-              }}
+          <div>
+            <button
+              className="flex items-center justify-between w-full px-4 py-3 text-[16px] font-semibold rounded-lg hover:bg-[#4B5A9E] transition duration-200"
+              onClick={() => setProfileMenuOpen(!profileMenuOpen)}
             >
-
               <span className="flex items-center">
                 <FaUser className="mr-4 text-xl" />
                 Profile
@@ -149,13 +120,13 @@ export default function DashboardLayout() {
                   className="cursor-pointer hover:underline hover:text-white"
                   onClick={() => setSelectedContent("profile-player")}
                 >
-                  Player
+                  Players
                 </p>
                 <p
                   className="cursor-pointer hover:underline hover:text-white"
                   onClick={() => setSelectedContent("profile-coach")}
                 >
-                  Coach
+                  Coaches
                 </p>
                 <p
                   className="cursor-pointer hover:underline hover:text-white"
@@ -165,7 +136,6 @@ export default function DashboardLayout() {
                 </p>
               </div>
             )}
-
           </div>
 
 

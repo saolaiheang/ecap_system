@@ -1,6 +1,6 @@
 "use client";
 
-import { SportType } from "@/entities";
+// import { SportType } from "@/entities";
 import Header from "./header";
 import TypesOfSport from "./typeSport";
 

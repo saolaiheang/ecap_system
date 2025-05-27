@@ -1,7 +1,7 @@
-import { getPlayerBySport } from "@/controllers/players/players.controller";
+import { getPlayerBySport, PlayerParams } from "@/controllers/players/players.controller";
 import { NextRequest } from "next/server";
 
-export async function GET(request: NextRequest,{params}: { params: { id: string } }) {
-    return await getPlayerBySport({params});
+export async function GET(req: NextRequest,context:PlayerParams) {
+    return await getPlayerBySport(req,context);
     
 }

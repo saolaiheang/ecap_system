@@ -3,9 +3,13 @@ import { MatchFriendly, SportType, Team } from "@/entities";
 import { initializeDataSource } from "@/utils/inititializeDataSource";
 import { AppDataSource } from "@/config";
 
-export const createMatchFriendly = async (req: NextRequest, { params }: { params: { id: string } }) => {
+
+export type MatchFriendlyParams = {
+    params: Promise<{ id: string }>;
+  };
+export const createMatchFriendly = async (req: NextRequest, { params }:MatchFriendlyParams) => {
     try {
-        const { id: sport_type_id } = params;
+        const { id: sport_type_id } =await params;
         await initializeDataSource();
         const { match_date, match_time, location, status, teamA_id, teamB_id, teamA_score, teamB_score } = await req.json();
         const sportType = await AppDataSource.getRepository(SportType).findOneBy({
@@ -46,10 +50,10 @@ export const createMatchFriendly = async (req: NextRequest, { params }: { params
 
     }
 }
-export const getMatchFriendlyById = async (_req: NextRequest, { params }: { params: { id: string } }
+export const getMatchFriendlyById = async (_req: NextRequest, { params }: MatchFriendlyParams
 ) => {
     try {
-        const { id } = params;
+        const { id } =await params;
         await initializeDataSource();
         const matchFriendly = await AppDataSource.getRepository(MatchFriendly).findOne({ where: { id }, relations: ["teamB", "teamA", "sportType"] });
         if (!matchFriendly) {
@@ -65,9 +69,9 @@ export const getMatchFriendlyById = async (_req: NextRequest, { params }: { para
     }
 }
 
-export const getMatchFriendlyBySport = async (_req: NextRequest, { params }: { params: { id: string } }) => {
+export const getMatchFriendlyBySport = async (_req: NextRequest, { params }:MatchFriendlyParams) => {
     try {
-        const { id } = params;
+        const { id } =await params;
         await initializeDataSource();
         const matchFriendly = await AppDataSource.getRepository(MatchFriendly).find({
             where: {
@@ -86,9 +90,9 @@ export const getMatchFriendlyBySport = async (_req: NextRequest, { params }: { p
         );
     }
 }
-export const deleteMatchFriendlyById = async (_req: NextRequest, { params }: { params: { id: string } }) => {
+export const deleteMatchFriendlyById = async (_req: NextRequest, { params }: MatchFriendlyParams) => {
     try {
-        const { id } = params;
+        const { id } =await params;
         await initializeDataSource();
         const matchFriendly = await AppDataSource.getRepository(MatchFriendly).findOne({ where: { id } });
         if (!matchFriendly) {
@@ -105,9 +109,9 @@ export const deleteMatchFriendlyById = async (_req: NextRequest, { params }: { p
     }
 
 }
-export const updateMatchFriendlyById = async (req: NextRequest, { params }: { params: { id: string } }) => {
+export const updateMatchFriendlyById = async (req: NextRequest, { params }: MatchFriendlyParams) => {
     try {
-        const { id } = params;
+        const { id } = await params;
         await initializeDataSource();
         const matchFriendly = await AppDataSource.getRepository(MatchFriendly).findOne({
             where: {

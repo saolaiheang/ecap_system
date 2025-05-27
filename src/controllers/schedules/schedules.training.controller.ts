@@ -3,7 +3,9 @@ import { initializeDataSource } from "@/utils/inititializeDataSource";
 import { AppDataSource } from "@/config";
 import { NextResponse, NextRequest } from "next/server";
 
-
+export type ScheduleParams={
+    params: Promise<{ id: string }>;
+}
 
 export const createScheduleTraining = async (req: NextRequest) => {
     try {
@@ -52,9 +54,9 @@ export const getAllSchedules = async (_req:NextRequest) => {
 
 }
 
-export const getAllScheduleBySport= async(req:NextRequest,{params}:{params:{id:string}})=>{
+export const getAllScheduleBySport= async(req:NextRequest,{params}:ScheduleParams)=>{
     try{
-        const {id}=params;
+        const {id}= await params;
         await initializeDataSource();
         console.log("✅ Database connected successfully...");
         const scheduleRepository=AppDataSource.getRepository(ScheduleTraining);
@@ -80,9 +82,9 @@ export const getAllScheduleBySport= async(req:NextRequest,{params}:{params:{id:s
     }
 }
 
-export const deleteSchedule=async(req:NextRequest,{params}:{params:{id:string}})=>{
+export const deleteSchedule=async(req:NextRequest,{params}:ScheduleParams)=>{
     try{
-        const {id}=params;
+        const {id}= await params;
         await initializeDataSource();
         console.log("✅ Database connected successfully...");
         const scheduleRepository=AppDataSource.getRepository(ScheduleTraining);
@@ -110,9 +112,9 @@ export const deleteSchedule=async(req:NextRequest,{params}:{params:{id:string}})
 }
 
 
-export const updateSchedule= async (req:NextRequest,{params}:{params:{id:string}})=>{
+export const updateSchedule= async (req:NextRequest,{params}:ScheduleParams)=>{
     try{
-        const {id}=params;
+        const {id}= await params;
         await initializeDataSource();
         console.log("✅ Database connected successfully...");
         const {  date, time, location, coach_id } = await req.json() as ScheduleTraining;

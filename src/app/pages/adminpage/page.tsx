@@ -29,6 +29,25 @@ import CompetitionStagesPage from "@/app/competitions/[competitionId]/stages/pag
 import DeshboardSportType from "@/components/fetchSportType";
 import FetchTeam from "@/components/fetchTeamD";
 
+
+function isTokenExpired(token: string): boolean {
+  try {
+    const payloadBase64 = token.split('.')[1];
+    if (!payloadBase64) return true;
+
+    const decodedPayload = JSON.parse(atob(payloadBase64));
+    if (!decodedPayload.exp) return true;
+
+    const expiryTimeMs = decodedPayload.exp * 1000;
+    return Date.now() > expiryTimeMs;
+  } catch {
+    return true;
+  }
+}
+
+import { FaFutbol } from "react-icons/fa";
+
+
 export default function DashboardLayout() {
   const router = useRouter();
   const [selectedContent, setSelectedContent] = useState<string>("dashboard");

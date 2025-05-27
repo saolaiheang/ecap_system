@@ -3,6 +3,7 @@
 import { useState, useEffect, ChangeEvent, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+
 interface Competition {
   id: string;
   name: string;
@@ -30,13 +31,14 @@ export default function CompetitionManager() {
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [editingCompetitionId, setEditingCompetitionId] = useState<
-    string | null
-  >(null); // For edit mode
+  const [editingCompetitionId, setEditingCompetitionId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  // Fetch sport types
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const competitionsPerPage = 5;
+
   useEffect(() => {
     const fetchSportTypes = async () => {
       try {
@@ -61,7 +63,6 @@ export default function CompetitionManager() {
         const res = await fetch("/api/competitions");
         if (!res.ok) throw new Error("Failed to fetch competitions");
         const data = await res.json();
-        console.log("Competitions:", data);
         setCompetitions(data.data || []);
       } catch (err) {
         console.error("Failed to fetch competitions:", err);
@@ -73,9 +74,7 @@ export default function CompetitionManager() {
     fetchCompetitions();
   }, []);
 
-  const handleCompetitionChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleCompetitionChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setCompetitionForm((prev) => ({ ...prev, [name]: value }));
   };
@@ -91,12 +90,7 @@ export default function CompetitionManager() {
       setError("Please select a sport type.");
       return;
     }
-    if (
-      !competitionForm.name ||
-      !competitionForm.location ||
-      !competitionForm.start_date ||
-      !competitionForm.image
-    ) {
+    if (!competitionForm.name || !competitionForm.location || !competitionForm.start_date || !competitionForm.image) {
       setError("Please fill in all required fields, including an image.");
       return;
     }
@@ -124,16 +118,9 @@ export default function CompetitionManager() {
 
       const newComp = await res.json();
       setCompetitions((prev) => [...prev, newComp]);
-      setCompetitionForm({
-        name: "",
-        location: "",
-        start_date: "",
-        image: null,
-      });
+      setCompetitionForm({ name: "", location: "", start_date: "", image: null });
       setSelectedSportId("");
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+      if (fileInputRef.current) fileInputRef.current.value = "";
       alert("Competition created successfully!");
     } catch (err) {
       console.error("Error creating competition:", err);
@@ -151,7 +138,7 @@ export default function CompetitionManager() {
       start_date: comp.start_date.split("T")[0],
       image: null,
     });
-    setSelectedSportId(selectedSportId || "");
+    setSelectedSportId(comp.sportType?.id || "");
   };
 
   const handleUpdateClick = async (id: string) => {
@@ -159,11 +146,7 @@ export default function CompetitionManager() {
       setError("Please select a sport type.");
       return;
     }
-    if (
-      !competitionForm.name ||
-      !competitionForm.location ||
-      !competitionForm.start_date
-    ) {
+    if (!competitionForm.name || !competitionForm.location || !competitionForm.start_date) {
       setError("Please fill in all required fields.");
       return;
     }
@@ -173,7 +156,7 @@ export default function CompetitionManager() {
     formDataPayload.append("location", competitionForm.location);
     formDataPayload.append("start_date", competitionForm.start_date);
     if (competitionForm.image) {
-      formDataPayload.append("image", competitionForm.image); // Image is optional
+      formDataPayload.append("image", competitionForm.image);
     }
     formDataPayload.append("sport_type_id", selectedSportId);
 
@@ -195,17 +178,10 @@ export default function CompetitionManager() {
       setCompetitions((prev) =>
         prev.map((com) => (com.id === id ? updatedCompetition : com))
       );
-      setCompetitionForm({
-        name: "",
-        location: "",
-        start_date: "",
-        image: null,
-      });
+      setCompetitionForm({ name: "", location: "", start_date: "", image: null });
       setSelectedSportId("");
       setEditingCompetitionId(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+      if (fileInputRef.current) fileInputRef.current.value = "";
       alert("Competition updated successfully!");
     } catch (err) {
       console.error("Failed to update competition:", err);
@@ -214,18 +190,23 @@ export default function CompetitionManager() {
       setIsLoading(false);
     }
   };
+
   const handleCancelEdit = () => {
     setCompetitionForm({ name: "", location: "", start_date: "", image: null });
     setSelectedSportId("");
     setEditingCompetitionId(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleViewStages = (competitionId: string) => {
     router.push(`/competitions/${competitionId}/stages`);
   };
+
+  // Pagination Logic
+  const totalPages = Math.ceil(competitions.length / competitionsPerPage);
+  const indexOfLastCompetition = currentPage * competitionsPerPage;
+  const indexOfFirstCompetition = indexOfLastCompetition - competitionsPerPage;
+  const currentCompetitions = competitions.slice(indexOfFirstCompetition, indexOfLastCompetition);
 
   return (
     <section className="px-8 py-6 bg-gray-50 min-h-screen">
@@ -239,11 +220,10 @@ export default function CompetitionManager() {
         </p>
       )}
 
+      {/* Form Section */}
       <div className="bg-white p-6 rounded-2xl shadow-lg mb-8 border flex flex-col">
         <h3 className="text-xl font-semibold mb-5 text-gray-800">
-          {editingCompetitionId
-            ? "✏️ Update Competition"
-            : "➕ Create New Competition"}
+          {editingCompetitionId ? "✏️ Update Competition" : "➕ Create New Competition"}
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -263,7 +243,6 @@ export default function CompetitionManager() {
           </select>
 
           <input
-            id="name"
             name="name"
             type="text"
             placeholder="📛 Competition Name"
@@ -274,7 +253,6 @@ export default function CompetitionManager() {
           />
 
           <input
-            id="location"
             name="location"
             type="text"
             placeholder="📍 Location"
@@ -285,7 +263,6 @@ export default function CompetitionManager() {
           />
 
           <input
-            id="start_date"
             name="start_date"
             type="date"
             value={competitionForm.start_date}
@@ -295,7 +272,6 @@ export default function CompetitionManager() {
           />
 
           <input
-            id="image"
             name="image"
             type="file"
             onChange={handleFileChange}
@@ -317,8 +293,7 @@ export default function CompetitionManager() {
               </button>
               <button
                 onClick={handleCancelEdit}
-                className="bg-gray-600 text-white px-6 py-2 rounded-[5px] hover:bg-gray-700 transition disabled:bg-gray-300"
-                disabled={isLoading}
+                className="bg-gray-600 text-white px-6 py-2 rounded-[5px] hover:bg-gray-700 transition"
               >
                 Cancel
               </button>
@@ -335,75 +310,99 @@ export default function CompetitionManager() {
         </div>
       </div>
 
+      {/* Table Section */}
       <h3 className="text-xl font-semibold text-gray-800 mb-4">
         📋 All Competitions
       </h3>
 
       {isFetching ? (
         <p className="text-center text-gray-600">Loading competitions...</p>
-      ) : competitions.length > 0 ? (
-        <div className="overflow-auto bg-white rounded-2xl shadow-lg border border-gray-200">
-          <table className="min-w-full text-base text-left border-collapse border border-gray-300">
-            <thead className="bg-blue-900 text-white text-lg text-center">
-              <tr>
-                <th className="px-4 py-3">No</th>
-                <th className=" px-6 py-4">Name</th>
-                <th className=" px-6 py-4">Location</th>
-                <th className=" px-6 py-4">Start Date</th>
-                <th className=" px-6 py-4">Image</th>
-                <th className=" px-6 py-4">Sport</th>
-                <th className=" px-6 py-4">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {competitions.map((comp, index) => (
-                <tr
-                  key={comp.id || `comp-${index}`}
-                  className="text-center hover:bg-blue-50 transition duration-300"
-                >
-                  <td className="px-4 py-3 border-t">{index + 1}</td>
-                  <td className=" px-6 py-4">{comp.name}</td>
-                  <td className=" px-6 py-4">{comp.location}</td>
-                  <td className=" px-6 py-4">
-                    {new Date(comp.start_date).toLocaleDateString()}
-                  </td>
-                  <td className=" px-6 py-4">
-                    {comp.image ? (
-                      <Image
-                        src={comp.image}
-                        width={120}
-                        height={100}
-                        alt={comp.name}
-                        className="object-cover rounded-lg mx-auto"
-                      />
-                    ) : (
-                      "No image"
-                    )}
-                  </td>
-                  <td className=" px-6 py-4">
-                    {comp.sportType?.name || "N/A"}
-                  </td>
-                  <td className=" px-6 py-4">
-                    <div className="flex justify-center gap-3">
-                      <button
-                        onClick={() => handleEditClick(comp)}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow text-sm"
-                      >
-                        Update
-                      </button>
-                      <button
-                        onClick={() => handleViewStages(comp.id)}
-                        className="bg-yellow-500 hover:bg-yellow-400 text-white px-4 py-2 rounded-lg shadow text-sm"
-                      >
-                        View
-                      </button>
-                    </div>
-                  </td>
+      ) : currentCompetitions.length > 0 ? (
+        <>
+          <div className="overflow-auto bg-white rounded-2xl shadow-lg border border-gray-200">
+            <table className="min-w-full text-base text-left border-collapse border border-gray-300">
+              <thead className="bg-blue-900 text-white text-lg text-center">
+                <tr>
+                  <th className="px-4 py-3">No</th>
+                  <th className="px-6 py-4">Name</th>
+                  <th className="px-6 py-4">Location</th>
+                  <th className="px-6 py-4">Start Date</th>
+                  <th className="px-6 py-4">Image</th>
+                  <th className="px-6 py-4">Sport</th>
+                  <th className="px-6 py-4">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {currentCompetitions.map((comp, index) => (
+                  <tr
+                    key={comp.id || `comp-${index}`}
+                    className="text-center hover:bg-blue-50 transition duration-300"
+                  >
+                    <td className="px-4 py-3 border-t">{indexOfFirstCompetition + index + 1}</td>
+                    <td className="px-6 py-4">{comp.name}</td>
+                    <td className="px-6 py-4">{comp.location}</td>
+                    <td className="px-6 py-4">
+                      {new Date(comp.start_date).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4">
+                      {comp.image ? (
+                        <Image
+                          src={comp.image}
+                          width={120}
+                          height={100}
+                          alt={comp.name}
+                          className="object-cover rounded-lg mx-auto"
+                        />
+                      ) : (
+                        "No image"
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      {comp.sportType?.name || "N/A"}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex justify-center gap-3">
+                        <button
+                          onClick={() => handleEditClick(comp)}
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow text-sm"
+                        >
+                          Update
+                        </button>
+                        <button
+                          onClick={() => handleViewStages(comp.id)}
+                          className="bg-yellow-500 hover:bg-yellow-400 text-white px-4 py-2 rounded-lg shadow text-sm"
+                        >
+                          View
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="flex justify-center mt-6 gap-4">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              className="bg-gray-200 px-4 py-2 rounded-md hover:bg-gray-300"
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <span className="text-gray-700 pt-2">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              className="bg-gray-200 px-4 py-2 rounded-md hover:bg-gray-300"
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        </>
       ) : (
         <p className="text-gray-500 text-center">No competitions found.</p>
       )}

@@ -28,7 +28,7 @@ interface Coach {
   id: string;
   name: string;
   contact_info:string;
-    image:string;
+  image:string;
 }
 
 interface SportType {
@@ -61,6 +61,24 @@ export default function FetchSchedule({sport}:Props) {
     sport_type_id: "",
     team_id: "",
   });
+
+  // === Pagination state ===
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  // Calculate total pages
+  const totalPages = Math.ceil(schedules.length / itemsPerPage);
+
+  // Get paginated schedules slice
+  const paginatedSchedules = schedules.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Reset page to 1 when schedules change (optional)
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [schedules]);
 
   const getSchedules = async () => {
     setLoading(true);
@@ -107,13 +125,11 @@ export default function FetchSchedule({sport}:Props) {
     }
   };
 
-  // Fetch sport types and schedules on mount
   useEffect(() => {
     getSportTypes();
     getSchedules();
   }, []);
 
-  // When sport_type_id changes, fetch coach and team
   useEffect(() => {
     if (formData.sport_type_id) {
       getCoachesBySport(formData.sport_type_id);
@@ -197,7 +213,6 @@ export default function FetchSchedule({sport}:Props) {
     });
   };
 
-
   useEffect(() => {
     if (sport) {
       const sportObj = sports.find(s => s.name === sport);
@@ -210,156 +225,196 @@ export default function FetchSchedule({sport}:Props) {
   
   return (
     <section className="px-8 py-6 bg-gray-50 min-h-screen">
-  <h2 className="text-3xl font-bold text-blue-700 mb-6">📅 Schedule Dashboard</h2>
+      <h2 className="text-3xl font-bold text-blue-700 mb-6">📅 Schedule Dashboard</h2>
 
-  {/* Schedule Form */}
-  <div className="bg-white p-6 rounded-2xl shadow-lg mb-8 border">
-    <h3 className="text-xl font-semibold mb-5 text-gray-800">
-      {formData.id ? "✏️ Update Schedule" : "➕ Add New Schedule"}
-    </h3>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-      <select
-        name="sport_type_id"
-        value={formData.sport_type_id}
-        onChange={handleChange}
-        className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
-      >
-        <option value="">🏅 Select Sport</option>
-        {sports.map((s) => (
-          <option key={s.id} value={s.id}>
-            {s.name}
-          </option>
-        ))}
-      </select>
+      {/* Schedule Form */}
+      <div className="bg-white p-6 rounded-2xl shadow-lg mb-8 border">
+        <h3 className="text-xl font-semibold mb-5 text-gray-800">
+          {formData.id ? "✏️ Update Schedule" : "➕ Add New Schedule"}
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <select
+            name="sport_type_id"
+            value={formData.sport_type_id}
+            onChange={handleChange}
+            className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
+          >
+            <option value="">🏅 Select Sport</option>
+            {sports.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
 
-      <select
-        name="coach_id"
-        value={formData.coach_id}
-        onChange={handleChange}
-        className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
-      >
-        <option value="">🧑‍🏫 Select Coach</option>
-        {coaches.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.name}
-          </option>
-        ))}
-      </select>
+          <select
+            name="coach_id"
+            value={formData.coach_id}
+            onChange={handleChange}
+            className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
+          >
+            <option value="">🧑‍🏫 Select Coach</option>
+            {coaches.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
 
-      <select
-        name="team_id"
-        value={formData.team_id}
-        onChange={handleChange}
-        className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
-      >
-        <option value="">👥 Select Team</option>
-        {teams.map((t) => (
-          <option key={t.id} value={t.id}>
-            {t.name} ({t.division})
-          </option>
-        ))}
-      </select>
+          <select
+            name="team_id"
+            value={formData.team_id}
+            onChange={handleChange}
+            className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
+          >
+            <option value="">👥 Select Team</option>
+            {teams.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.name} ({t.division})
+              </option>
+            ))}
+          </select>
 
-      <input
-        type="text"
-        name="date"
-        placeholder="📆 Date training"
-        value={formData.date}
-        onChange={handleChange}
-        className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
-      />
-      <input
-        type="time"
-        name="time"
-        placeholder="⏰ Time training"
-        value={formData.time}
-        onChange={handleChange}
-        className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
-      />
-      <input
-        type="text"
-        name="location"
-        placeholder="📍 Location"
-        value={formData.location}
-        onChange={handleChange}
-        className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
-      />
-    </div>
-    <div className="mt-6 text-right">
-      <button
-        onClick={handleSubmit}
-        className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-[5px] transition"
-      >
-        {formData.id ? "Update Schedule" : "Add Schedule"}
-      </button>
-    </div>
-  </div>
+          <input
+            type="text"
+            name="date"
+            placeholder="📆 Date training"
+            value={formData.date}
+            onChange={handleChange}
+            className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
+          />
+          <input
+            type="time"
+            name="time"
+            placeholder="⏰ Time training"
+            value={formData.time}
+            onChange={handleChange}
+            className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
+          />
+          <input
+            type="text"
+            name="location"
+            placeholder="📍 Location"
+            value={formData.location}
+            onChange={handleChange}
+            className="border p-3 rounded-xl focus:ring-2 focus:ring-blue-300"
+          />
+        </div>
+        <div className="mt-6 text-right">
+          <button
+            onClick={handleSubmit}
+            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-[5px] transition"
+          >
+            {formData.id ? "Update Schedule" : "Add Schedule"}
+          </button>
+        </div>
+      </div>
 
-  {/* Schedule Table */}
-  <div className="overflow-auto bg-white rounded-2xl shadow-lg border border-gray-200">
-    {loading ? (
-      <p className="text-gray-600 p-4">Loading schedules...</p>
-    ) : (
-      <table className="min-w-full text-base text-left">
-        <thead className="bg-blue-900 text-white text-lg text-center">
-          <tr>
-            <th className="px-4 py-3">#</th>
-            <th className="px-4 py-3">Date</th>
-            <th className="px-4 py-3">Time</th>
-            <th className="px-4 py-3">Location</th>
-            <th className="px-4 py-3">Coach</th>
-            <th className="px-4 py-3">Sport</th>
-            <th className="px-4 py-3">Team</th>
-            <th className="px-4 py-3">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {schedules.length > 0 ? (
-            schedules.map((s, i) => (
-              <tr
-                key={s.id}
-                className="hover:bg-blue-50 transition duration-300 text-center"
-              >
-                <td className="px-4 py-3 border-t">{i + 1}</td>
-                <td className="px-4 py-3 border-t">{s.date}</td>
-                <td className="px-4 py-3 border-t">{s.time}</td>
-                <td className="px-4 py-3 border-t">{s.location}</td>
-                <td className="px-4 py-3 border-t">{s.coach.name}</td>
-                <td className="px-4 py-3 border-t">{s.sportType.name}</td>
-                <td className="px-4 py-3 border-t">
-                  {s.team.name} ({s.team.division})
-                </td>
-                <td className="px-4 py-3 border-t space-x-2">
-                  <button
-                    onClick={() => handleEdit(s)}
-                    className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg shadow"
-                  >
-                    Update
-                  </button>
-                  <button
-                    onClick={() => handleDelete(s.id)}
-                    className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded-lg shadow"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td
-                colSpan={8}
-                className="text-center p-4 text-gray-500 border-t"
-              >
-                No schedules found
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    )}
-  </div>
-</section>
+      {/* Schedule Table */}
+      <div className="overflow-auto bg-white rounded-2xl shadow-lg border border-gray-200">
+        {loading ? (
+          <p className="text-gray-600 p-4">Loading schedules...</p>
+        ) : (
+          <>
+            <table className="min-w-full text-base text-left">
+              <thead className="bg-blue-900 text-white text-lg text-center">
+                <tr>
+                  <th className="px-4 py-3">#</th>
+                  <th className="px-4 py-3">Date</th>
+                  <th className="px-4 py-3">Time</th>
+                  <th className="px-4 py-3">Location</th>
+                  <th className="px-4 py-3">Coach</th>
+                  <th className="px-4 py-3">Sport</th>
+                  <th className="px-4 py-3">Team</th>
+                  <th className="px-4 py-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedSchedules.length > 0 ? (
+                  paginatedSchedules.map((s, i) => (
+                    <tr
+                      key={s.id}
+                      className="hover:bg-blue-50 transition duration-300 text-center"
+                    >
+                      <td className="px-4 py-3 border-t">{(currentPage - 1) * itemsPerPage + i + 1}</td>
+                      <td className="px-4 py-3 border-t">{s.date}</td>
+                      <td className="px-4 py-3 border-t">{s.time}</td>
+                      <td className="px-4 py-3 border-t">{s.location}</td>
+                      <td className="px-4 py-3 border-t">{s.coach.name}</td>
+                      <td className="px-4 py-3 border-t">{s.sportType.name}</td>
+                      <td className="px-4 py-3 border-t">
+                        {s.team.name} ({s.team.division})
+                      </td>
+                      <td className="px-4 py-3 border-t space-x-2">
+                        <button
+                          onClick={() => handleEdit(s)}
+                          className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg shadow"
+                        >
+                          Update
+                        </button>
+                        <button
+                          onClick={() => handleDelete(s.id)}
+                          className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded-lg shadow"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={8}
+                      className="text-center p-4 text-gray-500 border-t"
+                    >
+                      No schedules found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
 
+           
+          </>
+        )}
+      </div>
+       {/* Pagination Controls */}
+       {totalPages > 1 && (
+              <div className="flex justify-center gap-2 mt-4">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 rounded border border-gray-300 disabled:opacity-50"
+                >
+                  Prev
+                </button>
+
+                {[...Array(totalPages)].map((_, idx) => {
+                  const page = idx + 1;
+                  return (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={`px-3 py-1 rounded border ${
+                        currentPage === page
+                          ? "bg-blue-600 text-white border-blue-600"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  );
+                })}
+
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 rounded border border-gray-300 disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+            )}
+    </section>
   );
 }

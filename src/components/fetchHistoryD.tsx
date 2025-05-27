@@ -176,6 +176,7 @@ export default function FetchHistories() {
     <table className="min-w-full text-base text-left">
       <thead className="bg-blue-900 text-white text-lg text-center">
         <tr>
+          <th className="px-6 py-4">#</th>
           <th className="px-6 py-4">Image</th>
           <th className="px-6 py-4">Year</th>
           <th className="px-6 py-4">Title</th>
@@ -185,11 +186,12 @@ export default function FetchHistories() {
       </thead>
       <tbody>
         {histories.length > 0 ? (
-          histories.map((item, idx) => (
+          histories.map((item, index) => (
             <tr
               key={item.id}
               className="hover:bg-blue-50 transition duration-300 text-center text-lg"
             >
+              <td className="border-t px-6 py-4">{index+1}</td>
               <td className="border-t px-6 py-4">
                 <Image
                   src={item.imageUrl || "/placeholder.jpg"}

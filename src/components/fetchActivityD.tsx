@@ -161,9 +161,7 @@ export default function FetchActivityD() {
     setShowCreateForm(true);
   };
 
-  useEffect(() => {
-    fetchActivityD();
-  }, [selectSport]);
+ 
   
 
   return (

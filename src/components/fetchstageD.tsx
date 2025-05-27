@@ -76,6 +76,7 @@ export default function CompetitionStages() {
                 console.log(data)
                 setStages(Array.isArray(data) ? data : []);
             } catch (err) {
+                console.error(err);
                 setError("Failed to load stages.");
             } finally {
                 setIsLoading(false);
@@ -122,6 +123,7 @@ export default function CompetitionStages() {
                 const data = await res.json();
                 setTeams(data.data || []);
             } catch (err) {
+                console.error(err)
                 console.error("Failed to fetch teams.");
             } finally {
                 setIsLoading(false);

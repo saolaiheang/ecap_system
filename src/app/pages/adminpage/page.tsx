@@ -37,11 +37,9 @@ function isTokenExpired(token: string): boolean {
     const decodedPayload = JSON.parse(atob(payloadBase64));
     if (!decodedPayload.exp) return true;
 
-    // exp is in seconds, Date.now() in ms
     const expiryTimeMs = decodedPayload.exp * 1000;
     return Date.now() > expiryTimeMs;
   } catch {
-    // If any error decoding, treat as expired/invalid
     return true;
   }
 }

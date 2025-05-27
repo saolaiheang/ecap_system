@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getTypeOfSportById, updateTypeOfSport, deleteTypeOfSport } from "@/controllers/typeOfsport/typeOfsport.controller";
-export const GET = async (req: NextRequest, context: { params: { id: string } }) => {
+import { getTypeOfSportById, updateTypeOfSport, deleteTypeOfSport, SportParams } from "@/controllers/typeOfsport/typeOfsport.controller";
+export const GET = async (req: NextRequest, context: SportParams) => {
     try {
         const response = await getTypeOfSportById(req, context);
         return response;
@@ -8,7 +8,7 @@ export const GET = async (req: NextRequest, context: { params: { id: string } })
         return NextResponse.json({ error: error }, { status: 500 });
     }
 };
-export const PUT = async (req: NextRequest, context: { params: { id: string } }) => {
+export const PUT = async (req: NextRequest, context: SportParams) => {
     try {
         const response = await updateTypeOfSport(req, context);
         return response;
@@ -17,7 +17,7 @@ export const PUT = async (req: NextRequest, context: { params: { id: string } })
     }
 
 }
-export const DELETE = async (req: NextRequest, context: { params: { id: string } }) => {
+export const DELETE = async (req: NextRequest, context: SportParams) => {
     try {
         const response = await deleteTypeOfSport(req, context);
         return response;

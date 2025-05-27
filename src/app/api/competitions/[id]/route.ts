@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import {
     updateCompetition,
     deleteCompetition,
+    CompetitionParams,
 } from "@/controllers/competitions/competition.controller";
-export const PUT = async (req: NextRequest, { params }: { params: { id: string } }) => {
+
+export const PUT = async (req: NextRequest, context:CompetitionParams) => {
     try {
-        const response = await updateCompetition(req, { params });
+        const response = await updateCompetition(req,context);
         return response; 
     } catch (error) {
         console.error("Error in PUT /api/competitions/[id]:", error);
@@ -15,9 +17,9 @@ export const PUT = async (req: NextRequest, { params }: { params: { id: string }
         );
     }
 };
-export const DELETE = async (req: NextRequest, { params }: { params: { id: string } }) => {
+export const DELETE = async (req: NextRequest, context:CompetitionParams) => {
     try {
-        const response = await deleteCompetition(req, { params });
+        const response = await deleteCompetition(req,context);
         return response;
     } catch (error) {
         console.error("Error in DELETE /api/competitions/[id]:", error);

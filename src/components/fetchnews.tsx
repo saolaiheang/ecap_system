@@ -217,6 +217,7 @@ export default function FetchNews({ sport }: { sport: string }) {
           <table className="min-w-full text-base text-left border-collapse border border-gray-300">
             <thead className="bg-blue-900 text-white text-lg text-center">
               <tr>
+                <th className="px-6 py-4">#</th>
                 <th className=" px-6 py-4">Image</th>
                 <th className=" px-6 py-4">Title</th>
                 <th className=" px-6 py-4">Description</th>
@@ -231,6 +232,7 @@ export default function FetchNews({ sport }: { sport: string }) {
                     key={news.id}
                     className="text-center hover:bg-blue-50 transition duration-300"
                   >
+                    <td className="px-6 py-4">{index+1}</td>
                     <td className=" px-6 py-4">
                       <div className="flex justify-center items-center">
                         <Image

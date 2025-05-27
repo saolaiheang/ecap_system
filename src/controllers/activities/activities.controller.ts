@@ -12,9 +12,16 @@ export const config = {
         bodyParser: false,
     },
 };
-export const createActivities = async (req: NextRequest, { params }: { params: { id: string } }) => {
+
+export type ActivityParams = {
+    params: Promise<{ activity_id: string }>; 
+  };
+  export type SportParams = {
+    params: Promise<{ id: string }>; 
+  };
+export const createActivities = async (req: NextRequest, { params }: SportParams) => {
     try {
-        const { id: sport_id } = params;
+        const { id: sport_id } =await params;
         await initializeDataSource();
         const formData = await req.formData();
         const title = formData.get("title") as string;
@@ -85,39 +92,39 @@ export const createActivities = async (req: NextRequest, { params }: { params: {
     }
 }
 
-export const getAllActbySport = async (_req: NextRequest,context: { params: { id: string } }) => {
-    try {
-      await initializeDataSource();
-      const sport_id =context.params.id;
-      const activitiesRepository = AppDataSource.getRepository(Activities);
-  
-      const activities = await activitiesRepository.find({
-        where: { sport_id:sport_id },
-        relations: ["sportType"],
-      });
-  
-      if (!activities || activities.length === 0) {
-        return NextResponse.json(
-          { message: "No activities found" },
-          { status: 404 }
-        );
-      }
-  
-      return NextResponse.json(activities); 
-  
-    } catch (err) {
-        console.error(err);
-      return NextResponse.json(
-        { error: "Failed to get activities" },
-        { status: 500 }
-      );
-    }
-  };
-  
-export const getActivityById = async (_req: NextRequest, { params }: { params: { id: string } }) => {
+export const getAllActbySport = async (_req: NextRequest, {params}:SportParams) => {
     try {
         await initializeDataSource();
-        const { id: activity_id } = params;
+        const { id: sport_id } =await params;
+        const activitiesRepository = AppDataSource.getRepository(Activities);
+
+        const activities = await activitiesRepository.find({
+            where: { sport_id: sport_id },
+            relations: ["sportType"],
+        });
+
+        if (!activities || activities.length === 0) {
+            return NextResponse.json(
+                { message: "No activities found" },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json(activities);
+
+    } catch (err) {
+        console.error(err);
+        return NextResponse.json(
+            { error: "Failed to get activities" },
+            { status: 500 }
+        );
+    }
+};
+
+export const getActivityById = async (_req: NextRequest, { params }: ActivityParams) => {
+    try {
+        await initializeDataSource();
+        const { activity_id } =await params;
         const activitiesRepository = AppDataSource.getRepository(Activities);
         const activity = await activitiesRepository.findOne({
             where: { id: activity_id },
@@ -131,6 +138,7 @@ export const getActivityById = async (_req: NextRequest, { params }: { params: {
         }
         return NextResponse.json(activity);
     } catch (error) {
+        console.error(error);
         return NextResponse.json({
             error: "Failed to get activity",
             status: 500,
@@ -138,11 +146,11 @@ export const getActivityById = async (_req: NextRequest, { params }: { params: {
     }
 }
 
-export const deleteActivities = async (_req: NextRequest, { params }: { params: { id: string } }) => {
+export const deleteActivities = async (_req: NextRequest, { params }:ActivityParams) => {
     try {
         await initializeDataSource();
-        const { id: activity_id } = params;
-        const activitiesRepository = AppDataSource.getRepository(Activities);
+        const { activity_id } =await params;
+         const activitiesRepository = AppDataSource.getRepository(Activities);
         const activity = await activitiesRepository.findOne({
             where: { id: activity_id },
             relations: ["sportType"],
@@ -159,6 +167,7 @@ export const deleteActivities = async (_req: NextRequest, { params }: { params: 
             status: 200,
         })
     } catch (error) {
+        console.error(error)
         return NextResponse.json({
             error: "Failed to delete activity",
             status: 500,
@@ -166,10 +175,10 @@ export const deleteActivities = async (_req: NextRequest, { params }: { params: 
     }
 }
 
-export const editeActivities = async (req: NextRequest, { params }: { params: { id: string } }) => {
+export const editeActivities = async (req: NextRequest, { params }:ActivityParams) => {
     try {
         await initializeDataSource();
-        const { id: activity_id } = params;
+        const { activity_id } = await params;
         const formData = await req.formData();
         const title = formData.get("title") as string;
         const description = formData.get("description") as string;
@@ -209,6 +218,7 @@ export const editeActivities = async (req: NextRequest, { params }: { params: { 
             status: 200,
         });
     } catch (error) {
+        console.error(error);
         return NextResponse.json({
             error: "Failed to update activity",
             status: 500

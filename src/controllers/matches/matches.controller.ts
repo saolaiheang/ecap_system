@@ -4,9 +4,17 @@ import { initializeDataSource } from "@/utils/inititializeDataSource";
 import { Match, SportType, Stage, Team } from "@/entities";
 import { AppDataSource } from "@/config";
 import { MatchStatus } from "@/entities/match";
-export const createMatch = async (req: NextRequest, { params }: { params: { id: string; stage_id: string } }) => {
+
+export type MatchParams = {
+  params: Promise<{ id: string; stage_id: string }>;
+};
+
+export type MatchIdParams = {
+  params: Promise<{ id: string; stage_id: string; match_id: string }>;
+};
+export const createMatch = async (req: NextRequest, { params }: MatchParams) => {
   try {
-    const { stage_id, id: competition_id } = params;
+    const { stage_id, id: competition_id } = await params;
 
     await initializeDataSource();
     const { match_date, match_time, location, status, sport_type_id, teamA_id, teamB_id, teamA_score, teamB_score } = await req.json();
@@ -56,10 +64,10 @@ export const createMatch = async (req: NextRequest, { params }: { params: { id: 
   }
 };
 
-export const getAllMatchByStage = async (_req: NextRequest, { params }: { params: { id: string, stage_id: string } }) => {
+export const getAllMatchByStage = async (_req: NextRequest, { params }: MatchParams) => {
   try {
 
-    const { stage_id, id: competition_id } = params;
+    const { stage_id, id: competition_id } = await params;
     await initializeDataSource();
     const stage = await AppDataSource.getRepository(Stage).findOneBy({ id: stage_id, competition: { id: competition_id } })
     console.log(stage, ",,,,,,,,,,,")
@@ -82,9 +90,9 @@ export const getAllMatchByStage = async (_req: NextRequest, { params }: { params
     );
   }
 }
-export const getMatchById = async (_req: NextRequest, { params }: { params: { id: string, stage_id: string, match_id: string } }) => {
+export const getMatchById = async (_req: NextRequest, { params }: MatchIdParams) => {
   try {
-    const { stage_id, id: competition_id, match_id } = params;
+    const { stage_id, id: competition_id, match_id } = await params;
     await initializeDataSource();
     const stage = await AppDataSource.getRepository(Stage).findOneBy({ id: stage_id, competition: { id: competition_id } })
     console.log(stage, ",,,,,,,,,,,")
@@ -105,9 +113,9 @@ export const getMatchById = async (_req: NextRequest, { params }: { params: { id
   }
 }
 
-export const deleteMatch = async (_req: NextRequest, { params }: { params: { id: string, stage_id: string, match_id: string } }) => {
+export const deleteMatch = async (_req: NextRequest, { params }: MatchIdParams) => {
   try {
-    const { stage_id, id: competition_id, match_id } = params;
+    const { stage_id, id: competition_id, match_id } =await params;
     await initializeDataSource();
     const stage = await AppDataSource.getRepository(Stage).findOneBy({
       id: stage_id,
@@ -135,9 +143,9 @@ export const deleteMatch = async (_req: NextRequest, { params }: { params: { id:
   }
 }
 
-export const updateMatch = async (req: NextRequest, { params }: { params: { id: string, stage_id: string, match_id: string } }) => {
+export const updateMatch = async (req: NextRequest, { params }: MatchIdParams) => {
   try {
-    const { stage_id, id: competition_id, match_id } = params;
+    const { stage_id, id: competition_id, match_id } =await params;
     await initializeDataSource();
     const stage = await AppDataSource.getRepository(Stage).findOneBy({
       id: stage_id,

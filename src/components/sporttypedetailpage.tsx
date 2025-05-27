@@ -73,9 +73,7 @@ export default function DetailTypeOfSport() {
     }
   };
 
-  useEffect(() => {
-    fetchActivities();
-  }, [id]);
+ 
 
   if (loadingSport) {
     return (

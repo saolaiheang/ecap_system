@@ -13,18 +13,20 @@ export const config = {
     },
 };
 
+
+export type NewsParams = {
+    params: Promise<{ id: string }>;
+  };
 export const createNews = async (req: NextRequest) => {
     try {
-        
-            await initializeDataSource();
-        // const { title, description, image, sport_type_id } = await req.json() as NewsInput;
 
-         const formData= await req.formData();
-         const title = formData.get("title") as string;
-         const description = formData.get("description") as string;
-         const image = formData.get("image") as File;
-         const sport_type_id = formData.get("sport_type_id") as string;
-        // Validate required fields
+        await initializeDataSource();
+
+        const formData = await req.formData();
+        const title = formData.get("title") as string;
+        const description = formData.get("description") as string;
+        const image = formData.get("image") as File;
+        const sport_type_id = formData.get("sport_type_id") as string;
         if (!title || !description || !sport_type_id) {
             return NextResponse.json(
                 { error: "Title, description, and sport_type_id are required" },
@@ -47,18 +49,18 @@ export const createNews = async (req: NextRequest) => {
         }
 
         const tempFilePath = `${os.tmpdir()}/${image.name}-${Date.now()}`;
-                const fileBuffer = Buffer.from(await image.arrayBuffer());
-                await writeFile(tempFilePath, fileBuffer);
-        
-                const uploadResult = await cloudinary.uploader.upload(tempFilePath, {
-                    folder: "players",
-                    public_id: `${title}-${Date.now()}`,
-                });
-        
-                await fs.unlink(tempFilePath);
+        const fileBuffer = Buffer.from(await image.arrayBuffer());
+        await writeFile(tempFilePath, fileBuffer);
+
+        const uploadResult = await cloudinary.uploader.upload(tempFilePath, {
+            folder: "players",
+            public_id: `${title}-${Date.now()}`,
+        });
+
+        await fs.unlink(tempFilePath);
 
         const sportTypeRepository = AppDataSource.getRepository(SportType);
-        const sportType = await sportTypeRepository.findOne({ where: { id:sport_type_id } });
+        const sportType = await sportTypeRepository.findOne({ where: { id: sport_type_id } });
         if (!sportType) {
             return NextResponse.json(
                 { error: "Sport type not found" },
@@ -70,9 +72,9 @@ export const createNews = async (req: NextRequest) => {
         const news = newsRepository.create({
             title,
             description,
-            image:uploadResult.secure_url, 
+            image: uploadResult.secure_url,
             sport_type_id,
-            date: new Date(), 
+            date: new Date(),
         });
         await newsRepository.save(news);
 
@@ -134,11 +136,11 @@ export const getNewsByIdTypeOfSport = async (
 
 export const deleteNews = async (
     _req: NextRequest,
-    context: { params: { id: string } }
+    {params}:NewsParams
 ) => {
     try {
         await initializeDataSource();
-        const { id } = context.params;
+        const { id } = await params;
         const newsRepository = AppDataSource.getRepository(News);
         const news = await newsRepository.findOne({ where: { id } });
         if (!news) {
@@ -166,11 +168,11 @@ export const deleteNews = async (
 
 export const updateNews = async (
     req: NextRequest,
-    context: { params: { id: string } }
+    {params}:NewsParams
 ) => {
     try {
         await initializeDataSource();
-        const { id } = context.params;
+        const { id } =await params;
 
         const formData = await req.formData();
         const title = formData.get("title") as string;
@@ -178,7 +180,6 @@ export const updateNews = async (
         const image = formData.get("image") as File;
         const sport_type_id = formData.get("sport_type_id") as string;
 
-        // Find the existing news
         const newsRepository = AppDataSource.getRepository(News);
         const news = await newsRepository.findOne({ where: { id } });
 
@@ -189,7 +190,6 @@ export const updateNews = async (
             );
         }
 
-        // Validate SportType if sport_type_id is provided
         if (sport_type_id) {
             const sportTypeRepository = AppDataSource.getRepository(SportType);
             const sportType = await sportTypeRepository.findOne({ where: { id: sport_type_id } });
@@ -207,7 +207,6 @@ export const updateNews = async (
         news.description = description || news.description;
         news.sport_type_id = sport_type_id || news.sport_type_id;
 
-        // Handle image upload if a new image is provided
         if (image) {
             if (!image.type.startsWith("image/")) {
                 return NextResponse.json(
@@ -216,28 +215,22 @@ export const updateNews = async (
                 );
             }
 
-            // Temporary file path and buffer creation
             const tempFilePath = `${os.tmpdir()}/${image.name}-${Date.now()}`;
             const fileBuffer = Buffer.from(await image.arrayBuffer());
             await writeFile(tempFilePath, fileBuffer);
 
-            // Upload to Cloudinary
             const uploadResult = await cloudinary.uploader.upload(tempFilePath, {
                 folder: "players",
                 public_id: `${title}-${Date.now()}`,
             });
 
-            // Delete the local temp file
             await fs.unlink(tempFilePath);
 
-            // Update image URL
             news.image = uploadResult.secure_url;
         }
 
-        // Update the modification date
         news.date = new Date();
 
-        // Save the updated news
         await newsRepository.save(news);
 
         return NextResponse.json(
@@ -254,52 +247,52 @@ export const updateNews = async (
 };
 
 
-export const getAllNewsBysport=async(_req:NextRequest,{params}:{params:{id:string}})=>{
-    try{
-        const {id}=params;
+export const getAllNewsBysport = async (_req: NextRequest, { params }: NewsParams) => {
+    try {
+        const { id } =await params;
         await initializeDataSource();
-        const newsRepository=AppDataSource.getRepository(News);
-        const news=await newsRepository.find({where:{sport_type_id:id},relations:["sportType"]})
+        const newsRepository = AppDataSource.getRepository(News);
+        const news = await newsRepository.find({ where: { sport_type_id: id }, relations: ["sportType"] })
 
-        if(!news){
+        if (!news) {
             return NextResponse.json(
-                {error:"News not found"},
-                {status:404}
+                { error: "News not found" },
+                { status: 404 }
             )
         }
         return NextResponse.json({
-            message:"News by sport successfully",data:news
-        },{status:200})
+            message: "News by sport successfully", data: news
+        }, { status: 200 })
 
-    }catch(err){
+    } catch (err) {
         return NextResponse.json(
-            {error:"Can't get all news by this sport",err:err},
-            {status:500}
+            { error: "Can't get all news by this sport", err: err },
+            { status: 500 }
         )
 
     }
 }
 
 
-export const getNewsById= async (_req:NextRequest,{params}:{params:{id:string}})=>{
-    try{
-        const {id}=params;
+export const getNewsById = async (_req: NextRequest, { params }: NewsParams) => {
+    try {
+        const { id } = await params;
         await initializeDataSource();
-        const newsRepository=AppDataSource.getRepository(News);
-        const news=await newsRepository.findOne({where:{id},relations:["sportType"]})
-        if(!news){
+        const newsRepository = AppDataSource.getRepository(News);
+        const news = await newsRepository.findOne({ where: { id }, relations: ["sportType"] })
+        if (!news) {
             return NextResponse.json(
-                {error:"News not found"},
-                {status:404}
-                )
-                }
-                return NextResponse.json({
-                    message:"News by id successfully",data:news
-                    },{status:200})
-                    }catch(err){
-                        return NextResponse.json(
-                            {error:"Can't get news by this id",err:err},
-                            {status:500}
-                            )
-                            }
+                { error: "News not found" },
+                { status: 404 }
+            )
+        }
+        return NextResponse.json({
+            message: "News by id successfully", data: news
+        }, { status: 200 })
+    } catch (err) {
+        return NextResponse.json(
+            { error: "Can't get news by this id", err: err },
+            { status: 500 }
+        )
+    }
 }

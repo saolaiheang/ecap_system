@@ -12,6 +12,10 @@ export const config = {
     },
 };
 
+export type TeamParams={
+    params: Promise<{ id: string }>;
+}
+
 export const createTeam = async (req: NextRequest) => {
     try {
         await initializeDataSource();
@@ -22,7 +26,7 @@ export const createTeam = async (req: NextRequest) => {
         const contact_info = formData.get("contact_info") as string;
         const sport_id = formData.get("sport_id") as string;
         const imageFile = formData.get("image") as File;
-       
+
         if (!name || !division || !sport_id) {
             return NextResponse.json(
                 { error: "Name, division, and sport_id are required" },
@@ -54,23 +58,23 @@ export const createTeam = async (req: NextRequest) => {
             );
         }
 
-         const tempFilePath = `${os.tmpdir()}/${imageFile.name}-${Date.now()}`;
-                const fileBuffer = Buffer.from(await imageFile.arrayBuffer());
-                await writeFile(tempFilePath, fileBuffer);
-        
-                const uploadResult = await cloudinary.uploader.upload(tempFilePath, {
-                    folder: "teams",
-                    public_id: `${name}-${Date.now()}`,
-                });
-        
-                await fs.unlink(tempFilePath);
+        const tempFilePath = `${os.tmpdir()}/${imageFile.name}-${Date.now()}`;
+        const fileBuffer = Buffer.from(await imageFile.arrayBuffer());
+        await writeFile(tempFilePath, fileBuffer);
+
+        const uploadResult = await cloudinary.uploader.upload(tempFilePath, {
+            folder: "teams",
+            public_id: `${name}-${Date.now()}`,
+        });
+
+        await fs.unlink(tempFilePath);
         const team = teamRepository.create({
             name,
             division,
             contact_info,
             sportType,
             image: uploadResult.secure_url,
-           
+
         });
 
         await teamRepository.save(team);
@@ -98,10 +102,10 @@ export const createTeam = async (req: NextRequest) => {
     }
 };
 
-export const getTeamsByTypeOf= async (req: NextRequest, context: { params: { id: string } }) => {
+export const getTeamsByTypeOf = async (req: NextRequest, {params}:TeamParams) => {
     try {
         await initializeDataSource();
-        const { id } = context.params;
+        const { id } = await params;
         const teamRepository = AppDataSource.getRepository(Team);
         const teams = await teamRepository.find({
             where: { sportType: { id } },
@@ -140,10 +144,10 @@ export const getTeams = async (_req: NextRequest) => {
     }
 };
 
-export const updateTeam= async (req: NextRequest, {params}: { params: { id: string } }) => {
+export const updateTeam = async (req: NextRequest, { params }: TeamParams) => {
     try {
         await initializeDataSource();
-        const { id } =params;
+        const { id } =await params;
         const formData = await req.formData();
         const name = formData.get("name") as string;
         const division = formData.get("division") as string;
@@ -163,16 +167,16 @@ export const updateTeam= async (req: NextRequest, {params}: { params: { id: stri
             );
         }
 
-         const tempFilePath = `${os.tmpdir()}/${imageFile.name}-${Date.now()}`;
-                const fileBuffer = Buffer.from(await imageFile.arrayBuffer());
-                await writeFile(tempFilePath, fileBuffer);
-        
-                const uploadResult = await cloudinary.uploader.upload(tempFilePath, {
-                    folder: "teams",
-                    public_id: `${name}-${Date.now()}`,
-                });
-        
-                await fs.unlink(tempFilePath);
+        const tempFilePath = `${os.tmpdir()}/${imageFile.name}-${Date.now()}`;
+        const fileBuffer = Buffer.from(await imageFile.arrayBuffer());
+        await writeFile(tempFilePath, fileBuffer);
+
+        const uploadResult = await cloudinary.uploader.upload(tempFilePath, {
+            folder: "teams",
+            public_id: `${name}-${Date.now()}`,
+        });
+
+        await fs.unlink(tempFilePath);
         const teamRepository = AppDataSource.getRepository(Team);
         const team = await teamRepository.findOne({ where: { id } });
         if (!team) {
@@ -190,7 +194,7 @@ export const updateTeam= async (req: NextRequest, {params}: { params: { id: stri
         if (contact_info) {
             team.contact_info = contact_info;
         }
-        if(imageFile){
+        if (imageFile) {
             team.image = uploadResult.secure_url;
         }
         await teamRepository.save(team);
@@ -207,27 +211,27 @@ export const updateTeam= async (req: NextRequest, {params}: { params: { id: stri
     }
 };
 
-export const deleteTeam=async (req:NextRequest,{params}:{params:{id:string}})=>{
+export const deleteTeam = async (_req: NextRequest, { params }: TeamParams) => {
     try {
         await initializeDataSource();
         const teamRepository = AppDataSource.getRepository(Team);
-        const team = await teamRepository.findOne({ where: { id: params.id } });
+        const team = await teamRepository.findOne({ where: { id: (await params).id } });
         if (!team) {
             return NextResponse.json(
                 { error: "Team not found" },
                 { status: 404 }
-                );
-                }
-                await teamRepository.delete(params.id);
-                return NextResponse.json(
-                    { message: "Team deleted successfully" },
-                    { status: 200 }
-                    );
-                    } catch (error) {
-                        console.error("Error deleting team:", error);
-                        return NextResponse.json(
-                            { error: "Error deleting team" },
-                            { status: 500 }
-                            );
-                            }
+            );
+        }
+        await teamRepository.delete((await params).id);
+        return NextResponse.json(
+            { message: "Team deleted successfully" },
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error("Error deleting team:", error);
+        return NextResponse.json(
+            { error: "Error deleting team" },
+            { status: 500 }
+        );
+    }
 }

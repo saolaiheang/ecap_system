@@ -5,12 +5,16 @@ import { initializeDataSource } from "@/utils/inititializeDataSource";
 import { AppDataSource } from "@/config";
 import cloudinary from "@/lib/cloudinary";
 import os from 'os';
-import fs,{writeFile} from "fs/promises"
+import fs,{writeFile} from "fs/promises";
+
+
+export type SportParams={
+    params: Promise<{ id: string }>;
+}
 export const createTypeOfSport = async (req: NextRequest) => {
     try {
         await initializeDataSource();
         
-        // const { name, description,image } = await req.json();
         const formData= await req.formData();
         const name =formData.get("name") as string;
         const description=formData.get("description") as string;
@@ -83,11 +87,11 @@ export const getTypeOfSport = async (_req: NextRequest) => {
 
 export const getTypeOfSportById = async (
     _req: NextRequest,
-    context: { params: { id: string } }
+{params}: SportParams
 ) => {
     try {
         await initializeDataSource();
-        const { id } = context.params;
+        const { id } =await params;
         const typeOfSport = await AppDataSource.getRepository(SportType).findOneBy({
             id,
         });
@@ -111,12 +115,10 @@ export const getTypeOfSportById = async (
 };
 
 export const updateTypeOfSport = async (
-    req: NextRequest,
-    context: { params: { id: string } }
-) => {
+    req: NextRequest,{params}:SportParams) => {
     try {
         await initializeDataSource();
-        const { id } = context.params;
+        const { id } = await params;
 
         const formData= await req.formData();
         const name =formData.get("name") as string;
@@ -182,11 +184,11 @@ export const updateTypeOfSport = async (
 
 export const deleteTypeOfSport = async (
     req: NextRequest,
-    context: { params: { id: string } }
+    {params}: SportParams
 ) => {
     try {
         await initializeDataSource();
-        const { id } = context.params;
+        const { id } = await params;
         const typeOfSport = await AppDataSource.getRepository(SportType).findOneBy({
             id,
         });

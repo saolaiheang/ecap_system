@@ -13,17 +13,21 @@ export const config = {
         bodyParser: false,
     },
 };
-export const createCoach = async (req: NextRequest, { params }: { params: { id: string } }) => {
+
+export type SportParams = {
+    params: Promise<{ id: string }>; 
+  };
+  export type TeamParams = {
+    params: Promise<{ id: string }>; 
+  };
+  export type CoachParams = {
+    params: Promise<{ id: string }>; 
+  };
+export const createCoach = async (req: NextRequest,{params}: TeamParams) => {
     try {
-        const { id: team_id } = params;
-        // await initializeDataSource();
+        const { id: team_id } = await params;
+        await initializeDataSource();
 
-
-        (async () => {
-            await initializeDataSource();
-            console.log("App is running...");
-        })();
-        // const { name, contact_info, image } = await req.json() as CoachInput;
 
         const formData = await req.formData();
         const name = formData.get("name") as string;
@@ -135,11 +139,11 @@ export const getCoaches = async (_: NextRequest) => {
 
 }
 
-export const getCoachesByteam = async (rep: NextRequest, { params }: { params: { id: string } }) => {
+export const getCoachesByteam = async (_rep: NextRequest, { params }: TeamParams) => {
     {
         try {
             await initializeDataSource();
-            const { id: team_id } = params;
+            const { id: team_id } =await params;
             const coachRepository = AppDataSource.getRepository(Coach);
             const coaches = await coachRepository.find({ where: { team: { id: team_id } } });
             return NextResponse.json(
@@ -158,10 +162,10 @@ export const getCoachesByteam = async (rep: NextRequest, { params }: { params: {
 }
 
 
-export const getCoachesBysport = async ({ params }: { params: { id: string } }) => {
+export const getCoachesBysport = async (req: NextRequest, { params }: SportParams) => {
     try {
         await initializeDataSource();
-        const { id: sport_id } = params;
+        const { id: sport_id } =await params;
         const coachRepository = AppDataSource.getRepository(Coach);
         const coaches = await coachRepository.find({ where: { sport: { id: sport_id } }, relations: ["team", "sport"] });
         return NextResponse.json(
@@ -179,11 +183,11 @@ export const getCoachesBysport = async ({ params }: { params: { id: string } }) 
 }
 
 
-export const deleteCoachById = async ( { params }: { params: { id: string } }) => {
+export const deleteCoachById = async (_req:NextRequest, { params }: CoachParams) => {
 
     try {
         await initializeDataSource();
-        const { id } = params;
+        const { id } = await params;
         const coachRepository = AppDataSource.getRepository(Coach);
         await coachRepository.delete(id);
         return NextResponse.json(
@@ -199,9 +203,9 @@ export const deleteCoachById = async ( { params }: { params: { id: string } }) =
 }
 
 
-export const updateCoachById = async (req: NextRequest, { params }: { params: { id: string } }) => {
+export const updateCoachById = async (req: NextRequest, { params }: CoachParams) => {
     try {
-        const { id } = params;
+        const { id } =await params;
         await initializeDataSource();
         const coachRepository = AppDataSource.getRepository(Coach);
         const coach = await coachRepository.findOneBy({id});

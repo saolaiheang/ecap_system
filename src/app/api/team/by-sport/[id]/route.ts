@@ -1,7 +1,7 @@
 import { NextRequest,NextResponse } from "next/server";
-import { getTeamsByTypeOf } from "@/controllers/team/team.controller";
+import { getTeamsByTypeOf, TeamParams } from "@/controllers/team/team.controller";
 
-export const GET = async (req: NextRequest, context: { params: { id: string } }) => {
+export const GET = async (req: NextRequest, context: TeamParams) => {
     try {
         const response = await getTeamsByTypeOf(req, context);
         return response;

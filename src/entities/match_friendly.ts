@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, BeforeInsert, BeforeUpdate } from "typeorm";
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, BeforeInsert } from "typeorm";
 import { SportType } from "./typeOfsport";
 import { Team } from "./team";
 import {v4 as uuidv4} from "uuid"

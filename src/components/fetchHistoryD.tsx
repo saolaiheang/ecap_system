@@ -130,6 +130,7 @@ export default function FetchHistories() {
 
   return (
     <section className="px-8 py-6 bg-gray-50 min-h-screen">
+
       <h2 className="text-3xl font-bold text-blue-700 mb-6">
         📜 History Management
       </h2>
@@ -200,6 +201,7 @@ export default function FetchHistories() {
                   <tr
                     key={item.id}
                     className="hover:bg-blue-50 transition duration-300 text-center text-lg"
+
                   >
                     <td className="px-4 py-3 border-t">{index + 1}</td>
 

@@ -1,25 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-    getCompetitionByTypeOfSport
+    getCompetitionByTypeOfSport,
+    SportParams
 } from "@/controllers/competitions/competition.controller";
 
 
 
-export const GET = async (
-    request: NextRequest,
-    { params }: { params: { id: string } }) => {
+export const GET = async (req: NextRequest,context:SportParams) => {
     try {
-        console.log("Context params received:", params);
-        if (!params || !params.id) {
-            console.error("No ID found in params.");
-            return NextResponse.json(
-                { error: "Sport ID is required" },
-                { status: 400 }
-            );
-        }
-        const response = await getCompetitionByTypeOfSport(params);
-
-        return response;
+        return await getCompetitionByTypeOfSport(req,context)
     } catch (error) {
         console.error("Error in GET /api/competitions/[id]:", error);
         return NextResponse.json(

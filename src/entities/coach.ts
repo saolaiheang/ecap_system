@@ -26,7 +26,7 @@ export class Coach {
     @JoinColumn({ name: "team_id" })
     team: Team;
 
-    @ManyToOne("SportType", "players")
+    @ManyToOne(() => SportType)
     @JoinColumn({ name: "sport_id" })
     sport: SportType;
 

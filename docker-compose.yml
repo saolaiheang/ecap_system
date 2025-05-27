@@ -1,0 +1,20 @@
+
+services:
+  app:
+    build: .
+    container_name: ecap-system1
+    ports:
+    - "127.0.0.1:9007:3000"
+    environment:
+        - JWT_SECRET=${JWT_SECRET}
+        - PORT=${DB_PORT}
+        - NODE_ENV=${NODE_ENV},
+        - POSTGRES_HOST=${DB_HOST},
+        - POSTGRES_USER=${DB_USER},
+        - POSTGRES_DB=${DB_NAME},
+        - POSTGRES_PASSWORD=${DB_PASSWORD},
+        - PORT=${PORT},
+        - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+        - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+        - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+        - CLOUDINARY_URL=${CLOUDINARY_URL}

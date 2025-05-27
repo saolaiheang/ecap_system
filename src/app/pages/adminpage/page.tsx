@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+
 import HeaderAdminPage from "@/components/headerAdmin";
 
 import {
@@ -44,7 +45,6 @@ function isTokenExpired(token: string): boolean {
     return true;
   }
 }
-
 import { FaFutbol } from "react-icons/fa";
 
 
@@ -57,12 +57,17 @@ export default function DashboardLayout() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) {
+
+    if (!token || isTokenExpired(token)) {
       router.push("/pages/login");
+      setIsAuthenticated(false);
     } else {
       setIsAuthenticated(true);
     }
   }, [router]);
+
+ 
+
 
   if (isAuthenticated === null) {
     return <div>Loading...</div>;
@@ -127,29 +132,42 @@ export default function DashboardLayout() {
                 setMobileMenuOpen(false);
               }}
             >
-              Player
-            </p>
-            <p
-              className="cursor-pointer hover:underline hover:text-white"
-              onClick={() => {
-                setSelectedContent("profile-coach");
-                setMobileMenuOpen(false);
-              }}
-            >
-              Coach
-            </p>
-            <p
-              className="cursor-pointer hover:underline hover:text-white"
-              onClick={() => {
-                setSelectedContent("profile-team");
-                setMobileMenuOpen(false);
-              }}
-            >
-              Teams
-            </p>
+
+              <span className="flex items-center">
+                <FaUser className="mr-4 text-xl" />
+                Profile
+              </span>
+              <FaChevronDown
+                className={`ml-auto text-xl transition-transform ${
+                  profileMenuOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+            {profileMenuOpen && (
+              <div className="ml-10 mt-2 space-y-2 text-[15px] text-gray-300">
+                <p
+                  className="cursor-pointer hover:underline hover:text-white"
+                  onClick={() => setSelectedContent("profile-player")}
+                >
+                  Player
+                </p>
+                <p
+                  className="cursor-pointer hover:underline hover:text-white"
+                  onClick={() => setSelectedContent("profile-coach")}
+                >
+                  Coach
+                </p>
+                <p
+                  className="cursor-pointer hover:underline hover:text-white"
+                  onClick={() => setSelectedContent("profile-team")}
+                >
+                  Teams
+                </p>
+              </div>
+            )}
+
           </div>
-        )}
-      </div>
+
 
       <button
         className="flex items-center px-4 py-3 text-[16px] font-semibold rounded-lg hover:bg-[#4B5A9E] transition duration-200"
@@ -251,7 +269,9 @@ export default function DashboardLayout() {
           {selectedContent === "news" ? (
             <FetchNews sport="default" />
           ) : selectedContent === "profile-player" ? (
-            <ProfileDashboard />
+            <ProfileDashboard />)
+            :selectedContent==="profile-team"?(
+              <FetchTeam/>
           ) : selectedContent === "profile-coach" ? (
             <FetchProfileCoach />
           ) : selectedContent === "profile-team" ? (

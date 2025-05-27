@@ -1,5 +1,5 @@
 # Use official Node.js image,
-FROM node:18-alpine
+FROM node:20
 
 # Set working directory,
 WORKDIR /app
@@ -12,10 +12,13 @@ RUN npm install
 COPY . .
 
 # Build the Next.js app,
-RUN npm run build
+# RUN npm run build
 
 # Expose port 3000,
 EXPOSE 3000
 
 # Start the app in production mode,
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]
+
+
+

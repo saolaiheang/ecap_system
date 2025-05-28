@@ -268,7 +268,7 @@ export default function DashboardLayout() {
                 {/* Welcome Header */}
                 <div className="text-center mb-12">
                   <h1 className="text-4xl font-bold text-gray-800">
-                    Welcome to Your Dashboard
+                    Welcome to Ecap Dashboard
                   </h1>
                   <p className="text-lg text-gray-600 mt-2">
                     Stay updated and manage everything in one place

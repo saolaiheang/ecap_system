@@ -55,7 +55,7 @@ export default function News() {
         ) : (
           <section className="px-4 lg:px-[150px] sm:px-10 md:px-[100px] py-10 font-sans animate-fade-in">
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-pink-500 via-purple-800 to-indigo-600 bg-clip-text text-transparent drop-shadow-lg mb-[30px]">
-              Types of Sport
+              Announcements
             </h1>
 
             {/* Featured News */}

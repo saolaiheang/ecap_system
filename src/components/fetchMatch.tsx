@@ -433,7 +433,7 @@ export default function FetchMatch({ sport }: Props) {
                 key={comp.id}
                 className="hover:bg-blue-50 transition duration-300 text-center"
               >
-                <td className=" px-6 py-4">{index + 1}</td>
+                <td className=" px-6 py-4 border-t">{index + 1}</td>
                 <td className="px-6 py-4 border-t">{comp.teamA?.name}</td>
                 <td className="px-6 py-4 border-t">{comp.teamB?.name}</td>
                 <td className="px-6 py-4 border-t">{comp.match_date}</td>

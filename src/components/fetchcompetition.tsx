@@ -339,12 +339,12 @@ export default function CompetitionManager() {
                     className="text-center hover:bg-blue-50 transition duration-300"
                   >
                     <td className="px-4 py-3 border-t">{indexOfFirstCompetition + index + 1}</td>
-                    <td className="px-6 py-4">{comp.name}</td>
-                    <td className="px-6 py-4">{comp.location}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 border-t">{comp.name}</td>
+                    <td className="px-6 py-4 border-t">{comp.location}</td>
+                    <td className="px-6 py-4 border-t">
                       {new Date(comp.start_date).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 border-t">
                       {comp.image ? (
                         <Image
                           src={comp.image}
@@ -357,10 +357,10 @@ export default function CompetitionManager() {
                         "No image"
                       )}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 border-t">
                       {comp.sportType?.name || "N/A"}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 border-t">
                       <div className="flex justify-center gap-3">
                         <button
                           onClick={() => handleEditClick(comp)}

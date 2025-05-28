@@ -299,11 +299,11 @@ export default function FetchActivityD() {
                     key={activity.id}
                     className="text-center hover:bg-blue-50 transition duration-300"
                   >
-                    <td className=" px-6 py-4">{index + 1}</td>
+                    <td className=" px-6 py-4 border-t">{index + 1}</td>
 
-                    <td className="px-6 py-4">{activity.title}</td>
-                    <td className="px-6 py-4">{activity.description}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 border-t">{activity.title}</td>
+                    <td className="px-6 py-4 border-t">{activity.description}</td>
+                    <td className="px-6 py-4 border-t">
                       <a
                         href={activity.video}
                         target="_blank"
@@ -313,7 +313,7 @@ export default function FetchActivityD() {
                         Watch Video
                       </a>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 border-t">
                       <div className="flex justify-center gap-4">
                         <button
                           onClick={() => handleEditClick(activity)}

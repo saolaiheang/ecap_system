@@ -162,12 +162,14 @@ export const updateMatch = async (req: NextRequest, { params }: MatchIdParams) =
     if (!match) {
       return NextResponse.json({ error: "Match not found" }, { status: 404 })
     }
-    const { match_date, match_time, location, status } = await req.json();
+    const { match_date, match_time, location, status,teamA_score,teamB_score } = await req.json();
     const updatedMatch = await matchRepository.update(match_id, {
       match_date,
       match_time,
       location,
       status: status ?? MatchStatus.SCHEDULED,
+      teamA_score,
+      teamB_score,
     });
 
     return NextResponse.json({ message: "Match update successfully", data: updatedMatch })

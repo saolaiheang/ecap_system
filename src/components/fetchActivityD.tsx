@@ -51,6 +51,15 @@ export default function FetchActivityD() {
     fetchSports();
   }, []);
 
+  useEffect(() => {
+    if (selectSport) {
+      fetchActivityD();
+    } else {
+      setActivities([]); 
+      setLoading(false); 
+    }
+  }, [selectSport]);
+
   const fetchActivityD = async () => {
     if (!selectSport) return;
     setLoading(true);

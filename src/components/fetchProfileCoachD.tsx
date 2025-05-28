@@ -370,10 +370,10 @@ export default function CoachesProfileBySport() {
                   <td className=" px-6 py-4">{coach.team.name}</td>
                   <td className=" px-6 py-4">{coach.team.division}</td>
                   <td className=" px-6 py-4">{coach.team.contact_info}</td>
-                  <td className=" px-6 py-4">
+                  <td className=" px-6 py-4 flex">
                     <button
                       onClick={() => handleUpdateClick(coach)}
-                      className="bg-blue-500 text-white px-3 py-1 rounded-lg mr-2 hover:bg-blue-600"
+                      className="bg-blue-500  text-white px-3 py-1 rounded-lg mr-2 hover:bg-blue-600"
                     >
                       Update
                     </button>
@@ -408,7 +408,7 @@ export default function CoachesProfileBySport() {
             disabled={currentPage === 1}
             className="px-3 py-1 rounded border border-gray-400 hover:bg-gray-200 disabled:opacity-50"
           >
-            Previous
+            Prev
           </button>
 
           {[...Array(totalPages)].map((_, i) => {

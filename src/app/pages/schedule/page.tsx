@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-// import Header from "@/components/header";
+import Header from "@/components/header";
 import { Calendar, MapPin, Medal } from "lucide-react";
 import Footer from "@/components/footer";
-import FetchCompetitionLayout from "@/components/fetchcompetitionlayout";
 
 type Coach = {
   id: string;

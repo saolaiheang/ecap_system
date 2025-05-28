@@ -116,89 +116,89 @@ export default function FetchMatch({ sport }: Props) {
     }
   };
 
-  // const handleDelete = async (id: string) => {
-  //   if (!confirm("Are you sure you want to delete this match?")) return;
-  //   try {
-  //     const res = await fetch(`/api/match_friendly/${id}`, {
-  //       method: "DELETE",
-  //     });
-  //     if (res.ok) {
-  //       alert("match deleted successfully");
-  //     }
-  //     if (!res.ok) throw new Error("Failed to delete match");
-  //     setCompetitions((prev) => prev.filter((c) => c.id !== id));
-  //   } catch (err) {
-  //     alert(
-  //       `Error deleting match.${
-  //         err instanceof Error ? err.message : String(err)
-  //       }`
-  //     );
-  //   }
-  // };
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this match?")) return;
+    try {
+      const res = await fetch(`/api/match_friendly/${id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        alert("match deleted successfully");
+      }
+      if (!res.ok) throw new Error("Failed to delete match");
+      setCompetitions((prev) => prev.filter((c) => c.id !== id));
+    } catch (err) {
+      alert(
+        `Error deleting match.${
+          err instanceof Error ? err.message : String(err)
+        }`
+      );
+    }
+  };
 
-  // const handleAdd = async () => {
-  //   try {
-  //     if (
-  //       !form.match_date ||
-  //       !form.match_time ||
-  //       !form.location ||
-  //       !form.sport_type_id ||
-  //       !form.teamA_id ||
-  //       !form.teamB_id
-  //     ) {
-  //       alert("Please fill in all required fields.");
-  //       return;
-  //     }
+  const handleAdd = async () => {
+    try {
+      if (
+        !form.match_date ||
+        !form.match_time ||
+        !form.location ||
+        !form.sport_type_id ||
+        !form.teamA_id ||
+        !form.teamB_id
+      ) {
+        alert("Please fill in all required fields.");
+        return;
+      }
 
-  //     const matchData = {
-  //       match_date: form.match_date,
-  //       match_time: form.match_time + ":00", // Fix time format
-  //       location: form.location,
-  //       sport_type_id: form.sport_type_id,
-  //       teamA_id: form.teamA_id,
-  //       teamB_id: form.teamB_id,
-  //       status: form.status,
-  //     };
+      const matchData = {
+        match_date: form.match_date,
+        match_time: form.match_time + ":00", // Fix time format
+        location: form.location,
+        sport_type_id: form.sport_type_id,
+        teamA_id: form.teamA_id,
+        teamB_id: form.teamB_id,
+        status: form.status,
+      };
 
-  //     console.log("Sending POST request:", JSON.stringify(matchData));
+      console.log("Sending POST request:", JSON.stringify(matchData));
 
-  //     const res = await fetch(
-  //       `/api/match_friendly/by-sport/${form.sport_type_id}`,
-  //       {
-  //         method: "POST",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify(matchData),
-  //       }
-  //     );
-  //     if (res.ok) {
-  //       alert("Match added successfully!");
-  //     }
+      const res = await fetch(
+        `/api/match_friendly/by-sport/${form.sport_type_id}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(matchData),
+        }
+      );
+      if (res.ok) {
+        alert("Match added successfully!");
+      }
 
-  //     if (!res.ok) {
-  //       const errorData = await res.json();
-  //       throw new Error(errorData.error || "Failed to add match");
-  //     }
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to add match");
+      }
 
-  //     await fetchCompetitions();
+      await fetchCompetitions();
 
-  //     setForm({
-  //       match_date: "",
-  //       match_time: "",
-  //       location: "",
-  //       sport_type_id: "",
-  //       teamA_id: "",
-  //       teamB_id: "",
-  //       status: "scheduled",
-  //     });
-  //   } catch (err) {
-  //     console.error("Error in handleAdd:", err);
-  //     alert(
-  //       `Error adding match: ${
-  //         err instanceof Error ? err.message : String(err)
-  //       }`
-  //     );
-  //   }
-  // };
+      setForm({
+        match_date: "",
+        match_time: "",
+        location: "",
+        sport_type_id: "",
+        teamA_id: "",
+        teamB_id: "",
+        status: "scheduled",
+      });
+    } catch (err) {
+      console.error("Error in handleAdd:", err);
+      alert(
+        `Error adding match: ${
+          err instanceof Error ? err.message : String(err)
+        }`
+      );
+    }
+  };
 
   const handleEdit = async () => {
     if (!editMatch) return;
@@ -246,14 +246,14 @@ export default function FetchMatch({ sport }: Props) {
     }
   };
 
-  // const openEditModal = (match: Match_friendly) => {
-  //   setEditMatch(match);
-  //   setEditForm({
-  //     status: match.status,
-  //     teamA_score: match.teamA_score,
-  //     teamB_score: match.teamB_score,
-  //   });
-  // };
+  const openEditModal = (match: Match_friendly) => {
+    setEditMatch(match);
+    setEditForm({
+      status: match.status,
+      teamA_score: match.teamA_score,
+      teamB_score: match.teamB_score,
+    });
+  };
 
   useEffect(() => {
     fetchCompetitions();
@@ -348,7 +348,7 @@ export default function FetchMatch({ sport }: Props) {
           </select>
         </div>
         <div className="mt-6 text-right">
-          <Button className="bg-green-600 text-white px-6 py-2 rounded-[5px] hover:bg-green-700 transition">
+          <Button              onClick={handleAdd}  className="bg-green-600 text-white px-6 py-2 rounded-[5px] hover:bg-green-700 transition">
             Submit Match
           </Button>
         </div>
@@ -448,10 +448,18 @@ export default function FetchMatch({ sport }: Props) {
                 </td>
                 <td className="px-6 py-4 border-t">
                   <div className="flex justify-center gap-3">
-                    <Button className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg shadow">
+                    <Button onClick={() => {
+                        setEditMatch(comp);
+                        setEditForm({
+                          status: comp.status,
+                          teamA_score: comp.teamA_score,
+                          teamB_score: comp.teamB_score,
+                        });
+                      }} 
+                      className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg shadow">
                       Update
                     </Button>
-                    <Button className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded-lg shadow">
+                    <Button onClick={() => handleDelete(comp.id)} className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-2 rounded-lg shadow">
                       Delete
                     </Button>
                   </div>

@@ -20,7 +20,7 @@ export default function Homepage() {
         <News />
 
         <Coach />
-        <Footer />
+        {/* <Footer /> */}
         {/* <Player /> */}
       </div>
     </div>

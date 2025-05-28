@@ -385,10 +385,10 @@ export default function PlayerProfileBySport() {
                   key={player.id}
                   className="text-center hover:bg-blue-50 transition duration-300"
                 >
-                  <td className=" px-4 py-3">
+                  <td className=" px-4 py-3 border-t">
                     {(currentPage - 1) * itemsPerPage + index + 1}
                   </td>
-                  <td className=" px-4 py-3">
+                  <td className=" px-4 py-3 border-t">
                     <Image
                       src={player.image}
                       alt={player.name}
@@ -397,13 +397,13 @@ export default function PlayerProfileBySport() {
                       className="rounded-full mx-auto"
                     />
                   </td>
-                  <td className=" px-4 py-3">{player.name}</td>
-                  <td className=" px-4 py-3">{player.position}</td>
-                  <td className=" px-4 py-3">{player.contact_info}</td>
-                  <td className=" px-4 py-3">{player.team.name}</td>
-                  <td className=" px-4 py-3">{player.team.division}</td>
-                  <td className=" px-4 py-3">{player.team.contact_info}</td>
-                  <td className=" px-4 py-3 space-x-2">
+                  <td className=" px-4 py-3 border-t">{player.name}</td>
+                  <td className=" px-4 py-3 border-t">{player.position}</td>
+                  <td className=" px-4 py-3 border-t">{player.contact_info}</td>
+                  <td className=" px-4 py-3 border-t">{player.team.name}</td>
+                  <td className=" px-4 py-3 border-t">{player.team.division}</td>
+                  <td className=" px-4 py-3 border-t">{player.team.contact_info}</td>
+                  <td className=" px-4 py-3 border-t space-x-2">
                     <button
                       onClick={() => handleUpdateClick(player)}
                       className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"

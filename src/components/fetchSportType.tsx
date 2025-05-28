@@ -163,8 +163,8 @@ export default function SportComponent() {
               <tbody>
                 {paginatedSports.map((item, index) => (
                   <tr key={item.id} className="text-center hover:bg-blue-50 transition duration-300">
-                    <td className="px-6 py-4">{(currentPage - 1) * pageSize + index + 1}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 border-t">{(currentPage - 1) * pageSize + index + 1}</td>
+                    <td className="px-6 py-4 border-t">
                       <Image
                         src={item.image || "/placeholder.jpg"}
                         alt={item.name}
@@ -173,9 +173,9 @@ export default function SportComponent() {
                         className="object-cover rounded-lg"
                       />
                     </td>
-                    <td className="px-6 py-4">{item.name}</td>
-                    <td className="px-6 py-4">{item.description || "No description"}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 border-t">{item.name}</td>
+                    <td className="px-6 py-4 border-t">{item.description || "No description"}</td>
+                    <td className="px-6 py-4 border-t">
                       <button
                         onClick={() => openEditModal(item)}
                         className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow text-sm"

@@ -243,6 +243,7 @@ export default function FetchNews({ sport }: { sport: string }) {
                     className="text-center hover:bg-blue-50 transition duration-300"
                   >
 
+
                     <td className=" px-6 py-4">
                       {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
@@ -260,10 +261,10 @@ export default function FetchNews({ sport }: { sport: string }) {
                         />
                       </div>
                     </td>
-                    <td className=" px-6 py-4">{news.title}</td>
-                    <td className=" px-6 py-4">{news.description}</td>
-                    <td className=" px-6 py-4">{news.sportType?.name}</td>
-                    <td className=" px-6 py-4">
+                    <td className=" px-6 py-4 border-t">{news.title}</td>
+                    <td className=" px-6 py-4 border-t">{news.description}</td>
+                    <td className=" px-6 py-4 border-t">{news.sportType?.name}</td>
+                    <td className=" px-6 py-4 border-t">
                       <div className="flex justify-center gap-4">
                         <button
                           onClick={() => handleEdit(news)}

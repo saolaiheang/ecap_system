@@ -13,7 +13,7 @@ export default function Match(){
             <MatchLayout/>
       <FetchCompetitionLayout/>
 
-            <Footer/>
+            {/* <Footer/> */}
         </div>
     )
 }

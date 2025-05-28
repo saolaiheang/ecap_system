@@ -227,7 +227,7 @@ export default function FetchTeam() {
                   key={team.id}
                   className="hover:bg-blue-50 transition duration-300 text-center"
                 >
-                  <td className="px-6 py-4">{indexOfFirstItem + index + 1}</td>
+                  <td className="px-6 py-4 border-t">{indexOfFirstItem + index + 1}</td>
                   <td className="px-6 py-4 border-t">{team.name}</td>
                   <td className="px-6 py-4 border-t">{team.division}</td>
                   <td className="px-6 py-4 border-t">{team.contact_info}</td>

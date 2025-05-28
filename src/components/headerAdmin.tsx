@@ -3,6 +3,7 @@
 import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
+
 export default function HeaderAdminPage() {
   const router = useRouter();
 
@@ -19,10 +20,8 @@ export default function HeaderAdminPage() {
   }, [router]);
 
   return (
-    <header className="flex justify-between items-center bg-[#1D276C] shadow-md px-3 py-2">
-      
-
-     
-    </header>
+   <>
+   <button className="bg-red-600 p-2" onClick={handleLogout}>Logout</button>
+   </>
   );
 }

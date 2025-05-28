@@ -403,10 +403,10 @@ export default function PlayerProfileBySport() {
                   <td className=" px-4 py-3 border-t">{player.team.name}</td>
                   <td className=" px-4 py-3 border-t">{player.team.division}</td>
                   <td className=" px-4 py-3 border-t">{player.team.contact_info}</td>
-                  <td className=" px-4 py-3 border-t space-x-2">
+                  <td className=" px-4 py-3 border-t space-x-2 flex">
                     <button
                       onClick={() => handleUpdateClick(player)}
-                      className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700"
                     >
                       Update
                     </button>
@@ -441,7 +441,7 @@ export default function PlayerProfileBySport() {
             disabled={currentPage === 1}
             className={`px-3 py-1 rounded border border-gray-400 hover:bg-gray-200 disabled:opacity-50`}
           >
-            Previous
+            Prev
           </button>
           {[...Array(totalPages)].map((_, i) => {
             const page = i + 1;

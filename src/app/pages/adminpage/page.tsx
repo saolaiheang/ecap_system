@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import HeaderAdminPage from "@/components/headerAdmin" 
 
 import {
   FaUser,
@@ -193,6 +193,8 @@ export default function DashboardLayout() {
         <FaChartLine className="mr-4 text-xl" />
         Activity
       </button>
+      <HeaderAdminPage/>
+
     </>
   );
 

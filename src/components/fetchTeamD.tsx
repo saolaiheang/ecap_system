@@ -245,7 +245,7 @@ export default function FetchTeam() {
                       "No image"
                     )}
                   </td>
-                  <td className="px-6 py-4 border-t">
+                  <td className="px-6 py-4 border-t flex">
                     <Button
                       onClick={() => handleEditTeam(team)}
                       className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg shadow"
@@ -266,7 +266,7 @@ export default function FetchTeam() {
             disabled={currentPage === 1}
             className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded"
           >
-            Previous
+            Prev
           </Button>
           {Array.from({ length: totalPages }, (_, i) => (
             <button

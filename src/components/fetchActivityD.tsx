@@ -159,9 +159,7 @@ export default function FetchActivityD() {
     setShowCreateForm(true);
   };
 
-  useEffect(() => {
-    fetchActivityD();
-  }, [selectSport]);
+
 
   return (
     <div className="px-8 py-6 bg-gray-50 min-h-screen">

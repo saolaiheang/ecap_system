@@ -5,6 +5,16 @@ import { AppDataSource } from "@/config";
 import cloudinary from "@/lib/cloudinary";
 import os from 'os';
 import fs, { writeFile } from "fs/promises"
+
+export const config = {
+    api: {
+      bodyParser: false,
+    },
+  };
+
+  export type HistoryParams = {
+    params: Promise<{ id: string }>;
+  };
 export const createHistory = async (req: NextRequest) => {
     try {
         await initializeDataSource();
@@ -80,10 +90,10 @@ export const getAllHistory = async (_req: NextRequest) => {
     }
 }
 
-export const deleteHistory = async (_req: NextRequest, { params }: { params: { id: string } }) => {
+export const deleteHistory = async (_req: NextRequest, { params }: HistoryParams) => {
     try {
         await initializeDataSource();
-        const { id } = params;
+        const { id } =await params;
         const historyRepository = AppDataSource.getRepository(History);
         const history = await historyRepository.findOneBy({ id: id });
         if (!history) {
@@ -105,10 +115,10 @@ export const deleteHistory = async (_req: NextRequest, { params }: { params: { i
     }
 }
 
-export const updateHistory = async (req: NextRequest, { params }: { params: { id: string } }) => {
+export const updateHistory = async (req: NextRequest, { params }: HistoryParams) => {
     try {
         await initializeDataSource();
-        const { id } = params;
+        const { id } =await params;
         const historyRepository = AppDataSource.getRepository(History);
         const formData = await req.formData()
         const year = formData.get("year") as string;

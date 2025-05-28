@@ -16,5 +16,4 @@ export class SportType {
     generateId() {
         this.id = uuidv4();
     }
-
 }

@@ -1,9 +1,9 @@
 import { NextRequest } from "next/server";
-import { deleteHistory,updateHistory } from "@/controllers/histories/histories.controller";
-export const DELETE=async(req:NextRequest,context:{params:{id:string}})=>{
+import { deleteHistory,HistoryParams,updateHistory } from "@/controllers/histories/histories.controller";
+export const DELETE=async(req:NextRequest,context:HistoryParams)=>{
     return await deleteHistory(req,context);
 }
 
-export const PUT=async (req:NextRequest,context:{params:{id:string}})=>{
+export const PUT=async (req:NextRequest,context:HistoryParams)=>{
     return await updateHistory(req,context);
 }

@@ -6,7 +6,13 @@ import { z } from "zod";
 import { StageType } from "@/entities/stage";
 
 
-
+export type StageParams = {
+    params: Promise<{ id: string }>;
+  };
+  
+  export type StageIdParams = {
+    params: Promise<{ stage_id: string }>;
+  };
 const createStageSchema = z.object({
     name: z.string().min(1, "Stage name is required").max(100),
     type: z.enum(["group", "semifinal", "final"], {
@@ -20,14 +26,14 @@ const mapToStageType = (type: "group" | "semifinal" | "final"): StageType => {
 
 
 
-export const createStage = async (req: NextRequest, { params }: { params: { id: string } }) => {
+export const createStage = async (req: NextRequest, { params }:StageParams) => {
     try {
-        const { id } = params;
+        const { id } =await params;
         console.log(id)
         await initializeDataSource();
 
         const body = await req.json();
-        const parsed = createStageSchema.parse(body); // Validate input
+        const parsed = createStageSchema.parse(body);
 
         const competitionRepo = AppDataSource.getRepository(Competition);
         const competition = await competitionRepo.findOneBy({ id: id });
@@ -66,10 +72,10 @@ export const createStage = async (req: NextRequest, { params }: { params: { id: 
 
 }
 
-export const getStages = async (_req: NextRequest, { params }: { params: { id: string } }) => {
+export const getStages = async (_req: NextRequest, { params }:StageParams) => {
     try {
         await initializeDataSource();
-        const { id } = params;
+        const { id } =await params;
         console.log(id)
         const stageRepository = AppDataSource.getRepository(Stage);
         const stages = await stageRepository.findBy( { competition_id:id });
@@ -79,15 +85,10 @@ export const getStages = async (_req: NextRequest, { params }: { params: { id: s
         return NextResponse.json({ message: "Error fetching stages" ,err}, { status: 500 });
     }
 }
-export const getStage = async (_req: NextRequest, { params }: {
-    params: {
-        stage_id
-        : string
-    }
-}) => {
+export const getStage = async (_req: NextRequest, { params }:StageIdParams) => {
     try {
         await initializeDataSource();
-        const { stage_id } = params;
+        const { stage_id } = await params;
         const stageRepository = AppDataSource.getRepository(Stage);
         const stage = await stageRepository.findOneBy({ id:stage_id });
         if (!stage) {
@@ -100,10 +101,10 @@ export const getStage = async (_req: NextRequest, { params }: {
         return NextResponse.json({ message: "Error fetching stage" }, { status: 500 });
     }
 }
-export const updateStage = async (req: NextRequest, { params }: { params: { stage_id: string } }) => {
+export const updateStage = async (req: NextRequest, { params }: StageIdParams) => {
     try {
         await initializeDataSource();
-        const { stage_id } = params;
+        const { stage_id } =await params;
         const stageRepository = AppDataSource.getRepository(Stage);
         const stage = await stageRepository.findOneBy({ id:stage_id });
         if (!stage) {
@@ -119,10 +120,10 @@ export const updateStage = async (req: NextRequest, { params }: { params: { stag
         return NextResponse.json({ message: "Error updating stage" ,err}, { status: 500 });
     }
 }
-export const deleteStage = async (_req: NextRequest, { params }: { params: { stage_id: string } }) => {
+export const deleteStage = async (_req: NextRequest, { params }: StageIdParams) => {
     try {
         await initializeDataSource();
-        const { stage_id } = params;
+        const { stage_id } =await params;
         const stageRepository = AppDataSource.getRepository(Stage);
         const stage = await stageRepository.findOneBy({ id:stage_id });
         if (!stage) {

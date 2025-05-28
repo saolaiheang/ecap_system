@@ -212,7 +212,7 @@ export default function CompetitionStages() {
         sport_type_id: "",
         teamA_id: "",
         teamB_id: "",
-        status: "scheduled",
+
       });
     } catch (err) {
       const error = err as Error;
@@ -258,7 +258,230 @@ export default function CompetitionStages() {
             <option value="semifinal">Semifinal</option>
             <option value="final">Final</option>
           </select>
-        </div>
+
+    });
+    const router = useRouter();
+    useEffect(() => {
+        console.log("Extracted competitionId from params:", competitionId);
+        if (!competitionId) {
+            console.error("competitionId is undefined, redirecting to /competitions");
+        }
+    }, [competitionId]);
+    useEffect(() => {
+        const fetchStages = async () => {
+            try {
+                setIsLoading(true);
+                console.log("Fetching stages for competitionId:", competitionId);
+                const res = await fetch(`/api/competitions/${competitionId}/stages`);
+                const data = await res.json();
+                console.log(data)
+                setStages(Array.isArray(data) ? data : []);
+            } catch (err) {
+                console.error(err);
+                setError("Failed to load stages.");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchStages();
+    }, [competitionId]);
+
+
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setStageForm((prev) => ({ ...prev, [name]: value }));
+    };
+
+
+    useEffect(() => {
+
+        const fetchMatch = async () => {
+            if (!selectStage) return;
+            try {
+                setIsLoading(true);
+                console.log("Fetching match for competitionId:", competitionId);
+                const res = await fetch(`/api/competitions/${competitionId}/stages/${selectStage}/match`);
+                const data = await res.json();
+                console.log(data.data)
+                setMatches(Array.isArray(data.data) ? data.data : []);
+            } catch (err) {
+                console.log(err)
+                setMatchError("Failed to load matches.");
+            } finally {
+                setIsLoading(false);
+            }
+
+        }
+        fetchMatch()
+    }, [competitionId, selectStage]);
+
+
+    useEffect(() => {
+        const fetchTeams = async () => {
+            try {
+                const res = await fetch(`/api/team`);
+                const data = await res.json();
+                setTeams(data.data || []);
+            } catch (err) {
+                console.error(err)
+                console.error("Failed to fetch teams.");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchTeams();
+    }, []);
+
+    useEffect(() => {
+        const fetchSport = async () => {
+            try {
+                const res = await fetch('/api/typeofsport');
+                const data = await res.json();
+                console.log(data)
+                setSportTypes(data.typeOfSport || [])
+            } catch (err) {
+                console.log(err)
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        fetchSport()
+    }, []);
+
+
+
+
+
+    const handleCreateStage = async () => {
+        if (!stageForm.name) {
+            setError("Please fill in all fields.");
+            return;
+        }
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const res = await fetch(`/api/competitions/${competitionId}/stages`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    ...stageForm,
+                    competitionId,
+                }),
+            });
+
+
+            const newStage = await res.json();
+            if (!res.ok) {
+                throw new Error(newStage.message || "Field to create stage......");
+            }
+            setStages((prev) => (Array.isArray(prev) ? [...prev, newStage] : [newStage]));
+            setStageForm({ name: "", type: "" });
+        } catch (err) {
+            console.log(err)
+            const error = err as Error;
+            setError(error.message || "Field to create stage......");
+
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+
+
+    const handleMatchInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setMatchForm(prev => ({ ...prev, [name]: value }));
+    };
+
+
+    const handleCreateMatch = async () => {
+        try {
+            const res = await fetch(`/api/competitions/${competitionId}/stages/${selectStage}/match`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    ...matchForm,
+                    teamA_score: null,
+                    teamB_score: null,
+                }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error(data.message || "Failed to create match.");
+            }
+
+            setMatches(prev => [...prev, data.data]);
+            setShowMatchForm(false);
+            setMatchForm({
+                match_date: "",
+                match_time: "",
+                location: "",
+                sport_type_id: "",
+                teamA_id: "",
+                teamB_id: "",
+                status: "scheduled",
+            });
+        } catch (err) {
+            const error = err as Error;
+            setError(error.message || "Failed to create match.");
+
+        }
+    };
+
+
+
+
+    return (
+        <div className="px-6 max-w-3xl mx-auto">
+            <button onClick={() => router.back()} className="text-white rounded bg-gray-600">Back</button>
+            <h2 className="text-2xl font-bold mb-2">Stages for Competition</h2>
+            <div className="bg-gray-100 p-4 rounded mb-2 ">
+                <h3 className="text-lg font-semibold ">Create New Stage</h3>
+                {error && <p className="text-red-500 mb-4">{error}</p>}
+                <div className="gap-3 flex  ">
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Stage Name (e.g. វគ្គចែកប៉ូល)"
+                        value={stageForm.name}
+
+                        onChange={handleInputChange}
+                        className="border p-2 rounded mb-2 w-full"
+                    />
+
+                    <select
+                        name="type"
+                        value={stageForm.type}
+                        onChange={handleInputChange}
+                        className="border p-2 rounded mb-2 w-full"
+                    >
+                        <option value="">Select Stage</option>
+                        <option value="group">Group</option>
+                        <option value="semifinal">Semifinal</option>
+                        <option value="final">Final</option>
+                    </select>
+
+
+
+                </div>
+                <button
+                    onClick={handleCreateStage}
+                    className="bg-blue-500 hover:bg-blue-700 text-white rounded px-4"
+
+                >
+                    {isLoading ? "Create" : "creating...."}
+                </button>
+
+            </div>
+            <h3 className="text-lg mb-2">Existing Stages</h3>
+
+            <select name="" id="" value={selectStage} className="px-4 py-2 bg-stone-400 rounded"
+                onChange={(e) => setSelectStage(e.target.value)}
+            >
+                <option value="" >Select a Stage</option>
+
 
         <button
           onClick={handleCreateStage}

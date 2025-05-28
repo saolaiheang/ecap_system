@@ -1,12 +1,10 @@
 import { NextRequest} from "next/server";
-import { createPlayer, getPlayersByteams } from "@/controllers/players/players.controller";
+import { createPlayer, getPlayersByteams, PlayerParams } from "@/controllers/players/players.controller";
 
-export const POST = async (req: NextRequest, context: { params: { id: string } }) => {
+export const POST = async (req: NextRequest, context: PlayerParams) => {
     return await createPlayer(req, context);
 }
-export const GET = async (req: NextRequest, context: {
-    params: { id: string }
-}) => {
+export const GET = async (req: NextRequest, context:PlayerParams) => {
     return await getPlayersByteams(req, context);
 }
 

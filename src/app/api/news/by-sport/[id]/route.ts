@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
-import { getAllNewsBysport } from "@/controllers/news/news.controller";
+import { getAllNewsBysport, NewsParams } from "@/controllers/news/news.controller";
 
-export const GET=async(req:NextRequest,context:{params:{id:string}})=>{
+export const GET=async(req:NextRequest,context:NewsParams)=>{
     return await getAllNewsBysport(req,context)
 }

@@ -42,6 +42,7 @@ export default function NewsDetailPage() {
           setNews(data.data);
         }
       } catch (err) {
+        console.log(err)
         setError("An unexpected error occurred.");
         setNews(null);
       } finally {

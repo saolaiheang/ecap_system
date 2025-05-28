@@ -12,6 +12,13 @@ export const config = {
         bodyParser: false,
     },
 };
+
+export type SportParams = {
+    params: Promise<{ id: string }>; 
+  };
+  export type CompetitionParams = {
+    params: Promise<{ id: string; competition_id?: string }>;
+  };
 export const createCompetition = async (req: NextRequest) => {
     try {
         await initializeDataSource();
@@ -88,11 +95,11 @@ export const createCompetition = async (req: NextRequest) => {
     }
 };
 
-export const getCompetitionByTypeOfSport = async (params: { id: string }) => {
+export const getCompetitionByTypeOfSport = async (_req:NextRequest,{params}:SportParams) => {
     try {
         await initializeDataSource();
 
-        const { id: sport_id } = params;
+        const { id: sport_id } =await params;
         const competitionRepository = AppDataSource.getRepository(Competition);
 
         const competitions = await competitionRepository.find({
@@ -146,11 +153,11 @@ export const getAllCompetitions = async (_req: NextRequest) => {
 }
 
 
-export const getCompetitionById = async (params: { id: string, competition_id: string }) => {
+export const getCompetitionById = async (_rep:NextRequest,{params}:CompetitionParams) => {
     try {
         await initializeDataSource();
 
-        const { id, competition_id } = params;
+        const { id, competition_id } =await params;
 
         console.log("Sport Type ID:", id);
         console.log("Competition ID:", competition_id);
@@ -184,11 +191,11 @@ export const getCompetitionById = async (params: { id: string, competition_id: s
         );
     }
 };
-export const updateCompetition = async (req: NextRequest, context: { params: { id: string } }) => {
+export const updateCompetition = async (req: NextRequest, {params}:CompetitionParams) => {
     try {
         await initializeDataSource();
 
-        const { id } = context.params;
+        const { id } = await params;
         
         const formData = await req.formData();
         const name = formData.get("name") as string;
@@ -287,11 +294,11 @@ export const updateCompetition = async (req: NextRequest, context: { params: { i
     }
 };
 
-export const deleteCompetition = async (_req: NextRequest, context: { params: { id: string } }) => {
+export const deleteCompetition = async (_req: NextRequest, {params}:CompetitionParams) => {
     try {
         await initializeDataSource();
 
-        const { id } = context.params;
+        const { id } = await params;
         const competitionRepository = AppDataSource.getRepository(Competition);
 
         const competition = await competitionRepository.findOne({ where: { id } });

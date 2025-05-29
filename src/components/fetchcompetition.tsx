@@ -43,7 +43,6 @@ export default function CompetitionManager() {
     const fetchSportTypes = async () => {
       try {
         const res = await fetch("/api/typeofsport");
-        if (!res.ok) throw new Error("Failed to fetch sport types");
         const data = await res.json();
         setSportTypes(data.typeOfSport || []);
       } catch (err) {
@@ -61,7 +60,6 @@ export default function CompetitionManager() {
       try {
         setIsFetching(true);
         const res = await fetch("/api/competitions");
-        if (!res.ok) throw new Error("Failed to fetch competitions");
         const data = await res.json();
         setCompetitions(data.data || []);
       } catch (err) {

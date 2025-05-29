@@ -86,7 +86,6 @@ export default function FetchNews({ sport }: { sport: string }) {
         }
       );
 
-      if (!response.ok) throw new Error("Failed to submit news");
 
       alert(
         editNewsId ? "News updated successfully" : "News added successfully"
@@ -123,7 +122,6 @@ export default function FetchNews({ sport }: { sport: string }) {
         method: "DELETE",
       });
 
-      if (!res.ok) throw new Error("Delete failed");
 
       alert("News deleted");
       await fetchNews(selectedSport);

@@ -144,7 +144,7 @@ export default function FetchCompetitionLayout() {
     async function fetchSports() {
       try {
         const res = await fetch("/api/typeofsport", { cache: "no-store" });
-        if (!res.ok) throw new Error(`Failed to fetch sports: ${res.status} ${res.statusText}`);
+        
         const data = await res.json();
         console.log("Sports API Response:", data);
         setSports(data.typeOfSport || []);
@@ -167,7 +167,6 @@ export default function FetchCompetitionLayout() {
           ? `/api/competitions?sport_type_id=${selectedSport}`
           : "/api/competitions";
         const res = await fetch(url, { cache: "no-store" });
-        if (!res.ok) throw new Error(`Failed to fetch competitions: ${res.status} ${res.statusText}`);
         const json = await res.json();
         console.log("Competitions API Response:", json);
         const competitionsData = json.data || [];
@@ -179,8 +178,7 @@ export default function FetchCompetitionLayout() {
               const stagesRes = await fetch(`/api/competitions/${competition.id}/stages`, {
                 cache: "no-store",
               });
-              if (!stagesRes.ok)
-                throw new Error(`Failed to fetch stages for competition ${competition.id}: ${stagesRes.status} ${stagesRes.statusText}`);
+           
               const stagesData = await stagesRes.json();
               console.log(`Stages for competition ${competition.id}:`, stagesData);
 
@@ -195,8 +193,6 @@ export default function FetchCompetitionLayout() {
                       `/api/competitions/${competition.id}/stages/${stage.id}/match`,
                       { cache: "no-store" }
                     );
-                    if (!matchesRes.ok)
-                      throw new Error(`Failed to fetch matches for stage ${stage.id}: ${matchesRes.status} ${matchesRes.statusText}`);
                     const matchesData = await matchesRes.json();
                     console.log(`Matches for stage ${stage.id}:`, matchesData);
                     return { ...stage, matches: matchesData.data || [] };

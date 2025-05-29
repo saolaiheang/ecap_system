@@ -114,7 +114,6 @@ export default function FetchTeam() {
         body: formData,
       });
 
-      if (!res.ok) throw new Error("Failed to save team");
 
       await fetchTeams();
       alert(editingTeamId ? "Team updated successfully" : "Team added successfully");

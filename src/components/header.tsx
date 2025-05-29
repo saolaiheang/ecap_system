@@ -38,7 +38,7 @@ export default function Header() {
 
         {/* Title */}
         <h1 className=" lg:ml-[-150px] hidden md:block w-full text-center text-2xl md:text-4xl font-bold bg-gradient-to-r from-pink-500  to-purple-700 bg-clip-text text-transparent drop-shadow-lg">
-          Extracurricular Activity Program
+          Extra Curriculum Activities Program
         </h1>
 
         {/* Mobile Menu Button */}

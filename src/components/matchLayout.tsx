@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { FaClock, FaMapMarkerAlt } from "react-icons/fa";
 import Image from "next/image";
-import { match } from "assert";
 
 interface Team {
   name: string;
@@ -48,11 +47,10 @@ function MatchCard({
   teamB_score:number
 }) {
   const defaultImage = "https://via.placeholder.com/80x80?text=Team";
-
   return (
     <div className="rounded-xl overflow-hidden shadow-md transition-transform hover:scale-[1.02] hover:shadow-pink-300 duration-300 border border-pink-600 bg-white/90">
       {/* Header */}
-      <div className="bg-gradient-to-r from-pink-500 to-purple-700 text-white p-4 sm:p-5 flex justify-between items-center">
+      <div className="bg-gradient-to-r from-pink-500 to-purple-700 text-white p-4 sm:p-5 flex justify-between items-center w-[300px]">
         <div className="text-center space-y-1 sm:space-y-2 w-1/3">
           <Image
             src={teamA.image || defaultImage}
@@ -119,12 +117,12 @@ export default function MatchLayout() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  const [showAll, setShowAll] = useState(false); // 👈 new state
+  const MAX_VISIBLE = 4; 
   useEffect(() => {
     const fetchMatches = async () => {
       try {
         const res = await fetch("/api/match_friendly");
-        if (!res.ok) throw new Error("Failed to fetch matches");
         const data = await res.json();
         setMatches(data || []);
       } catch (error) {
@@ -137,6 +135,7 @@ export default function MatchLayout() {
 
     fetchMatches();
   }, []);
+  const displayedMatches = showAll ? matches : matches.slice(0, MAX_VISIBLE);
 
   return (
     <div className="px-4 sm:px-8 md:px-16 py-10 text-white">
@@ -157,7 +156,7 @@ export default function MatchLayout() {
 
       <div className="flex justify-center">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 max-w-7xl">
-          {matches.map((match) => (
+          {displayedMatches.map((match) => (
             <MatchCard
               key={match.id}
               teamA={match.teamA}
@@ -173,6 +172,17 @@ export default function MatchLayout() {
           ))}
         </div>
       </div>
+
+      {matches.length > MAX_VISIBLE && (
+        <div className="text-center mt-6">
+          <button
+            onClick={() => setShowAll(!showAll)}
+            className="px-6 py-2 rounded-full bg-pink-600 hover:bg-pink-700 text-white font-medium shadow-md transition"
+          >
+            {showAll ? "Show Less" : "Show All"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

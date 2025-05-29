@@ -83,7 +83,6 @@ export default function FetchHistories() {
       const responseText = await res.text();
       console.log("Server response:", responseText);
 
-      if (!res.ok) throw new Error("Failed to submit");
 
       alert(editId ? "Updated successfully" : "Created successfully");
       setFormData({ title: "", year: "", description: "" });

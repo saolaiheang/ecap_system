@@ -179,9 +179,7 @@ export default function CompetitionStages() {
       });
 
       const newStage = await res.json();
-      if (!res.ok) {
-        throw new Error(newStage.message || "Failed to create stage.");
-      }
+      
       setStages((prev) => (Array.isArray(prev) ? [...prev, newStage] : [newStage]));
       setStageForm({ name: "", type: "" });
     } catch (err) {
@@ -211,9 +209,7 @@ export default function CompetitionStages() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to create match.");
-      }
+     
 
       setMatches((prev) => [...prev, data.data]);
       setShowMatchForm(false);
@@ -271,9 +267,7 @@ export default function CompetitionStages() {
       });
 
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to update match.");
-      }
+     
 
       setMatches((prev) =>
         prev.map((match) => (match.id === editingMatchId ? { ...match, ...data.data } : match))
@@ -333,10 +327,7 @@ export default function CompetitionStages() {
       });
 
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to delete match.");
-      }
-
+   
       setMatches((prev) => prev.filter((match) => match.id !== matchId));
     } catch (err) {
       console.error("Error deleting match:", err);

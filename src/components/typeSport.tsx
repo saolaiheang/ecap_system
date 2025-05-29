@@ -41,21 +41,17 @@ export default function TypesOfSport() {
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-pink-500 to-purple-700 bg-clip-text text-transparent drop-shadow-lg">
           Types of Sport
         </h1>
+       
+
         <button
-          onClick={() => setShowAll(!showAll)}
-          className="w-full sm:w-auto bg-gradient-to-r from-pink-500 to-purple-700 text-white px-4 py-2 rounded-md font-semibold shadow-md hover:shadow-lg hover:from-purple-700 hover:to-pink-500 transition duration-300 "
-        >
-          {showAll ? "Show less" : "See all"}
-        </button>
+            onClick={() => setShowAll(!showAll)}
+            className="px-6 py-2 rounded-full bg-pink-600 hover:bg-pink-700 text-white font-medium shadow-md transition"
+          >
+            {showAll ? "Show Less" : "Show All"}
+          </button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-        {sports.length === 0 && (
-          <p className="text-red-500 col-span-full text-center text-lg">
-            No sports found.
-          </p>
-        )}
-
         {displayedSports.map((sport) => (
           <Link href={`/typeofsport/${sport.id}`} key={sport.id}>
 

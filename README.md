@@ -18,9 +18,9 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 
 ## create file .env
-DB_HOST="62.72.46.248"
-DB_PORT=5432
-DB_USER="postgres"
-DB_NAME="ecap_system"
-DB_PASSWORD="NZt3C7DPfWnZyy8N"
-NODE_ENV= "development"
+DB_HOST=""
+DB_PORT=
+DB_USER=""
+DB_NAME=""
+DB_PASSWORD=""
+NODE_ENV= ""

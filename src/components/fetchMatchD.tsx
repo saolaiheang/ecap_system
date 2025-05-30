@@ -35,7 +35,6 @@ export default function CompetitionManager() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  // Fetch sport types
   useEffect(() => {
     const fetchSportTypes = async () => {
       try {
